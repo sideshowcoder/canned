@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+var Canned = require('../canned')
+,   http = require('http')
+,   args = process.argv.slice(2)
+
+if (args.length > 1) {
+  console.log('Usage: canned [dir]\n')
+  process.exit(1)
+}
+
+// TODO start a http server using canned 
