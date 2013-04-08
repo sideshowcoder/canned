@@ -55,14 +55,14 @@ Canned.prototype._log = function(message){
 }
 
 Canned.prototype.responder = function(req, res){
-  var pathname = url.parse(req.path).pathname.split('/')
+  var pathname = req.url.split('/')
   ,   dname = pathname.pop()
   ,   fname = '_' + dname
   ,   method = req.method.toLowerCase()
   ,   path = this.dir + pathname.join('/')
   ,   that = this
 
-  this._log('request: ' + req.method + ' ' + req.path)
+  this._log('request: ' + req.method + ' ' + req.url)
 
   fs.readdir(path, function(err, files){
     fs.stat(path + '/' + dname, function(err, stats){
