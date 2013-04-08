@@ -1,6 +1,7 @@
 var tap = require('tap')
 ,   test = tap.test
 ,   canned = require('../canned')
+,   fs = require('fs')
 
 test('canned actually loads', function(t){
   t.ok(canned, 'canned loaded successfully')
@@ -8,7 +9,7 @@ test('canned actually loads', function(t){
 })
 
 test('create fake api', function(t){
-  var can = canned('./test_responses')
+  var can = canned('./test_responses', { logger: process.stderr })
   ,   req = { method: 'GET' }
   ,   res = { setHeader: function(){}, end: function(){} }
 
@@ -45,24 +46,49 @@ test('create fake api', function(t){
   t.test('sets application/txt as content-type if _b.get.txt does exist for /b', function(t){
     t.plan(1)
     req.path = '/b'
-    res.setHeader = function(name, value){
+    res.setHeader = function(_name, value){
       t.equal(value, 'application/txt', 'set content type txt')
     }
     can(req, res)
   })
 
-  t.test('gets the content of index.get.json for /', { skip: true }, function(t){
+  t.test('gets content-type json if index.get.json for /', function(t){
+    t.plan(1)
+    req.path = '/'
+    res.setHeader = function(_name, value){
+      t.equal(value, 'application/json', 'set content type txt')
+    }
+    can(req, res)
+  })
+
+  t.test('gets content of index.get.json for /', function(t){
     t.plan(1)
     req.path = '/'
     res.end = function(content){
-      t.equal(content, 'index.get.json', 'get the content')
+      t.equal(content, 'index.get.json\n', 'set the file content')
+    }
+    can(req, res)
+  })
+
+  t.test('gets content of index.get.json for /d', function(t){
+    t.plan(1)
+    req.path = '/d'
+    res.end = function(content){
+      t.equal(content, 'd/index.get.json\n', 'set the file content')
+    }
+    can(req, res)
+  })
+
+  t.test('gets content of any.get.json for /d/iamanid', function(t){
+    t.plan(1)
+    req.path = '/d/iamanid'
+    res.end = function(content){
+      t.equal(content, 'd/any.get.json\n', 'set the file content')
     }
     can(req, res)
   })
 
   t.end()
 })
-
-
 
 
