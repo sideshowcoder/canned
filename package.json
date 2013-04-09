@@ -9,7 +9,6 @@
     "dev": "./node_modules/node-dev/bin/node-dev ./bin/canned"
   },
   "bin": "./bin/canned",
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/sideshowcoder/canned"
