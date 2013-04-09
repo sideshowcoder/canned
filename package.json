@@ -1,6 +1,6 @@
 {
   "name": "canned",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "serve canned responses to mock an api, based on files in a folder",
   "main": "canned.js",
   "scripts": {
@@ -28,5 +28,5 @@
     "server"
   ],
   "author": "Philipp Fehre @sideshowcoder",
-  "license": "MIT",
+  "license": "MIT"
 }
