@@ -1,20 +1,36 @@
 #!/usr/bin/env node
 var canned = require('../canned')
 ,   http = require('http')
-,   args = process.argv.slice(2)
+,   optimist = require('optimist')
+,   argv = optimist
+          .default('p', 3000)
+          .alias('p', 'port')
+          .describe('p', 'server port')
+          .default('h', false)
+          .alias('h', 'help')
+          .describe('h', 'show the help')
+          .usage('Usage: $0 [dir]')
+          .argv
 
-if(args.length > 1) {
-  console.log('Usage: canned [dir]\n')
-  process.exit(1)
+if(argv.h) {
+  optimist.showHelp()
+  return
 }
 
-var dir;
-if(args.length === 0) {
-  dir = './'
+var dir = ''
+,   port = argv.p
+,   logger
+,   cannedDir
+
+if(argv._.length === 1) dir = argv._[0] // use the passed directory
+if(argv.q) {
+  logger = null // be quiet
 } else {
-  dir = args[0]
+  logger = process.stdout
+  dir.length === 0 ? cannedDir = './' : cannedDir = dir
+  process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
-var can = canned(dir, { logger: process.stdout })
-http.createServer(can).listen(3000)
+var can = canned(dir, { logger: logger })
+http.createServer(can).listen(port)
 
