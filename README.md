@@ -1,5 +1,8 @@
 Canned fake API server
 ======================
+
+[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned)
+
 Working with APIs, more often than not, during development you want to work
 with a fixed version of the responses provided. This is especially true if the
 API is still under development, and maybe even still needs input on how to
