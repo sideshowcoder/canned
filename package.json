@@ -1,12 +1,14 @@
 {
   "name": "canned",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "serve canned responses to mock an api, based on files in a folder",
   "main": "canned.js",
   "scripts": {
     "test": "./node_modules/tap/bin/tap.js ./test",
     "start": "node ./bin/canned",
     "dev": "./node_modules/node-dev/bin/node-dev ./bin/canned"
+  },
+  "bin": "./bin/canned",
   },
   "repository": {
     "type": "git",
