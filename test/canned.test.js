@@ -70,6 +70,15 @@ test('create fake api', function(t){
     can(req, res)
   })
 
+  t.test('gets _a.get.json for /a?abc=thegreatpubar ignoring the query params', function(t){
+    t.plan(1)
+    req.url = '/a?abc=thegreatpubar'
+    res.end = function(content){
+      t.equal(content, '_a.get.json\n', 'set the file content')
+    }
+    can(req, res)
+  })
+
   t.test('gets content of index.get.json for /d', function(t){
     t.plan(1)
     req.url = '/d'

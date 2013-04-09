@@ -19,9 +19,8 @@ function scanFileListForName(files, pattern){
 // return a data structure representing the response for a file
 // datastructure mirrors Racks [headers, status, content]
 // while headers are [[name, value], [name, value]]
-Canned.prototype._responseForFile = function(fname, path, method, files, cb){
+function responseForFile(fname, path, method, files, cb){
   var pattern = fname + '\.' + method + '\.(.+)'
-  ,   that = this
   ,   m
 
   if(m = scanFileListForName(files, pattern)){
@@ -55,7 +54,7 @@ Canned.prototype._log = function(message){
 }
 
 Canned.prototype.responder = function(req, res){
-  var pathname = req.url.split('/')
+  var pathname = url.parse(req.url).pathname.split('/')
   ,   dname = pathname.pop()
   ,   fname = '_' + dname
   ,   method = req.method.toLowerCase()
@@ -67,9 +66,9 @@ Canned.prototype.responder = function(req, res){
   fs.readdir(path, function(err, files){
     fs.stat(path + '/' + dname, function(err, stats){
       if(err){
-        that._responseForFile(fname, path, method, files, function(err, resp){
+        responseForFile(fname, path, method, files, function(err, resp){
           if(err) {
-            that._responseForFile('any', path, method, files, function(err, resp){
+            responseForFile('any', path, method, files, function(err, resp){
               if(err) {
                 that._log(' not found\n')
               } else {
@@ -86,7 +85,7 @@ Canned.prototype.responder = function(req, res){
         if(stats.isDirectory()) {
           var fpath = path + '/' + dname
           fs.readdir(fpath, function(err, files){
-            that._responseForFile('index', fpath, method, files, function(err, resp){
+            responseForFile('index', fpath, method, files, function(err, resp){
               if(err) {
                 that._log(' not found\n')
               } else {

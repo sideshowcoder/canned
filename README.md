@@ -11,9 +11,12 @@ Canned maps a folder structure to API responses, so
 
     /comment/any.get.json
 
-becomes
+responds to
 
-    HTTP GET
+    GET /comment/:id
+
+and becomes
+
     Content-Type: application/json
     {
       content: 'I am a comment',
@@ -26,13 +29,14 @@ Currently Canned supports the basic REST-API mapping, as well as custom method
 mapping with nested endpoints.
 
 
-    file                        | response
+    file                        | resquest
     /index.get.json             | GET /
     /any.get.json               | GET /:id
     /_search.get.json           | GET /search
     /comments/index.get.json    | GET /comments/
     /comments/any.get.json      | GET /comments/:id
     /comments/_search.get.json  | GET /comments/search
+    /comments/_search.get.json  | GET /comments/search?iam=soignored
 
 Ok I need this!
 ---------------
@@ -55,7 +59,7 @@ Or just run the provided canned server script
 
     $ canned
 
-Which serves the current folder with canned responses
+Which serves the current folder with canned responses on port 3000
 
 License
 -------
