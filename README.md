@@ -64,6 +64,10 @@ Or just run the provided canned server script
 
 Which serves the current folder with canned responses on port 3000
 
+    $ canned -p 5000 ./my/responses/
+
+will serve the relative folder via port 5000
+
 License
 -------
 MIT 2013 Philipp Fehre alias @sideshowcoder
