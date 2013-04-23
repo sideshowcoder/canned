@@ -47,6 +47,11 @@ Just install via npm
 
     $ npm install canned
 
+which will install it locally in node\_modules, if you want to have it
+available from anywhere just install globally
+
+    $ npm install -g canned
+
 How do I use it
 ---------------
 There are 2 ways here, either you embed it somewhere programmatically
@@ -68,8 +73,23 @@ Which serves the current folder with canned responses on port 3000
 
 will serve the relative folder via port 5000
 
+It does not work :(
+-------------------
+
+### canned not found
+make sure you either install globally or put ./node\_modules/.bin in your PATH
+
+### it is still not found, and I installed globally
+make sure /usr/local/share/npm/bin is in your path, this should be true for
+every install since you won't be able to run any global module bins if not.
+(like express, and such)
+
+### the encoding looks wrong
+make sure you run a version of node which is 0.10.3 or higher, because it fixes
+a problem for the encoding handling when reading files
+
 License
 -------
-MIT 2013 Philipp Fehre alias @sideshowcoder
+MIT 2013 Philipp Fehre alias @sideshowcoder, or @ischi on twitter
 
 
