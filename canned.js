@@ -2,6 +2,13 @@ var url = require('url')
 ,   fs = require('fs')
 ,   util = require('util')
 
+CONTENT_TYPES = {
+  'json': 'application/json',
+  'html': 'text/html',
+  'txt': 'text/plain',
+  'js': 'application/javascript'
+}
+
 function Canned(dir, options){
   this.logger = options.logger
   this.dir = process.cwd() + '/' + dir
@@ -14,6 +21,27 @@ function scanFileListForName(files, pattern){
     if(m) return m
   }
   return false
+}
+
+function removeJSLikeComments(text){
+  return text.replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '')
+}
+
+function sanatize(data, cType){
+  var sanatized
+  switch(cType) {
+    case 'json':
+      // make sure we return valid JSON even so we support comments
+      try {
+        sanatized = JSON.stringify(JSON.parse(removeJSLikeComments(data)))
+      } catch(err) {
+        return false
+      }
+      break
+    default:
+      sanatized = data
+  }
+  return sanatized
 }
 
 // return a data structure representing the response for a file
@@ -29,7 +57,13 @@ function responseForFile(fname, path, method, files, cb){
       if(err) {
         cb('Not found', [[['Content-Type', 'text/html']], 404, ''])
       } else {
-        cb(null, [[['Content-Type', 'application/' + m[1]]], 200, data])
+        content = sanatize(data, m[1])
+        if(content){
+          cb(null, [[['Content-Type', CONTENT_TYPES[m[1]]]], 200, content])
+        } else {
+          cb(null, [[['Content-Type', 'text/html']], 500, 'Internal Server error invalid input file'])
+
+        }
       }
     })
   } else {

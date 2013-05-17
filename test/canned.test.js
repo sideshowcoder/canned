@@ -33,30 +33,20 @@ test('create fake api', function(t){
     can(req, res)
   })
 
-  t.test('sets application/json as content-type if _a.get.json does exist for /a', function(t){
-    t.plan(2)
-    req.url = '/a'
-    res.setHeader = function(name, value){
-      t.equal(name, 'Content-Type', 'set content-type')
-      t.equal(value, 'application/json', 'set application/json')
-    }
-    can(req, res)
-  })
-
   t.test('sets application/txt as content-type if _b.get.txt does exist for /b', function(t){
     t.plan(1)
     req.url = '/b'
     res.setHeader = function(_name, value){
-      t.equal(value, 'application/txt', 'set content type txt')
+      t.equal(value, 'text/plain', 'set content type txt')
     }
     can(req, res)
   })
 
-  t.test('gets content-type json if index.get.json for /', function(t){
+  t.test('gets content-type json if index.get.html for /', function(t){
     t.plan(1)
     req.url = '/'
     res.setHeader = function(_name, value){
-      t.equal(value, 'application/json', 'set content type txt')
+      t.equal(value, 'text/html', 'set content type html')
     }
     can(req, res)
   })
@@ -93,6 +83,15 @@ test('create fake api', function(t){
     req.url = '/d/iamanid'
     res.end = function(content){
       t.equal(content, 'd/any.get.json\n', 'set the file content')
+    }
+    can(req, res)
+  })
+
+  t.test('removes the comments from .json so it is valid', function(t){
+    t.plan(1)
+    req.url = '/d/commented'
+    res.end = function(content){
+      t.equal(content, '{"no":"comments"}', 'removes comments')
     }
     can(req, res)
   })

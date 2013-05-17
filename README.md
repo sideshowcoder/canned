@@ -10,21 +10,31 @@ output something. This is what Canned is for!
 
 What does it do?
 ----------------
-Canned maps a folder structure to API responses, so
+Canned maps a folder structure to API responses
 
     /comment/any.get.json
+    /comment/index.get.html
 
-responds to
+requests like
 
     GET /comment/:id
 
-and becomes
+are served as
 
     Content-Type: application/json
-    {
-      content: 'I am a comment',
-      author: 'sideshowcoder'
-    }
+    { "content": "I am a comment", "author": "sideshowcoder" }
+
+requests like
+
+    GET /content/
+
+are served as
+
+    Content-Type: text/html
+    <html>
+      <body>Some html in here</body>
+    </html>
+
 
 Awesome! so what is supported?
 ------------------------------
@@ -40,6 +50,15 @@ mapping with nested endpoints.
     /comments/any.get.json      | GET /comments/:id
     /comments/_search.get.json  | GET /comments/search
     /comments/_search.get.json  | GET /comments/search?iam=soignored
+
+How about some docs inside for the responses?
+---------------------------------------------
+Most content types support comments nativly, like html or javascript. Sadly the
+probaly most used type (JSON) does not :(. So canned actually extends the JSON
+syntax a little so it can include comments with _//_ or _/**/_. In case you use
+the json files directly on the backend side as test cases make sure you strip
+those out as well!
+
 
 Ok I need this!
 ---------------
