@@ -15,11 +15,11 @@ test('create fake api', function(t){
 
   t.type(can, 'function', 'canned fake api creates success')
 
-  t.test('returns status 400 if _na.get does not exist for /na', function(t){
+  t.test('returns status 404 if _na.get does not exist for /na', function(t){
     t.plan(1)
     req.url = '/na'
     res.end = function(){
-      t.equal(res.statusCode, 400, 'set error status')
+      t.equal(res.statusCode, 404, 'set error status')
     }
     can(req, res)
   })

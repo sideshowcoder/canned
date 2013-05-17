@@ -27,18 +27,18 @@ function responseForFile(fname, path, method, files, cb){
     var file = path + '/' + m[0]
     fs.readFile(file, { encoding: 'utf8' }, function(err, data){
       if(err) {
-        cb('Not found', [[['Content-Type', 'text/html']], 400, ''])
+        cb('Not found', [[['Content-Type', 'text/html']], 404, ''])
       } else {
         cb(null, [[['Content-Type', 'application/' + m[1]]], 200, data])
       }
     })
   } else {
-    cb('Not found', [[['Content-Type', 'text/html']], 400, ''])
+    cb('Not found', [[['Content-Type', 'text/html']], 404, ''])
   }
 }
 
 function writeError(res){
-  writeResponse(res, [[['Content-Type', 'text/html']], 400, ''])
+  writeResponse(res, [[['Content-Type', 'text/html']], 500, ''])
 }
 
 function writeResponse(res, resp){
