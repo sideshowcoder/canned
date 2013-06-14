@@ -96,6 +96,23 @@ test('create fake api', function(t){
     can(req, res)
   })
 
+  t.test('sets the necessary HEADER to allow CORS', function(t){
+    t.plan(1)
+    req.url = '/d/commented'
+    req.method = 'OPTIONS'
+    var header = {}
+    header['Content-Type'] = "text/plain";
+    header['Access-Control-Allow-Origin'] = "*";
+    header['Access-Control-Allow-Methods'] = "GET, POST, PUT, DELETE, HEAD, OPTIONS";
+    header['Access-Control-Allow-Headers'] = "X-Requested-With";
+    header['Access-Control-Allow-Max-Age'] = "86400";
+
+    res.setHeader = function(name, value){
+      t.equal(value, header[name], 'Checking Header '+name);
+    }
+    can(req, res)
+  })
+
   t.end()
 })
 

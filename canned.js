@@ -9,6 +9,13 @@ CONTENT_TYPES = {
   'js': 'application/javascript'
 }
 
+CORS_HEADERS = [
+  ['Access-Control-Allow-Origin', '*'],
+  ['Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, HEAD, OPTIONS'],
+  ['Access-Control-Allow-Headers', 'X-Requested-With'],
+  ['Access-Control-Allow-Max-Age', '86400']
+]
+
 function Canned(dir, options){
   this.logger = options.logger
   this.dir = process.cwd() + '/' + dir
@@ -62,7 +69,6 @@ function responseForFile(fname, path, method, files, cb){
           cb(null, [[['Content-Type', CONTENT_TYPES[m[1]]]], 200, content])
         } else {
           cb(null, [[['Content-Type', 'text/html']], 500, 'Internal Server error invalid input file'])
-
         }
       }
     })
@@ -96,6 +102,12 @@ Canned.prototype.responder = function(req, res){
   ,   that = this
 
   this._log('request: ' + req.method + ' ' + req.url)
+
+  if(method == 'options') {
+    that._log('Options request, serving CORS Headers\n')
+    writeResponse(res, [CORS_HEADERS, 200, ''])
+    return
+  }
 
   fs.readdir(path, function(err, files){
     fs.stat(path + '/' + dname, function(err, stats){
