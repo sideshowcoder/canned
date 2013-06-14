@@ -97,7 +97,7 @@ test('create fake api', function(t){
   })
 
   t.test('sets the necessary HEADER to allow CORS', function(t){
-    t.plan(1)
+    t.plan(4)
     req.url = '/d/commented'
     req.method = 'OPTIONS'
     var header = {}
