@@ -50,6 +50,7 @@ mapping with nested endpoints.
     /comments/any.get.json      | GET /comments/:id
     /comments/_search.get.json  | GET /comments/search
     /comments/_search.get.json  | GET /comments/search?iam=soignored
+    /something                  | OPTIONS serve all the options needed for CORS
 
 How about some docs inside for the responses?
 ---------------------------------------------
@@ -106,6 +107,11 @@ every install since you won't be able to run any global module bins if not.
 ### the encoding looks wrong
 make sure you run a version of node which is 0.10.3 or higher, because it fixes
 a problem for the encoding handling when reading files
+
+Contributors
+------------
+* [sideshowcoder](https://github.com/sideshowcoder)
+* [leifg](https://github.com/leifg)
 
 License
 -------
