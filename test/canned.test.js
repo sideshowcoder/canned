@@ -13,6 +13,10 @@ test('create fake api', function(t){
   ,   req = { method: 'GET' }
   ,   res = { setHeader: function(){}, end: function(){} }
 
+  var expected_headers = {}
+  expected_headers['Access-Control-Allow-Origin'] = "*";
+  expected_headers['Access-Control-Allow-Headers'] = "X-Requested-With";
+
   t.type(can, 'function', 'canned fake api creates success')
 
   t.test('returns status 404 if _na.get does not exist for /na', function(t){
@@ -34,19 +38,21 @@ test('create fake api', function(t){
   })
 
   t.test('sets application/txt as content-type if _b.get.txt does exist for /b', function(t){
-    t.plan(1)
+    t.plan(3)
     req.url = '/b'
-    res.setHeader = function(_name, value){
-      t.equal(value, 'text/plain', 'set content type txt')
+    expected_headers['Content-Type'] = "text/plain"
+    res.setHeader = function(name, value){
+      t.equal(value, expected_headers[name], 'Checking Header '+name)
     }
     can(req, res)
   })
 
   t.test('gets content-type json if index.get.html for /', function(t){
-    t.plan(1)
+    t.plan(3)
     req.url = '/'
-    res.setHeader = function(_name, value){
-      t.equal(value, 'text/html', 'set content type html')
+    expected_headers['Content-Type'] = "text/html"
+    res.setHeader = function(name, value){
+      t.equal(value, expected_headers[name], 'Checking Header '+name)
     }
     can(req, res)
   })
@@ -97,18 +103,12 @@ test('create fake api', function(t){
   })
 
   t.test('sets the necessary HEADER to allow CORS', function(t){
-    t.plan(4)
+    t.plan(1)
     req.url = '/d/commented'
     req.method = 'OPTIONS'
-    var header = {}
-    header['Content-Type'] = "text/plain";
-    header['Access-Control-Allow-Origin'] = "*";
-    header['Access-Control-Allow-Methods'] = "GET, POST, PUT, DELETE, HEAD, OPTIONS";
-    header['Access-Control-Allow-Headers'] = "X-Requested-With";
-    header['Access-Control-Allow-Max-Age'] = "86400";
-
+    expected_headers['Content-Type'] = "text/plain"
     res.setHeader = function(name, value){
-      t.equal(value, header[name], 'Checking Header '+name);
+      t.equal(value, expected_headers[name], 'Checking Header '+name)
     }
     can(req, res)
   })

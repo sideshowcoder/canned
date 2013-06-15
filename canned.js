@@ -11,9 +11,7 @@ CONTENT_TYPES = {
 
 CORS_HEADERS = [
   ['Access-Control-Allow-Origin', '*'],
-  ['Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, HEAD, OPTIONS'],
   ['Access-Control-Allow-Headers', 'X-Requested-With'],
-  ['Access-Control-Allow-Max-Age', '86400']
 ]
 
 function Canned(dir, options){
@@ -66,7 +64,7 @@ function responseForFile(fname, path, method, files, cb){
       } else {
         content = sanatize(data, m[1])
         if(content){
-          cb(null, [[['Content-Type', CONTENT_TYPES[m[1]]]], 200, content])
+          cb(null, [[['Content-Type', CONTENT_TYPES[m[1]]]].concat(CORS_HEADERS), 200, content])
         } else {
           cb(null, [[['Content-Type', 'text/html']], 500, 'Internal Server error invalid input file'])
         }
