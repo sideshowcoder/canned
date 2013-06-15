@@ -13,9 +13,6 @@ test('create fake api', function(t){
   ,   req = { method: 'GET' }
   ,   res = { setHeader: function(){}, end: function(){} }
 
-  var expected_headers = {}
-  expected_headers['Access-Control-Allow-Origin'] = "*";
-  expected_headers['Access-Control-Allow-Headers'] = "X-Requested-With";
 
   t.type(can, 'function', 'canned fake api creates success')
 
@@ -38,9 +35,9 @@ test('create fake api', function(t){
   })
 
   t.test('sets application/txt as content-type if _b.get.txt does exist for /b', function(t){
-    t.plan(3)
+    t.plan(1)
     req.url = '/b'
-    expected_headers['Content-Type'] = "text/plain"
+    var expected_headers = { 'Content-Type': "text/plain" }
     res.setHeader = function(name, value){
       t.equal(value, expected_headers[name], 'Checking Header '+name)
     }
@@ -48,9 +45,9 @@ test('create fake api', function(t){
   })
 
   t.test('gets content-type json if index.get.html for /', function(t){
-    t.plan(3)
+    t.plan(1)
     req.url = '/'
-    expected_headers['Content-Type'] = "text/html"
+    var expected_headers = { 'Content-Type': "text/html" }
     res.setHeader = function(name, value){
       t.equal(value, expected_headers[name], 'Checking Header '+name)
     }
@@ -101,16 +98,39 @@ test('create fake api', function(t){
     }
     can(req, res)
   })
+  t.test('CORS support', function(t){
+    var can = canned('./test_responses', { logger: process.stderr, cors: true })
+    ,   req = { method: 'GET' }
+    ,   res = { setHeader: function(){}, end: function(){} }
 
-  t.test('sets the necessary HEADER to allow CORS', function(t){
-    t.plan(1)
-    req.url = '/d/commented'
-    req.method = 'OPTIONS'
-    expected_headers['Content-Type'] = "text/plain"
-    res.setHeader = function(name, value){
-      t.equal(value, expected_headers[name], 'Checking Header '+name)
-    }
-    can(req, res)
+    t.test('sets the necessary HEADER to allow CORS', function(t){
+      t.plan(2)
+      var req = { method: 'OPTIONS', url: '/' }
+      var expected_headers = {
+        'Access-Control-Allow-Origin': "*"
+      , 'Access-Control-Allow-Headers': "X-Requested-With"
+      }
+      res.setHeader = function(name, value){
+        t.equal(value, expected_headers[name], 'Checking Header '+name)
+      }
+      can(req, res)
+    })
+
+    t.test('sets the necessary HEADER to allow CORS on GET', function(t){
+      t.plan(3)
+      req.url = '/'
+      var expected_headers = {
+        'Content-Type': "text/html"
+      , 'Access-Control-Allow-Origin': "*"
+      , 'Access-Control-Allow-Headers': "X-Requested-With"
+      }
+      res.setHeader = function(name, value){
+        t.equal(value, expected_headers[name], 'Checking Header '+name)
+      }
+      can(req, res)
+    })
+
+    t.end()
   })
 
   t.end()

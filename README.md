@@ -50,7 +50,17 @@ mapping with nested endpoints.
     /comments/any.get.json      | GET /comments/:id
     /comments/_search.get.json  | GET /comments/search
     /comments/_search.get.json  | GET /comments/search?iam=soignored
-    /something                  | OPTIONS serve all the options needed for CORS
+
+Same support is available for PUT, POST, etc.
+
+    /index.post.json            | POST serves /... + CORS Headers
+    /index.put.json             | PUT serves /... + CORS Headers
+
+If CORS support is enabled additionally options will be available as a http verb
+and all requests will serve the CORS Headers as well
+
+    /                           | OPTIONS serve all the options needed for CORS
+    /index.get.json             | GET serves /... + CORS Headers
 
 How about some docs inside for the responses?
 ---------------------------------------------
@@ -78,8 +88,9 @@ There are 2 ways here, either you embed it somewhere programmatically
 
     var canned = require('canned')
     ,   http = require('http')
+    ,   opts = { cors: true, logger: process.stdout }
 
-    can = canned('/path/to/canned/response/folder')
+    can = canned('/path/to/canned/response/folder', opts)
 
     http.createServer(can).listen(3000)
 
@@ -92,6 +103,11 @@ Which serves the current folder with canned responses on port 3000
     $ canned -p 5000 ./my/responses/
 
 will serve the relative folder via port 5000
+
+If for whatever reason you want to turn of CORS support do so via
+
+    $ canned --cors=false ./my/responses/
+
 
 It does not work :(
 -------------------

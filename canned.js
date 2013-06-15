@@ -16,6 +16,7 @@ CORS_HEADERS = [
 
 function Canned(dir, options){
   this.logger = options.logger
+  this.cors = options.cors
   this.dir = process.cwd() + '/' + dir
 }
 
@@ -49,29 +50,36 @@ function sanatize(data, cType){
   return sanatized
 }
 
+Canned.prototype._headers = function(type){
+  var headers = [['Content-Type', CONTENT_TYPES[type]]]
+  if(this.cors) headers = headers.concat(CORS_HEADERS)
+  return headers
+}
+
 // return a data structure representing the response for a file
 // datastructure mirrors Racks [headers, status, content]
 // while headers are [[name, value], [name, value]]
-function responseForFile(fname, path, method, files, cb){
+Canned.prototype._responseForFile = function(fname, path, method, files, cb){
   var pattern = fname + '\.' + method + '\.(.+)'
-  ,   m
+  var that = this
+  var m
 
   if(m = scanFileListForName(files, pattern)){
     var file = path + '/' + m[0]
     fs.readFile(file, { encoding: 'utf8' }, function(err, data){
       if(err) {
-        cb('Not found', [[['Content-Type', 'text/html']], 404, ''])
+        cb('Not found', [that._headersFor('html'), 404, ''])
       } else {
         content = sanatize(data, m[1])
         if(content){
-          cb(null, [[['Content-Type', CONTENT_TYPES[m[1]]]].concat(CORS_HEADERS), 200, content])
+          cb(null, [that._headers(m[1]), 200, content])
         } else {
-          cb(null, [[['Content-Type', 'text/html']], 500, 'Internal Server error invalid input file'])
+          cb(null, [that._headers('html'), 500, 'Internal Server error invalid input file'])
         }
       }
     })
   } else {
-    cb('Not found', [[['Content-Type', 'text/html']], 404, ''])
+    cb('Not found', [that._headers('html'), 404, ''])
   }
 }
 
@@ -101,7 +109,7 @@ Canned.prototype.responder = function(req, res){
 
   this._log('request: ' + req.method + ' ' + req.url)
 
-  if(method == 'options') {
+  if(method == 'options' && that.cors) {
     that._log('Options request, serving CORS Headers\n')
     writeResponse(res, [CORS_HEADERS, 200, ''])
     return
@@ -110,9 +118,9 @@ Canned.prototype.responder = function(req, res){
   fs.readdir(path, function(err, files){
     fs.stat(path + '/' + dname, function(err, stats){
       if(err){
-        responseForFile(fname, path, method, files, function(err, resp){
+        that._responseForFile(fname, path, method, files, function(err, resp){
           if(err) {
-            responseForFile('any', path, method, files, function(err, resp){
+            that._responseForFile('any', path, method, files, function(err, resp){
               if(err) {
                 that._log(' not found\n')
               } else {
@@ -129,7 +137,7 @@ Canned.prototype.responder = function(req, res){
         if(stats.isDirectory()) {
           var fpath = path + '/' + dname
           fs.readdir(fpath, function(err, files){
-            responseForFile('index', fpath, method, files, function(err, resp){
+            that._responseForFile('index', fpath, method, files, function(err, resp){
               if(err) {
                 that._log(' not found\n')
               } else {
