@@ -36,6 +36,7 @@ are served as
     </html>
 
 
+
 Awesome! so what is supported?
 ------------------------------
 Currently Canned supports the basic REST-API mapping, as well as custom method
@@ -61,6 +62,16 @@ and all requests will serve the CORS Headers as well
 
     /                           | OPTIONS serve all the options needed for CORS
     /index.get.json             | GET serves /... + CORS Headers
+
+If you need some custum return codes, just add them to the file via adding a
+file header like so
+
+    //! statusCode: 201
+    <html>
+      <body>Created something successfully! Happy!</body>
+    </html>
+
+The header will be stripped before sending and the statusCode will be set.
 
 How about some docs inside for the responses?
 ---------------------------------------------
