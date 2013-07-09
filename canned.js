@@ -21,6 +21,8 @@ function Canned(dir, options) {
 }
 
 function scanFileListForName(files, pattern) {
+  if(!files) return false // guard against no files found
+
   var m, i, e
   for (i = 0, e = files[i]; e != null; e = files[++i]) {
     m = e.match(new RegExp(pattern))

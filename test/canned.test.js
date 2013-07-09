@@ -139,6 +139,15 @@ test('create fake api', function(t) {
       can(req, res)
     })
 
+    t.test('nested folder request for not present folders should work', function(t) {
+      t.plan(1)
+      req.url = '/foo/bar/baz'
+      res.end = function() {
+       t.equal(res.statusCode, 404, 'set not status')
+      }
+      can(req, res)
+    })
+
     t.end()
   })
 
