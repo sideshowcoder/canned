@@ -107,6 +107,16 @@ test('create fake api', function(t) {
     }
     can(req, res)
   })
+
+  t.test('nested folder request for not present folders should work', function(t) {
+    t.plan(1)
+    req.url = '/foo/bar/baz'
+    res.end = function() {
+      t.equal(res.statusCode, 404, 'set not status')
+    }
+    can(req, res)
+  })
+
   t.test('CORS support', function(t) {
     var can = canned('./test_responses', { logger: process.stderr, cors: true })
     ,   req = { method: 'GET' }
@@ -117,7 +127,7 @@ test('create fake api', function(t) {
       var req = { method: 'OPTIONS', url: '/' }
       var expected_headers = {
         'Access-Control-Allow-Origin': "*"
-      , 'Access-Control-Allow-Headers': "X-Requested-With"
+        , 'Access-Control-Allow-Headers': "X-Requested-With"
       }
       res.setHeader = function(name, value) {
         t.equal(value, expected_headers[name], 'Checking Header '+name)
@@ -130,8 +140,8 @@ test('create fake api', function(t) {
       req.url = '/'
       var expected_headers = {
         'Content-Type': "text/html"
-      , 'Access-Control-Allow-Origin': "*"
-      , 'Access-Control-Allow-Headers': "X-Requested-With"
+        , 'Access-Control-Allow-Origin': "*"
+        , 'Access-Control-Allow-Headers': "X-Requested-With"
       }
       res.setHeader = function(name, value) {
         t.equal(value, expected_headers[name], 'Checking Header '+name)
@@ -139,14 +149,6 @@ test('create fake api', function(t) {
       can(req, res)
     })
 
-    t.test('nested folder request for not present folders should work', function(t) {
-      t.plan(1)
-      req.url = '/foo/bar/baz'
-      res.end = function() {
-       t.equal(res.statusCode, 404, 'set not status')
-      }
-      can(req, res)
-    })
 
     t.end()
   })

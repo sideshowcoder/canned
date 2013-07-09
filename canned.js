@@ -1,22 +1,11 @@
 var url = require('url')
-,   fs = require('fs')
-,   util = require('util')
-
-CONTENT_TYPES = {
-  'json': 'application/json',
-  'html': 'text/html',
-  'txt': 'text/plain',
-  'js': 'application/javascript'
-}
-
-CORS_HEADERS = [
-  ['Access-Control-Allow-Origin', '*'],
-  ['Access-Control-Allow-Headers', 'X-Requested-With'],
-]
+var fs = require('fs')
+var util = require('util')
+var Response = require('./lib/response')
 
 function Canned(dir, options) {
   this.logger = options.logger
-  this.cors = options.cors
+  this.response_opts = { cors_enabled: options.cors }
   this.dir = process.cwd() + '/' + dir
 }
 
@@ -73,9 +62,7 @@ function sanatize(data, cType) {
 }
 
 Canned.prototype._headers = function(type) {
-  var headers = [['Content-Type', CONTENT_TYPES[type]]]
-  if (this.cors) headers = headers.concat(CORS_HEADERS)
-  return headers
+  return new Response(type, { cors_enabled: this.cors }).headers()
 }
 
 // return a data structure representing the response for a file
@@ -90,21 +77,25 @@ Canned.prototype._responseForFile = function(fname, path, method, files, cb) {
     var file = path + '/' + m[0]
     fs.readFile(file, { encoding: 'utf8' }, function(err, data) {
       if (err) {
-        cb('Not found', [that._headersFor('html'), 404, ''])
+        var response = new Response('html', that.response_opts)
+        cb('Not found', [response.headers(), 404, ''])
       } else {
+        var response = new Response(m[1], that.response_opts)
         var _data = that._extractOptions(data)
         data = _data.data
         var statusCode = _data.statusCode
-        var content = sanatize(data, m[1])
+        var content = sanatize(data, response.content_type)
         if (content) {
-          cb(null, [that._headers(m[1]), statusCode, content])
+          cb(null, [response.headers(), statusCode, content])
         } else {
-          cb(null, [that._headers('html'), 500, 'Internal Server error invalid input file'])
+          var response = new Response('html', that.response_opts)
+          cb(null, [response.headers(), 500, 'Internal Server error invalid input file'])
         }
       }
     })
   } else {
-    cb('Not found', [that._headers('html'), 404, ''])
+    var response = new Response('html', that.response_opts)
+    cb('Not found', [response.headers(), 404, ''])
   }
 }
 
@@ -126,17 +117,18 @@ Canned.prototype._log = function(message) {
 
 Canned.prototype.responder = function(req, res) {
   var pathname = url.parse(req.url).pathname.split('/')
-  ,   dname = pathname.pop()
-  ,   fname = '_' + dname
-  ,   method = req.method.toLowerCase()
-  ,   path = this.dir + pathname.join('/')
-  ,   that = this
+  var dname = pathname.pop()
+  var fname = '_' + dname
+  var method = req.method.toLowerCase()
+  var path = this.dir + pathname.join('/')
+  var that = this
 
   this._log('request: ' + req.method + ' ' + req.url)
 
-  if (method == 'options' && that.cors) {
+  if (method == 'options') {
     that._log('Options request, serving CORS Headers\n')
-    writeResponse(res, [CORS_HEADERS, 200, ''])
+    var response = new Response(null, this.response_opts)
+    writeResponse(res, [response.headers(), 200, ''])
     return
   }
 
