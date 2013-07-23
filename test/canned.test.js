@@ -1,7 +1,7 @@
 var tap = require('tap')
-,   test = tap.test
-,   canned = require('../canned')
-,   fs = require('fs')
+var test = tap.test
+var canned = require('../canned')
+var fs = require('fs')
 
 test('canned actually loads', function(t) {
   t.ok(canned, 'canned loaded successfully')
@@ -10,38 +10,11 @@ test('canned actually loads', function(t) {
 
 test('create fake api', function(t) {
   var can = canned('./test_responses', { logger: process.stderr })
-  ,   req = { method: 'GET' }
-  ,   res = { setHeader: function() {}, end: function() {} }
+  var req = { method: 'GET' }
+  var res = { setHeader: function() {}, end: function() {} }
 
 
   t.type(can, 'function', 'canned fake api creates success')
-
-  t.test('returns status 404 if _na.get does not exist for /na', function(t) {
-    t.plan(1)
-    req.url = '/na'
-    res.end = function() {
-      t.equal(res.statusCode, 404, 'set error status')
-    }
-    can(req, res)
-  })
-
-  t.test('returns status 201 if set in file', function(t) {
-    t.plan(1)
-    req.url = '/201'
-    res.end = function() {
-      t.equal(res.statusCode, 201, 'set status code from file')
-    }
-    can(req, res)
-  })
-
-  t.test('returns status 200 if _a.get.json does exist for /a', function(t) {
-    t.plan(1)
-    req.url = '/a'
-    res.end = function() {
-      t.equal(res.statusCode, 200, 'set ok status')
-    }
-    can(req, res)
-  })
 
   t.test('sets application/txt as content-type if _b.get.txt does exist for /b', function(t) {
     t.plan(1)
@@ -119,15 +92,15 @@ test('create fake api', function(t) {
 
   t.test('CORS support', function(t) {
     var can = canned('./test_responses', { logger: process.stderr, cors: true })
-    ,   req = { method: 'GET' }
-    ,   res = { setHeader: function() {}, end: function() {} }
+    var req = { method: 'GET' }
+    var res = { setHeader: function() {}, end: function() {} }
 
     t.test('sets the necessary HEADER to allow CORS', function(t) {
       t.plan(2)
       var req = { method: 'OPTIONS', url: '/' }
       var expected_headers = {
-        'Access-Control-Allow-Origin': "*"
-        , 'Access-Control-Allow-Headers': "X-Requested-With"
+        'Access-Control-Allow-Origin': "*"i
+        'Access-Control-Allow-Headers': "X-Requested-With"
       }
       res.setHeader = function(name, value) {
         t.equal(value, expected_headers[name], 'Checking Header '+name)
@@ -139,9 +112,9 @@ test('create fake api', function(t) {
       t.plan(3)
       req.url = '/'
       var expected_headers = {
-        'Content-Type': "text/html"
-        , 'Access-Control-Allow-Origin': "*"
-        , 'Access-Control-Allow-Headers': "X-Requested-With"
+        'Content-Type': "text/html",
+        'Access-Control-Allow-Origin': "*",
+        'Access-Control-Allow-Headers': "X-Requested-With"
       }
       res.setHeader = function(name, value) {
         t.equal(value, expected_headers[name], 'Checking Header '+name)
