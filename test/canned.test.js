@@ -16,16 +16,6 @@ test('create fake api', function(t) {
 
   t.type(can, 'function', 'canned fake api creates success')
 
-  t.test('gets content-type json if index.get.html for /', function(t) {
-    t.plan(1)
-    req.url = '/'
-    var expected_headers = { 'Content-Type': "text/html" }
-    res.setHeader = function(name, value) {
-      t.equal(value, expected_headers[name], 'Checking Header '+name)
-    }
-    can(req, res)
-  })
-
   t.test('gets content of index.get.json for /', function(t) {
     t.plan(1)
     req.url = '/'
@@ -89,7 +79,7 @@ test('create fake api', function(t) {
       t.plan(2)
       var req = { method: 'OPTIONS', url: '/' }
       var expected_headers = {
-        'Access-Control-Allow-Origin': "*"i
+        'Access-Control-Allow-Origin': "*",
         'Access-Control-Allow-Headers': "X-Requested-With"
       }
       res.setHeader = function(name, value) {
