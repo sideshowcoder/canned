@@ -37,4 +37,42 @@ describe('canned', function() {
       can(req, res)
     })
   })
+
+  describe('content type', function() {
+    it('sets text/plain for txt', function(done) {
+      req.url = '/b'
+      res.setHeader = function(name, value) {
+        expect(value).toBe('text/plain')
+        expect(name).toBe('Content-Type')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('sets text/html for errors', function(done) {
+      req.url = '/i_do_not_exist'
+      res.setHeader = function(name, value) {
+        expect(value).toBe('text/html')
+        expect(name).toBe('Content-Type')
+        done()
+      }
+      can(req, res)
+    })
+  })
+
+  describe('resolve file paths', function() {
+    it('loads index for /')
+    it('loads index for /d with d being a directory')
+    it('loads any for /d/something')
+    it('works for nested folder being not present')
+  })
+
+  describe('content modifier', function() {
+    it('removes comments from json')
+  })
+
+  describe('CORS', function() {
+    it('accepts the options verb')
+    it('sets the headers')
+  })
 })
