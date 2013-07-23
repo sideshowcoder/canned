@@ -61,10 +61,50 @@ describe('canned', function() {
   })
 
   describe('resolve file paths', function() {
-    it('loads index for /')
-    it('loads index for /d with d being a directory')
-    it('loads any for /d/something')
-    it('works for nested folder being not present')
+    it('loads index for /', function(done) {
+      req.url = '/'
+      res.end = function(content) {
+        expect(content).toContain('index.get.json')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('loads index for /d with d being a directory', function(done) {
+      req.url = '/d'
+      res.end = function(content) {
+        expect(content).toContain('d/index.get.json')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('loads any for /d/something', function(done) {
+      req.url = '/d/i_am_an_id'
+      res.end = function(content) {
+        expect(content).toContain('d/any.get.json')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('ignores the query params', function(done) {
+      req.url = '/a?foo=bar'
+      res.end = function(content) {
+        expect(content).toContain('_a.get.json')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('works for nested folder being not present', function(done) {
+      req.url = '/foo/bar/baz'
+      res.end = function() {
+        expect(res.statusCode).toBe(404)
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('content modifier', function() {
