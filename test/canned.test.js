@@ -16,16 +16,6 @@ test('create fake api', function(t) {
 
   t.type(can, 'function', 'canned fake api creates success')
 
-  t.test('sets application/txt as content-type if _b.get.txt does exist for /b', function(t) {
-    t.plan(1)
-    req.url = '/b'
-    var expected_headers = { 'Content-Type': "text/plain" }
-    res.setHeader = function(name, value) {
-      t.equal(value, expected_headers[name], 'Checking Header '+name)
-    }
-    can(req, res)
-  })
-
   t.test('gets content-type json if index.get.html for /', function(t) {
     t.plan(1)
     req.url = '/'
