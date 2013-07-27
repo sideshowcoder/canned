@@ -143,7 +143,7 @@ describe('canned', function() {
           delete expectedHeaders[name]
         }
         // all expected headers have been set!
-        if(Object.keys(expected_headers).length === 0) done()
+        if(Object.keys(expectedHeaders).length === 0) done()
       }
       can(req, res)
     })

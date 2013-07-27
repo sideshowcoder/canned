@@ -1,3 +1,1 @@
-* move remaining tests to jasmine specs
-* ajust test script to run both assert.sh and spec
-
+* remove unneeded responses
