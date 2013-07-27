@@ -61,14 +61,7 @@ function sanatize(data, cType) {
   return sanatized
 }
 
-Canned.prototype._headers = function(type) {
-  return new Response(type, { cors_enabled: this.cors }).headers()
-}
-
-// return a data structure representing the response for a file
-// datastructure mirrors Racks [headers, status, content]
-// while headers are [[name, value], [name, value]]
-Canned.prototype._responseForFile = function(fname, path, method, files, cb) {
+Canned.prototype._responseForFile = function(fname, path, method, files, res, cb) {
   var pattern = fname + '\.' + method + '\.(.+)'
   var that = this
   var m
@@ -77,38 +70,27 @@ Canned.prototype._responseForFile = function(fname, path, method, files, cb) {
     var file = path + '/' + m[0]
     fs.readFile(file, { encoding: 'utf8' }, function(err, data) {
       if (err) {
-        var response = new Response('html', that.response_opts)
-        cb('Not found', [response.headers(), 404, ''])
+        var response = new Response('html', '', 404, res, that.response_opts)
+        cb('Not found', response)
       } else {
-        var response = new Response(m[1], that.response_opts)
         var _data = that._extractOptions(data)
         data = _data.data
         var statusCode = _data.statusCode
-        var content = sanatize(data, response.content_type)
+        var content = sanatize(data, m[1])
         if (content) {
-          cb(null, [response.headers(), statusCode, content])
+          var response = new Response(m[1], content, statusCode, res, that.response_opts)
+          cb(null, response)
         } else {
-          var response = new Response('html', that.response_opts)
-          cb(null, [response.headers(), 500, 'Internal Server error invalid input file'])
+          var content = 'Internal Server error invalid input file'
+          var response = new Response('html', content, 500, res, that.response_opts)
+          cb(null, response)
         }
       }
     })
   } else {
-    var response = new Response('html', that.response_opts)
-    cb('Not found', [response.headers(), 404, ''])
+    var response = new Response('html', '', 404, res, that.response_opts)
+    cb('Not found', response)
   }
-}
-
-function writeError(res) {
-  writeResponse(res, [[['Content-Type', 'text/html']], 500, ''])
-}
-
-function writeResponse(res, resp) {
-  for (var i = 0, h = resp[0][i]; h != null; h = resp[0][++i]) {
-    res.setHeader(h[0], h[1])
-  }
-  res.statusCode = resp[1]
-  res.end(resp[2])
 }
 
 Canned.prototype._log = function(message) {
@@ -127,44 +109,43 @@ Canned.prototype.responder = function(req, res) {
 
   if (method == 'options') {
     that._log('Options request, serving CORS Headers\n')
-    var response = new Response(null, this.response_opts)
-    writeResponse(res, [response.headers(), 200, ''])
+    new Response(null, '', 200, res,  this.response_opts).send()
     return
   }
 
   fs.readdir(path, function(err, files) {
     fs.stat(path + '/' + dname, function(err, stats) {
       if (err) {
-        that._responseForFile(fname, path, method, files, function(err, resp) {
+        that._responseForFile(fname, path, method, files, res, function(err, resp) {
           if (err) {
-            that._responseForFile('any', path, method, files, function(err, resp) {
+            that._responseForFile('any', path, method, files, res, function(err, resp) {
               if (err) {
                 that._log(' not found\n')
               } else {
                 that._log(' served via: ' + pathname.join('/') + '/any.' + method + '\n')
               }
-              writeResponse(res, resp)
+              resp.send()
             })
           } else {
             that._log(' served via: ' + pathname.join('/') + '/' + fname + '.' + method + '\n')
-            writeResponse(res, resp)
+            resp.send()
           }
         })
       } else {
         if(stats.isDirectory()) {
           var fpath = path + '/' + dname
           fs.readdir(fpath, function(err, files) {
-            that._responseForFile('index', fpath, method, files, function(err, resp) {
+            that._responseForFile('index', fpath, method, files, res, function(err, resp) {
               if (err) {
                 that._log(' not found\n')
               } else {
                 that._log(' served via: ' + pathname.concat(dname).join('/') + '/index.' + method + '\n')
               }
-              writeResponse(res, resp)
+              resp.send()
             })
           })
         } else {
-          writeError(res)
+          new Response('html', '', 500, res).send()
         }
       }
     })
