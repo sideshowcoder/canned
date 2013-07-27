@@ -4,7 +4,7 @@
   "description": "serve canned responses to mock an api, based on files in a folder",
   "main": "canned.js",
   "scripts": {
-    "test": "./node_modules/tap/bin/tap.js ./test",
+    "test": "make test",
     "start": "./bin/canned"
   },
   "bin": "./bin/canned",
@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "node-dev": "~2.0.1",
-    "tap": "~0.4",
     "jasmine-node": "~1.10.2"
   },
   "engines": {
