@@ -108,7 +108,14 @@ describe('canned', function() {
   })
 
   describe('content modifier', function() {
-    it('removes comments from json')
+    it('removes comments from json', function(done) {
+      req.url = '/d/commented'
+      res.end = function(content) {
+        expect(content).toBe('{"no":"comments"}');
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('CORS', function() {
