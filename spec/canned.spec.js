@@ -119,7 +119,33 @@ describe('canned', function() {
   })
 
   describe('CORS', function() {
-    it('accepts the options verb')
-    it('sets the headers')
+    var can = canned('./spec/test_responses', { cors: true })
+    it('accepts the options verb', function(done) {
+      req.method = 'OPTIONS'
+      req.url = '/'
+      res.end = function(content) {
+        // serves no content
+        expect(content).toBe('')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('sets the headers', function(done) {
+      req.url = '/'
+      var expectedHeaders = {
+        'Access-Control-Allow-Origin': "*",
+        'Access-Control-Allow-Headers': "X-Requested-With"
+      }
+      res.setHeader = function(name, value) {
+        if(expectedHeaders[name]) {
+          expect(expectedHeaders[name]).toBe(value)
+          delete expectedHeaders[name]
+        }
+        // all expected headers have been set!
+        if(Object.keys(expected_headers).length === 0) done()
+      }
+      can(req, res)
+    })
   })
 })
