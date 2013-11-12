@@ -139,6 +139,7 @@ Contributors
 ------------
 * [sideshowcoder](https://github.com/sideshowcoder)
 * [leifg](https://github.com/leifg)
+* [runemadsen](https://github.com/runemadsen)
 
 License
 -------
