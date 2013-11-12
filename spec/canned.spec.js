@@ -61,6 +61,7 @@ describe('canned', function() {
   })
 
   describe('resolve file paths', function() {
+    
     it('loads index for /', function(done) {
       req.url = '/'
       res.end = function(content) {
@@ -68,7 +69,7 @@ describe('canned', function() {
         done()
       }
       can(req, res)
-    })
+    });
 
     it('loads index for /d with d being a directory', function(done) {
       req.url = '/d'
@@ -77,7 +78,16 @@ describe('canned', function() {
         done()
       }
       can(req, res)
-    })
+    });
+
+    it('loads index for /d/e with both being directories', function(done) {
+      req.url = '/d/e'
+      res.end = function(content) {
+        expect(content).toContain('d/e/index.get.html')
+        done()
+      }
+      can(req, res);
+    });
 
     it('loads any for /d/something', function(done) {
       req.url = '/d/i_am_an_id'
