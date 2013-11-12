@@ -8,6 +8,8 @@ var canned = require('../canned')
           .describe('p', 'server port')
           .default('cors', true)
           .describe('cors', 'disable cors support')
+          .default('headers', false)
+          .describe('headers', 'add custom headers allowed in cors requests')
           .default('h', false)
           .alias('h', 'help')
           .describe('h', 'show the help')
@@ -22,6 +24,7 @@ if(argv.h) {
 var dir = ''
 ,   port = argv.p
 ,   cors = argv.cors
+,   cors_headers = argv.headers
 ,   logger
 ,   cannedDir
 
@@ -34,6 +37,6 @@ if(argv.q) {
   process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
-var can = canned(dir, { logger: logger, cors: cors})
+var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers})
 http.createServer(can).listen(port)
 
