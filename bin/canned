@@ -21,7 +21,7 @@ if(argv.h) {
 
 var dir = ''
 ,   port = argv.p
-,   cors = argv.c
+,   cors = argv.cors
 ,   logger
 ,   cannedDir
 
