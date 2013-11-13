@@ -5,7 +5,10 @@ var Response = require('./lib/response')
 
 function Canned(dir, options) {
   this.logger = options.logger
-  this.response_opts = { cors_enabled: options.cors }
+  this.response_opts = { 
+    cors_enabled: options.cors,
+    cors_headers: options.cors_headers
+  }
   this.dir = process.cwd() + '/' + dir
 }
 
