@@ -130,7 +130,7 @@ describe('canned', function() {
     it('works with http:// in json strings', function(done) {
       req.url = '/chartest'
       res.end = function(content) {
-        expect(content).toBe('"my_url":"http://www.mywebsite.com"');
+        expect(content).toBe('{"my_url":"http://www.mywebsite.com"}');
         done()
       }
       can(req, res)
