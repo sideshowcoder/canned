@@ -119,6 +119,13 @@ If for whatever reason you want to turn of CORS support do so via
 
     $ canned --cors=false ./my/responses/
 
+Also if you need additional headers to be served alongside the CORS headers
+these can be added like this (thanks to runemadsen)
+
+canned --headers "Authorization, Another-Header"
+
+For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
+
 
 It does not work :(
 -------------------
