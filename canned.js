@@ -24,7 +24,7 @@ function scanFileListForName(files, pattern) {
 }
 
 function removeJSLikeComments(text) {
-  return text.replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '')
+  return text.replace(/\/\*.+?\*\/|\/\/\s.*(?=[\n\r])/g, '')
 }
 
 Canned.prototype._extractOptions = function(data) {
