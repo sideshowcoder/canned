@@ -154,7 +154,8 @@ describe('canned', function() {
       req.url = '/'
       var expectedHeaders = {
         'Access-Control-Allow-Origin': "*",
-        'Access-Control-Allow-Headers': "X-Requested-With"
+        'Access-Control-Allow-Headers': "X-Requested-With",
+        'Access-Control-Allow-Methods': "GET, POST, PUT, DELETE, OPTIONS"
       }
       res.setHeader = function(name, value) {
         if(expectedHeaders[name]) {
@@ -171,7 +172,6 @@ describe('canned', function() {
       var can2 = canned('./spec/test_responses', { cors: true, cors_headers: "Authorization" })
       req.url = '/'
       var expectedHeaders = {
-        'Access-Control-Allow-Origin': "*",
         'Access-Control-Allow-Headers': "X-Requested-With, Authorization"
       }
       res.setHeader = function(name, value) {
