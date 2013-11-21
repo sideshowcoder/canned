@@ -107,7 +107,14 @@ describe('canned', function() {
       can(req, res)
     })
 
-    // ALSO SUPPORT any. and index. with query params?
+    it('looks for index file with query params', function(done) {
+      req.url = '/?name=Superman'
+      res.end = function(content) {
+        expect(content).toContain('Superman!')
+        done()
+      }
+      can(req, res)
+    })
 
     it('can tell different query param files a part', function(done) {
       req.url = '/a?name=Batman&age=30&idontneed=everyparaminfilename'
