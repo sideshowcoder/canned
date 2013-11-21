@@ -12,13 +12,31 @@ function Canned(dir, options) {
   this.dir = process.cwd() + '/' + dir
 }
 
-function scanFileListForName(files, pattern) {
-  if(!files) return false // guard against no files found
+function getFileFromRequest(files, fname, method, query) {
+  
+  if(!files) return false
 
-  var m, i, e
+  var m, i, e, matchString, matchPattern, fileMatch
+
+  // if query params, match regexp based on filename to request
+  if(query)
+  {
+    for (i = 0, e = files[i]; e != null; e = files[++i]) {
+      fileMatch = e.match(/(.*)\?(.*)\.(.*)\.(.*)/)
+      if(fileMatch)
+      {
+        matchString = fname + "?" + query + "." + method
+        matchPattern = new RegExp(fileMatch[1] + "(?=.*" + fileMatch[2].split("&").join(")(?=.*") + ").+" + fileMatch[3])
+        if(matchString.match(matchPattern))  return { filename: e, mimetype: fileMatch[4]}
+      }
+    }
+  }
+
+  // if match regexp based on request to filename
   for (i = 0, e = files[i]; e != null; e = files[++i]) {
-    m = e.match(new RegExp(pattern))
-    if(m) return m
+    matchPattern = new RegExp(fname + '\.' + method + '\.(.+)')
+    m = e.match(matchPattern)
+    if(m) return { filename : m[0], mimetype : m[1] }
   }
   return false
 }
@@ -64,14 +82,12 @@ function sanatize(data, cType) {
   return sanatized
 }
 
-Canned.prototype._responseForFile = function(fname, path, method, files, res, cb) {
-  var pattern = fname + '\.' + method + '\.(.+)'
+Canned.prototype._responseForFile = function(fname, query, path, method, files, res, cb) {
   var that = this
-  var m
-
-  if(m = scanFileListForName(files, pattern)) {
-    var file = path + '/' + m[0]
-    fs.readFile(file, { encoding: 'utf8' }, function(err, data) {
+  var fileObject = getFileFromRequest(files, fname, method, query)
+  if(fileObject) {
+    var filePath = path + '/' + fileObject.filename
+    fs.readFile(filePath, { encoding: 'utf8' }, function(err, data) {
       if (err) {
         var response = new Response('html', '', 404, res, that.response_opts)
         cb('Not found', response)
@@ -79,9 +95,9 @@ Canned.prototype._responseForFile = function(fname, path, method, files, res, cb
         var _data = that._extractOptions(data)
         data = _data.data
         var statusCode = _data.statusCode
-        var content = sanatize(data, m[1])
+        var content = sanatize(data, fileObject.mimetype)
         if (content) {
-          var response = new Response(m[1], content, statusCode, res, that.response_opts)
+          var response = new Response(fileObject.mimetype, content, statusCode, res, that.response_opts)
           cb(null, response)
         } else {
           var content = 'Internal Server error invalid input file'
@@ -101,7 +117,9 @@ Canned.prototype._log = function(message) {
 }
 
 Canned.prototype.responder = function(req, res) {
-  var pathname = url.parse(req.url).pathname.split('/')
+  var parsedurl = url.parse(req.url)
+  var pathname = parsedurl.pathname.split('/')
+  var query = parsedurl.query
   var dname = pathname.pop()
   var fname = '_' + dname
   var method = req.method.toLowerCase()
@@ -119,9 +137,9 @@ Canned.prototype.responder = function(req, res) {
   fs.readdir(path, function(err, files) {
     fs.stat(path + '/' + dname, function(err, stats) {
       if (err) {
-        that._responseForFile(fname, path, method, files, res, function(err, resp) {
+        that._responseForFile(fname, query, path, method, files, res, function(err, resp) {
           if (err) {
-            that._responseForFile('any', path, method, files, res, function(err, resp) {
+            that._responseForFile('any', query, path, method, files, res, function(err, resp) {
               if (err) {
                 that._log(' not found\n')
               } else {
@@ -138,7 +156,7 @@ Canned.prototype.responder = function(req, res) {
         if(stats.isDirectory()) {
           var fpath = path + '/' + dname
           fs.readdir(fpath, function(err, files) {
-            that._responseForFile('index', fpath, method, files, res, function(err, resp) {
+            that._responseForFile('index', query, fpath, method, files, res, function(err, resp) {
               if (err) {
                 that._log(' not found\n')
               } else {
