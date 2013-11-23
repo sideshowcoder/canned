@@ -1,0 +1,20 @@
+body {
+	padding: 30px;
+	color: #555;
+	background-color: #FDF6E3;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 1em;
+	line-height: 1.4;
+}
+h1 {font-size: 2em; margin-top: 0;}
+h2 {font-size: 1.6em;}
+h3 {font-size: 1.4em;}
+h4 {font-size: 1.2em;}
+strong {font-weight: bold;}
+em {font-style: italic;}
+pre, code {font-family: Consolas,monospace; font-size: .9em;}
+pre {border: solid 5px #EEE;}
+pre {padding: 15px; border: solid 5px #EEE; background-color: #F6F6F6;}
+a {color: #B58900;}
+section {min-width: 200px; max-width: 920px; margin: 0 auto; padding: 3px; background-color: #EEE;}
+article {padding: 30px; border: solid 1px #CACACA; background-color: #FEFEFE;}
