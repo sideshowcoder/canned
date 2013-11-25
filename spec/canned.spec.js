@@ -70,7 +70,7 @@ describe('canned', function() {
       }
       can(req, res)
     });
-
+    
     it('loads index for /d with d being a directory', function(done) {
       req.url = '/d'
       res.end = function(content) {
@@ -79,7 +79,7 @@ describe('canned', function() {
       }
       can(req, res)
     });
-
+    
     it('loads index for /d/e with both being directories', function(done) {
       req.url = '/d/e'
       res.end = function(content) {
@@ -88,7 +88,7 @@ describe('canned', function() {
       }
       can(req, res);
     });
-
+    
     it('loads any for /d/something', function(done) {
       req.url = '/d/i_am_an_id'
       res.end = function(content) {
@@ -98,7 +98,34 @@ describe('canned', function() {
       can(req, res)
     })
 
-    it('ignores the query params', function(done) {
+    it('looks for _file with query params', function(done) {
+      req.url = '/a?name=Superman&age=30&idontneed=everyparaminfilename'
+      res.end = function(content) {
+        expect(content).toContain('Superman!')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('looks for index file with query params', function(done) {
+      req.url = '/?name=Superman'
+      res.end = function(content) {
+        expect(content).toContain('Superman!')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('can tell different query param files a part', function(done) {
+      req.url = '/a?name=Batman&age=30&idontneed=everyparaminfilename'
+      res.end = function(content) {
+        expect(content).toContain('Batman!')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('falls back to file without query params if one or more params dont match', function(done) {
       req.url = '/a?foo=bar'
       res.end = function(content) {
         expect(content).toContain('_a.get.json')
