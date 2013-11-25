@@ -1,6 +1,6 @@
-----
+---
 layout: index
-----
+---
 
 Canned fake API server
 ======================
