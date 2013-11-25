@@ -44,15 +44,20 @@ Awesome! so what is supported?
 Currently Canned supports the basic REST-API mapping, as well as custom method
 mapping with nested endpoints.
 
+    file                            | resquest
+    /index.get.json                 | GET /
+    /any.get.json                   | GET /:id
+    /_search.get.json               | GET /search
+    /comments/index.get.json        | GET /comments/
+    /comments/any.get.json          | GET /comments/:id
+    /comments/_search.get.json      | GET /comments/search
 
-    file                        | resquest
-    /index.get.json             | GET /
-    /any.get.json               | GET /:id
-    /_search.get.json           | GET /search
-    /comments/index.get.json    | GET /comments/
-    /comments/any.get.json      | GET /comments/:id
-    /comments/_search.get.json  | GET /comments/search
-    /comments/_search.get.json  | GET /comments/search?iam=soignored
+You can even add query parameters to your filenames to return different responses on the same route. If the all query params in a filename match the incoming request, this file will be returned. It will fall back to returning the file with no query params if it exists.
+    
+    file                            | resquest
+    /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
+    /_search?q=hello.get.json       | GET /comments/search?q=hello
+    /_search.get.json               | GET /comments/search?iam=soignored        
 
 Same support is available for PUT, POST, etc.
 
