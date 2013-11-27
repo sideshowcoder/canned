@@ -16,7 +16,7 @@ function Canned(dir, options) {
 
 function matchFile(matchString, fname, method) {
   return matchString.match(
-    new RegExp(fname + '\.' + method + '\.(.+)')
+    new RegExp(fname + '\\.' + method + '\\.(.+)')
   )
 }
 
