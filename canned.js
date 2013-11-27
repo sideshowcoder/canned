@@ -1,3 +1,5 @@
+"use strict";
+
 var url = require('url')
 var fs = require('fs')
 var util = require('util')
@@ -5,7 +7,7 @@ var Response = require('./lib/response')
 
 function Canned(dir, options) {
   this.logger = options.logger
-  this.response_opts = { 
+  this.response_opts = {
     cors_enabled: options.cors,
     cors_headers: options.cors_headers
   }
@@ -33,8 +35,8 @@ function removeJSLikeComments(text) {
 }
 
 function getFileFromRequest(httpObj, files) {
-  
-  if(!files) return false
+
+  if (!files) return false
 
   var m, i, e, matchString, matchPattern, fileMatch
 
@@ -43,11 +45,11 @@ function getFileFromRequest(httpObj, files) {
   {
     for (i = 0, e = files[i]; e != null; e = files[++i]) {
       fileMatch = matchFileWithQuery(e)
-      if(fileMatch)
+      if (fileMatch)
       {
         matchString = httpObj.fname + "?" + httpObj.query + "." + httpObj.method
         m = matchFileWithExactQuery(matchString, fileMatch[1], fileMatch[2], fileMatch[3])
-        if(m)  return { fname: e, mimetype: fileMatch[4]}
+        if (m) return { fname: e, mimetype: fileMatch[4]}
       }
     }
   }
@@ -55,26 +57,26 @@ function getFileFromRequest(httpObj, files) {
   // if match regexp based on request to fname
   for (i = 0, e = files[i]; e != null; e = files[++i]) {
     m = matchFile(e, httpObj.fname, httpObj.method)
-    if(m) return { fname : m[0], mimetype : m[1] }
+    if (m) return { fname : m[0], mimetype : m[1] }
   }
   return false
 }
 
-Canned.prototype._extractOptions = function(data) {
+Canned.prototype._extractOptions = function (data) {
   var lines = data.split('\n')
   var opts = {}
   if (lines[0].indexOf('//!') !== -1) {
     try {
-      var content = lines[0].replace('//!','')
-      content = content.split(',').map(function(s) {
+      var content = lines[0].replace('//!', '')
+      content = content.split(',').map(function (s) {
         return '"' + s.split(':')[0].trim() + '":' + s.split(':')[1]
       }).join(',')
       opts = JSON.parse('{' + content  + '}')
-    } catch(e) {
+    } catch (e) {
       this._log('Invalid file header format try //! statusCode: 201')
       opts = {}
     }
-    lines.splice(0,1)
+    lines.splice(0, 1)
   }
   var statusCode = opts.statusCode || 200
   return { statusCode: statusCode, data: lines.join('\n') }
@@ -83,28 +85,29 @@ Canned.prototype._extractOptions = function(data) {
 function sanatize(data, cType) {
   var sanatized
   switch (cType) {
-    case 'json':
-      // make sure we return valid JSON even so we support comments
-      try {
-        sanatized = JSON.stringify(JSON.parse(removeJSLikeComments(data)))
-      } catch(err) {
-        return false
-      }
-      break
-    default:
-      sanatized = data
+  case 'json':
+    // make sure we return valid JSON even so we support comments
+    try {
+      sanatized = JSON.stringify(JSON.parse(removeJSLikeComments(data)))
+    } catch (err) {
+      return false
+    }
+    break
+  default:
+    sanatized = data
   }
   return sanatized
 }
 
-Canned.prototype._responseForFile = function(httpObj, files, cb) {
+Canned.prototype._responseForFile = function (httpObj, files, cb) {
   var that = this
   var fileObject = getFileFromRequest(httpObj, files)
-  if(fileObject) {
+  if (fileObject) {
     var filePath = httpObj.path + '/' + fileObject.fname
-    fs.readFile(filePath, { encoding: 'utf8' }, function(err, data) {
+    fs.readFile(filePath, { encoding: 'utf8' }, function (err, data) {
+      var response
       if (err) {
-        var response = new Response('html', '', 404, httpObj.res, that.response_opts)
+        response = new Response('html', '', 404, httpObj.res, that.response_opts)
         cb('Not found', response)
       } else {
         var _data = that._extractOptions(data)
@@ -112,11 +115,11 @@ Canned.prototype._responseForFile = function(httpObj, files, cb) {
         var statusCode = _data.statusCode
         var content = sanatize(data, fileObject.mimetype)
         if (content) {
-          var response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
+          response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
           cb(null, response)
         } else {
-          var content = 'Internal Server error invalid input file'
-          var response = new Response('html', content, 500, httpObj.res, that.response_opts)
+          content = 'Internal Server error invalid input file'
+          response = new Response('html', content, 500, httpObj.res, that.response_opts)
           cb(null, response)
         }
       }
@@ -127,18 +130,18 @@ Canned.prototype._responseForFile = function(httpObj, files, cb) {
   }
 }
 
-Canned.prototype._log = function(message) {
+Canned.prototype._log = function (message) {
   if (this.logger) this.logger.write(message)
 }
 
-Canned.prototype._logHTTPObject = function(httpObj) {
+Canned.prototype._logHTTPObject = function (httpObj) {
   this._log(' served via: ' + httpObj.pathname.join('/') + '/' + httpObj.fname + '.' + httpObj.method + '\n')
 }
 
-Canned.prototype.responder = function(req, res) {
+Canned.prototype.responder = function (req, res) {
   var that = this
   var parsedurl = url.parse(req.url)
-  
+
   var httpObj = {}
   httpObj.pathname  = parsedurl.pathname.split('/')
   httpObj.dname     = httpObj.pathname.pop()
@@ -147,22 +150,22 @@ Canned.prototype.responder = function(req, res) {
   httpObj.query     = parsedurl.query
   httpObj.method    = req.method.toLowerCase(),
   httpObj.res       = res
-    
+
   this._log('request: ' + httpObj.method + ' ' + req.url)
 
-  if (httpObj.method == 'options') {
+  if (httpObj.method === 'options') {
     that._log('Options request, serving CORS Headers\n')
-    new Response(null, '', 200, res,  this.response_opts).send()
-    return
+    var response = new Response(null, '', 200, res,  this.response_opts)
+    return response.send()
   }
 
-  fs.readdir(httpObj.path, function(err, files) {
-    fs.stat(httpObj.path + '/' + httpObj.dname, function(err, stats) {
+  fs.readdir(httpObj.path, function (err, files) {
+    fs.stat(httpObj.path + '/' + httpObj.dname, function (err, stats) {
       if (err) {
-        that._responseForFile(httpObj, files, function(err, resp) {
+        that._responseForFile(httpObj, files, function (err, resp) {
           if (err) {
             httpObj.fname = 'any'
-            that._responseForFile(httpObj, files, function(err, resp) {
+            that._responseForFile(httpObj, files, function (err, resp) {
               if (err) {
                 that._log(' not found\n')
               } else {
@@ -176,12 +179,12 @@ Canned.prototype.responder = function(req, res) {
           }
         })
       } else {
-        if(stats.isDirectory()) {
+        if (stats.isDirectory()) {
           var fpath = httpObj.path + '/' + httpObj.dname
-          fs.readdir(fpath, function(err, files) {
+          fs.readdir(fpath, function (err, files) {
             httpObj.fname = 'index'
             httpObj.path  = fpath
-            that._responseForFile(httpObj, files, function(err, resp) {
+            that._responseForFile(httpObj, files, function (err, resp) {
               if (err) {
                 that._log(' not found\n')
               } else {
@@ -198,9 +201,9 @@ Canned.prototype.responder = function(req, res) {
   })
 }
 
-var canned = function(dir, options) {
+var canned = function (dir, options) {
   if (!options) options = {}
-  c = new Canned(dir, options)
+  var c = new Canned(dir, options)
   return c.responder.bind(c)
 }
 
