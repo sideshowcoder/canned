@@ -189,7 +189,7 @@ describe('canned', function () {
       res.setHeader = function (name, value) {
         if (expectedHeaders[name]) {
           expect(expectedHeaders[name]).toBe(value)
-          (delete expectedHeaders[name])
+          delete expectedHeaders[name]
         }
         // all expected headers have been set!
         if (Object.keys(expectedHeaders).length === 0) done()
@@ -206,7 +206,7 @@ describe('canned', function () {
       res.setHeader = function (name, value) {
         if (expectedHeaders[name]) {
           expect(expectedHeaders[name]).toBe(value)
-          (delete expectedHeaders[name])
+          delete expectedHeaders[name]
         }
         // all expected headers have been set!
         if (Object.keys(expectedHeaders).length === 0) done()
