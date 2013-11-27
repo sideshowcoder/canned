@@ -148,7 +148,7 @@ Canned.prototype.responder = function (req, res) {
   httpObj.fname     = '_' + httpObj.dname
   httpObj.path      = this.dir + httpObj.pathname.join('/')
   httpObj.query     = parsedurl.query
-  httpObj.method    = req.method.toLowerCase(),
+  httpObj.method    = req.method.toLowerCase()
   httpObj.res       = res
 
   this._log('request: ' + httpObj.method + ' ' + req.url)
