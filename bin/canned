@@ -16,7 +16,7 @@ var canned = require('../canned')
           .usage('Usage: $0 [dir]')
           .argv
 
-if(argv.h) {
+if (argv.h) {
   optimist.showHelp()
   return
 }
@@ -28,12 +28,13 @@ var dir = ''
 ,   logger
 ,   cannedDir
 
-if(argv._.length === 1) dir = argv._[0] // use the passed directory
-if(argv.q) {
+if (argv._.length === 1) dir = argv._[0] // use the passed directory
+if (argv.q) {
   logger = null // be quiet
 } else {
   logger = process.stdout
-  dir.length === 0 ? cannedDir = './' : cannedDir = dir
+  cannedDir = dir
+  if (cannedDir.length === 0) cannedDir = './'
   process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
