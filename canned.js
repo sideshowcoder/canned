@@ -49,7 +49,7 @@ function getFileFromRequest(httpObj, files) {
       {
         matchString = httpObj.fname + "?" + httpObj.query + "." + httpObj.method
         m = matchFileWithExactQuery(matchString, fileMatch[1], fileMatch[2], fileMatch[3])
-        if (m) return { fname: e, mimetype: fileMatch[4]}
+        if (m) return { fname: e, mimetype: fileMatch[4] }
       }
     }
   }
@@ -102,6 +102,7 @@ function sanatize(data, cType) {
 Canned.prototype._responseForFile = function (httpObj, files, cb) {
   var that = this
   var fileObject = getFileFromRequest(httpObj, files)
+  httpObj.filename = fileObject.fname
   if (fileObject) {
     var filePath = httpObj.path + '/' + fileObject.fname
     fs.readFile(filePath, { encoding: 'utf8' }, function (err, data) {
@@ -135,7 +136,7 @@ Canned.prototype._log = function (message) {
 }
 
 Canned.prototype._logHTTPObject = function (httpObj) {
-  this._log(' served via: ' + httpObj.pathname.join('/') + '/' + httpObj.fname + '.' + httpObj.method + '\n')
+  this._log(' served via: .' + httpObj.pathname.join('/') + '/' + httpObj.filename + '\n')
 }
 
 Canned.prototype.responder = function (req, res) {
