@@ -37,6 +37,25 @@ are served as
       <body>Some html in here</body>
     </html>
 
+Getting started
+----------------
+
+You can install `canned` with:
+
+    npm install -g canned
+
+Then, simply go to a directory with JSON stubs, and do:
+
+    $ canned
+
+Now, a server is listening at:
+
+    starting canned on port 3000 for ./
+
+A simple test for a file _search.get.json would give you:
+
+    $ curl 0.0.0.0:3000/search
+    {"search":"result","key":"value"}
 
 
 Awesome! so what is supported?
