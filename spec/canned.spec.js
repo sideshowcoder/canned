@@ -11,6 +11,30 @@ describe('canned', function () {
     res = { setHeader: function () {}, end: function () {} }
   })
 
+  describe('error messages', function () {
+    var writeLog, logCan
+    beforeEach(function () {
+      var logger = {
+        write: function (msg) {
+          if (writeLog) writeLog(msg)
+        }
+      }
+      logCan = canned('./spec/test_responses', { logger: logger })
+    })
+
+    it('displays an error for unparsable json files', function (done) {
+      var regex = new RegExp('.*Syntax.*')
+      writeLog = function (message) {
+        if (regex.test(message)) {
+          expect(message).toBe("problem sanatizing content for _invalid_syntax.get.json SyntaxError: Unexpected token I")
+          done()
+        }
+      }
+      req.url = '/invalid_syntax'
+      logCan(req, res)
+    })
+  })
+
   describe('status codes', function () {
     it('sets 404 for non resolveable request', function (done) {
       req.url = '/i_do_not_exist'
