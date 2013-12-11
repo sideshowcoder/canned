@@ -82,14 +82,15 @@ Canned.prototype._extractOptions = function (data) {
   return { statusCode: statusCode, data: lines.join('\n') }
 }
 
-function sanatize(data, cType) {
+Canned.prototype.sanatizeContent = function (data, fileObject) {
   var sanatized
-  switch (cType) {
+  switch (fileObject.mimetype) {
   case 'json':
     // make sure we return valid JSON even so we support comments
     try {
       sanatized = JSON.stringify(JSON.parse(removeJSLikeComments(data)))
     } catch (err) {
+      this._log("problem sanatizing content for " + fileObject.fname + " " + err)
       return false
     }
     break
@@ -114,7 +115,7 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         var _data = that._extractOptions(data)
         data = _data.data
         var statusCode = _data.statusCode
-        var content = sanatize(data, fileObject.mimetype)
+        var content = that.sanatizeContent(data, fileObject)
         if (content) {
           response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
           cb(null, response)
