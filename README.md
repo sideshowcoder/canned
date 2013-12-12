@@ -153,12 +153,12 @@ How to Contribute
 -----------------
 * Checkout the repository
 * Run the tests and jshint
-    $ make
+    ```$ make```
 * Create a topic branch
-    $ git checkout -b my-new-feature
+    ```$ git checkout -b my-new-feature```
 * Code test and make jshint happy!
-    $ make test
-    $ make hint
+    ```$ make test```
+    ```$ make hint```
 * Push the branch and create a Pull-Request
 
 I try to review the pull requests as quickly as possible, should it take to long
