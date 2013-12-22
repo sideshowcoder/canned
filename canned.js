@@ -102,7 +102,6 @@ function sanatize(data, cType) {
 }
 
 Canned.prototype._responseForFile = Promise.method(function(httpObj, files) {
-  var that = this;
   var response;
   var fileObject = getFileFromRequest(httpObj, files)
   httpObj.filename = fileObject.fname;
@@ -112,26 +111,24 @@ Canned.prototype._responseForFile = Promise.method(function(httpObj, files) {
   }
 
   if (fileObject) {
-    // serve response
     var filePath = httpObj.path + '/' + fileObject.fname;
-    fs.readFileAsync(filePath, { encoding: 'utf8' }).then(function (data) {
-      var _data = that._extractOptions(data);
+    return fs.readFileAsync(filePath, { encoding: 'utf8' }).bind(this).then(function (data) {
+      var _data = this._extractOptions(data);
       data = _data.data;
       var statusCode = _data.statusCode;
       var content = sanatize(data, fileObject.mimetype);
       if (content) {
-        response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
+        response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, this.response_opts)
       } else {
         content = 'Internal Server error invalid input file'
-        response = new Response('html', content, 500, httpObj.res, that.response_opts)
+        response = new Response('html', content, 500, httpObj.res, this.response_opts)
       }
-      return Promise.resolve(response);
+      return response;
     })
     .catch(function(err) {
       console.log("Nope, said Chuck Tesla.");
-      console.log(err);
-      response = new Response('html', '', 404, httpObj.res, that.response_opts)
-      return Promise.resolve(response);
+      response = new Response('html', '', 404, httpObj.res, this.response_opts)
+      return response;
     })
   }
 });
@@ -153,12 +150,10 @@ Canned.prototype._canDirectory = function (httpObj, files) {
     httpObj.path  = fpath;
     that._responseForFile(httpObj, files)
       .then(function (resp) {
-        console.log("******");
         that._logHTTPObject(httpObj)
         resp.send();
       })
       .catch(function(err) {
-        console.log("----");
         that._log(' not found\n');
         var resp = new Response('html', '', 404, httpObj.res, that.response_opts);
         resp.send();
@@ -192,8 +187,11 @@ Canned.prototype.responder = function (req, res) {
   fs.readdir(httpObj.path, function (err, files) {
     fs.stat(httpObj.path + '/' + httpObj.dname, function (err, stats) {
       if (err) {
-        that._responseForFile(httpObj, files, function (err, resp) {
-          if (err) {
+        that._responseForFile(httpObj, files).then(function (resp) {
+            that._logHTTPObject(httpObj);
+            resp.send();
+        })
+        .catch(function(err) {
             httpObj.fname = 'any';
             that._responseForFile(httpObj, files)
               .then(function(resp) {
@@ -202,13 +200,10 @@ Canned.prototype.responder = function (req, res) {
               })
               .catch(function(err) {
                 that._log(' not found\n')
-                resp.send()
+                var resp = new Response('html', '', 404, httpObj.res, that.response_opts);
+                resp.send();
               })
-          } else {
-            that._logHTTPObject(httpObj);
-            resp.send();
-          }
-        })
+         })
       } else {
         if (stats.isDirectory()) {
           that._canDirectory(httpObj, files);
