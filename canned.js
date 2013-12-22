@@ -5,6 +5,7 @@ var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
 var Promise = require('bluebird');
+Promise.promisifyAll(fs);
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -101,30 +102,31 @@ function sanatize(data, cType) {
 }
 
 Canned.prototype._responseForFile = function (httpObj, files, cb) {
-  var that = this
+  var that = this;
+  var response;
   var fileObject = getFileFromRequest(httpObj, files)
-  httpObj.filename = fileObject.fname
+  httpObj.filename = fileObject.fname;
+
   if (fileObject) {
-    var filePath = httpObj.path + '/' + fileObject.fname
-    fs.readFile(filePath, { encoding: 'utf8' }, function (err, data) {
-      var response
-      if (err) {
-        response = new Response('html', '', 404, httpObj.res, that.response_opts)
-        cb('Not found', response)
+    var filePath = httpObj.path + '/' + fileObject.fname;
+    fs.readFileAsync(filePath, { encoding: 'utf8' }).then(function (data) {
+      var _data = that._extractOptions(data);
+      data = _data.data;
+      var statusCode = _data.statusCode;
+      var content = sanatize(data, fileObject.mimetype);
+      if (content) {
+        response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
       } else {
-        var _data = that._extractOptions(data)
-        data = _data.data
-        var statusCode = _data.statusCode
-        var content = sanatize(data, fileObject.mimetype)
-        if (content) {
-          response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
-          cb(null, response)
-        } else {
-          content = 'Internal Server error invalid input file'
-          response = new Response('html', content, 500, httpObj.res, that.response_opts)
-          cb(null, response)
-        }
+        content = 'Internal Server error invalid input file'
+        response = new Response('html', content, 500, httpObj.res, that.response_opts)
       }
+      cb(null, response);
+    })
+    .catch(function(err) {
+      console.log("Nope, said Chuck Tesla.");
+      console.log(err);
+      response = new Response('html', '', 404, httpObj.res, that.response_opts)
+      cb(err, response);
     })
   } else {
     var response = new Response('html', '', 404, httpObj.res, that.response_opts)
