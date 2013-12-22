@@ -127,8 +127,8 @@ Canned.prototype._responseForFile = Promise.method(function(httpObj, files) {
     })
     .catch(function(err) {
       console.log("Nope, said Chuck Tesla.");
-      response = new Response('html', '', 404, httpObj.res, this.response_opts)
-      return response;
+      console.log(err);
+      return new Response('html', '', 404, httpObj.res, this.response_opts);
     })
   }
 });
@@ -190,7 +190,7 @@ Canned.prototype.responder = function (req, res) {
         that._responseForFile(httpObj, files).then(function (resp) {
             that._logHTTPObject(httpObj);
             resp.send();
-        })
+          })
         .catch(function(err) {
             httpObj.fname = 'any';
             that._responseForFile(httpObj, files)
@@ -203,7 +203,7 @@ Canned.prototype.responder = function (req, res) {
                 var resp = new Response('html', '', 404, httpObj.res, that.response_opts);
                 resp.send();
               })
-         })
+          })
       } else {
         if (stats.isDirectory()) {
           that._canDirectory(httpObj, files);
