@@ -4,6 +4,7 @@ var url = require('url')
 var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
+var Promise = require('bluebird');
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -160,20 +161,23 @@ Canned.prototype.responder = function (req, res) {
     return response.send()
   }
 
+  Promise.promisifyAll(that);
+
   fs.readdir(httpObj.path, function (err, files) {
     fs.stat(httpObj.path + '/' + httpObj.dname, function (err, stats) {
       if (err) {
         that._responseForFile(httpObj, files, function (err, resp) {
           if (err) {
-            httpObj.fname = 'any'
-            that._responseForFile(httpObj, files, function (err, resp) {
-              if (err) {
-                that._log(' not found\n')
-              } else {
-                that._logHTTPObject(httpObj)
-              }
-              resp.send()
-            })
+            httpObj.fname = 'any';
+            that._responseForFileAsync(httpObj, files)
+              .then(function(resp) {
+                  that._logHTTPObject(httpObj)
+                  resp.send()
+              })
+              .catch(function(err) {
+                  that._log(' not found\n')
+                  resp.send()
+              })
           } else {
             that._logHTTPObject(httpObj)
             resp.send()
@@ -183,16 +187,17 @@ Canned.prototype.responder = function (req, res) {
         if (stats.isDirectory()) {
           var fpath = httpObj.path + '/' + httpObj.dname
           fs.readdir(fpath, function (err, files) {
-            httpObj.fname = 'index'
-            httpObj.path  = fpath
-            that._responseForFile(httpObj, files, function (err, resp) {
-              if (err) {
-                that._log(' not found\n')
-              } else {
+            httpObj.fname = 'index';
+            httpObj.path  = fpath;
+            that._responseForFileAsync(httpObj, files)
+              .then(function (resp) {
                 that._logHTTPObject(httpObj)
-              }
-              resp.send()
-            })
+                resp.send();
+              })
+              .catch(function(err) {
+                that._log(' not found\n')
+                resp.send();
+              })
           })
         } else {
           new Response('html', '', 500, httpObj.res).send()
