@@ -101,13 +101,18 @@ function sanatize(data, cType) {
   return sanatized
 }
 
-Canned.prototype._responseForFile = function (httpObj, files, cb) {
+Canned.prototype._responseForFile = Promise.method(function(httpObj, files) {
   var that = this;
   var response;
   var fileObject = getFileFromRequest(httpObj, files)
   httpObj.filename = fileObject.fname;
 
+  if (!fileObject) {
+    throw "Not found."
+  }
+
   if (fileObject) {
+    // serve response
     var filePath = httpObj.path + '/' + fileObject.fname;
     fs.readFileAsync(filePath, { encoding: 'utf8' }).then(function (data) {
       var _data = that._extractOptions(data);
@@ -120,19 +125,17 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         content = 'Internal Server error invalid input file'
         response = new Response('html', content, 500, httpObj.res, that.response_opts)
       }
-      cb(null, response);
+      return Promise.resolve(response);
     })
     .catch(function(err) {
       console.log("Nope, said Chuck Tesla.");
       console.log(err);
       response = new Response('html', '', 404, httpObj.res, that.response_opts)
-      cb(err, response);
+      return Promise.resolve(response);
     })
-  } else {
-    var response = new Response('html', '', 404, httpObj.res, that.response_opts)
-    cb('Not found', response)
   }
-}
+});
+
 
 Canned.prototype._log = function (message) {
   if (this.logger) this.logger.write(message)
@@ -148,21 +151,24 @@ Canned.prototype._canDirectory = function (httpObj, files) {
   fs.readdir(fpath, function (err, files) {
     httpObj.fname = 'index';
     httpObj.path  = fpath;
-    that._responseForFileAsync(httpObj, files)
+    that._responseForFile(httpObj, files)
       .then(function (resp) {
+        console.log("******");
         that._logHTTPObject(httpObj)
         resp.send();
       })
       .catch(function(err) {
-        that._log(' not found\n')
+        console.log("----");
+        that._log(' not found\n');
+        var resp = new Response('html', '', 404, httpObj.res, that.response_opts);
         resp.send();
       })
   })
 }
 
 Canned.prototype.responder = function (req, res) {
-  var that = this
-  var parsedurl = url.parse(req.url)
+  var that = this;
+  var parsedurl = url.parse(req.url);
 
   var httpObj = {}
   httpObj.pathname  = parsedurl.pathname.split('/')
@@ -189,18 +195,18 @@ Canned.prototype.responder = function (req, res) {
         that._responseForFile(httpObj, files, function (err, resp) {
           if (err) {
             httpObj.fname = 'any';
-            that._responseForFileAsync(httpObj, files)
+            that._responseForFile(httpObj, files)
               .then(function(resp) {
-                  that._logHTTPObject(httpObj)
-                  resp.send()
+                that._logHTTPObject(httpObj);
+                resp.send();
               })
               .catch(function(err) {
-                  that._log(' not found\n')
-                  resp.send()
+                that._log(' not found\n')
+                resp.send()
               })
           } else {
-            that._logHTTPObject(httpObj)
-            resp.send()
+            that._logHTTPObject(httpObj);
+            resp.send();
           }
         })
       } else {
