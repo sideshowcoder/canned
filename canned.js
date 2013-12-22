@@ -140,6 +140,24 @@ Canned.prototype._logHTTPObject = function (httpObj) {
   this._log(' served via: .' + httpObj.pathname.join('/') + '/' + httpObj.filename + '\n')
 }
 
+Canned.prototype._canDirectory = function (httpObj, files) {
+  var fpath = httpObj.path + '/' + httpObj.dname;
+  var that = this;
+  fs.readdir(fpath, function (err, files) {
+    httpObj.fname = 'index';
+    httpObj.path  = fpath;
+    that._responseForFileAsync(httpObj, files)
+      .then(function (resp) {
+        that._logHTTPObject(httpObj)
+        resp.send();
+      })
+      .catch(function(err) {
+        that._log(' not found\n')
+        resp.send();
+      })
+  })
+}
+
 Canned.prototype.responder = function (req, res) {
   var that = this
   var parsedurl = url.parse(req.url)
@@ -185,20 +203,7 @@ Canned.prototype.responder = function (req, res) {
         })
       } else {
         if (stats.isDirectory()) {
-          var fpath = httpObj.path + '/' + httpObj.dname
-          fs.readdir(fpath, function (err, files) {
-            httpObj.fname = 'index';
-            httpObj.path  = fpath;
-            that._responseForFileAsync(httpObj, files)
-              .then(function (resp) {
-                that._logHTTPObject(httpObj)
-                resp.send();
-              })
-              .catch(function(err) {
-                that._log(' not found\n')
-                resp.send();
-              })
-          })
+          that._canDirectory(httpObj, files);
         } else {
           new Response('html', '', 500, httpObj.res).send()
         }
