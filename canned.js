@@ -140,6 +140,38 @@ Canned.prototype._logHTTPObject = function (httpObj) {
   this._log(' served via: .' + httpObj.pathname.join('/') + '/' + httpObj.filename + '\n')
 }
 
+Canned.prototype.respondWithDir = function (httpObj) {
+  var that = this;
+
+  var fpath = httpObj.path + '/' + httpObj.dname
+  fs.readdir(fpath, function (err, files) {
+    httpObj.fname = 'index'
+    httpObj.path  = fpath
+    that._responseForFile(httpObj, files, function (err, resp) {
+      if (err) {
+        that._log(' not found\n')
+      } else {
+        that._logHTTPObject(httpObj)
+      }
+      resp.send()
+    })
+  })
+}
+
+Canned.prototype.respondWithAny = function (httpObj, files) {
+  var that = this;
+
+  httpObj.fname = 'any';
+  that._responseForFile(httpObj, files, function (err, resp) {
+    if (err) {
+      that._log(' not found\n')
+    } else {
+      that._logHTTPObject(httpObj)
+    }
+    resp.send()
+  })
+}
+
 Canned.prototype.responder = function (req, res) {
   var that = this
   var parsedurl = url.parse(req.url)
@@ -166,15 +198,7 @@ Canned.prototype.responder = function (req, res) {
       if (err) {
         that._responseForFile(httpObj, files, function (err, resp) {
           if (err) {
-            httpObj.fname = 'any'
-            that._responseForFile(httpObj, files, function (err, resp) {
-              if (err) {
-                that._log(' not found\n')
-              } else {
-                that._logHTTPObject(httpObj)
-              }
-              resp.send()
-            })
+            that.respondWithAny(httpObj, files);
           } else {
             that._logHTTPObject(httpObj)
             resp.send()
@@ -182,21 +206,9 @@ Canned.prototype.responder = function (req, res) {
         })
       } else {
         if (stats.isDirectory()) {
-          var fpath = httpObj.path + '/' + httpObj.dname
-          fs.readdir(fpath, function (err, files) {
-            httpObj.fname = 'index'
-            httpObj.path  = fpath
-            that._responseForFile(httpObj, files, function (err, resp) {
-              if (err) {
-                that._log(' not found\n')
-              } else {
-                that._logHTTPObject(httpObj)
-              }
-              resp.send()
-            })
-          })
+          that.respondWithDir(httpObj);
         } else {
-          new Response('html', '', 500, httpObj.res).send()
+          new Response('html', '', 500, httpObj.res).send();
         }
       }
     })
