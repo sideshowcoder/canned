@@ -169,6 +169,7 @@ Contributors
 * [sideshowcoder](https://github.com/sideshowcoder)
 * [leifg](https://github.com/leifg)
 * [runemadsen](https://github.com/runemadsen)
+* [mulderp](https://github.com/mulderp)
 
 License
 -------
