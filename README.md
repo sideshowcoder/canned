@@ -1,7 +1,8 @@
 Canned fake API server
 ======================
 
-[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned)
+[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned) [![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned)
+
 
 View the docs on [Docs](http://sideshowcoder.github.io/canned)
 
