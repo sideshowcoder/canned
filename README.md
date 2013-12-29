@@ -176,3 +176,7 @@ License
 -------
 MIT 2013 Philipp Fehre alias @sideshowcoder, or @ischi on twitter
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
