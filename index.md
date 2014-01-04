@@ -1,11 +1,11 @@
 ---
 layout: index
 ---
-
 Canned fake API server
 ======================
 
-[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned)
+[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned) [![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 
 View the docs on [Docs](http://sideshowcoder.github.io/canned)
 
@@ -57,11 +57,11 @@ mapping with nested endpoints.
     /comments/_search.get.json      | GET /comments/search
 
 You can even add query parameters to your filenames to return different responses on the same route. If the all query params in a filename match the incoming request, this file will be returned. It will fall back to returning the file with no query params if it exists.
-    
+
     file                            | resquest
     /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
     /_search?q=hello.get.json       | GET /comments/search?q=hello
-    /_search.get.json               | GET /comments/search?iam=soignored        
+    /_search.get.json               | GET /comments/search?iam=soignored
 
 Same support is available for PUT, POST, etc.
 
@@ -133,7 +133,7 @@ If for whatever reason you want to turn of CORS support do so via
 Also if you need additional headers to be served alongside the CORS headers
 these can be added like this (thanks to runemadsen)
 
-canned --headers "Authorization, Another-Header"
+    $ canned --headers "Authorization, Another-Header"
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
@@ -153,14 +153,28 @@ every install since you won't be able to run any global module bins if not.
 make sure you run a version of node which is 0.10.3 or higher, because it fixes
 a problem for the encoding handling when reading files
 
+How to Contribute
+-----------------
+* Checkout the repository
+* Run the tests and jshint
+    ```$ make```
+* Create a topic branch
+    ```$ git checkout -b my-new-feature```
+* Code test and make jshint happy!
+    ```$ make test```
+    ```$ make hint```
+* Push the branch and create a Pull-Request
+
+I try to review the pull requests as quickly as possible, should it take to long
+feel free to [bug me on twitter](https://twitter.com/ischi)
+
 Contributors
 ------------
 * [sideshowcoder](https://github.com/sideshowcoder)
 * [leifg](https://github.com/leifg)
 * [runemadsen](https://github.com/runemadsen)
+* [mulderp](https://github.com/mulderp)
 
 License
 -------
 MIT 2013 Philipp Fehre alias @sideshowcoder, or @ischi on twitter
-
-
