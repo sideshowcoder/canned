@@ -84,6 +84,15 @@ describe('canned', function () {
       }
       can(req, res)
     })
+    it('sets Content-type header if specified in file', function(done){
+      req.url = '/vendor_type'
+      res.setHeader = function(name, value){
+        expect(value).toBe('application/vnd.custom+xml')
+        expect(name).toBe('Content-Type')
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('resolve file paths', function () {
