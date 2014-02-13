@@ -81,7 +81,7 @@ file header like so
 
 The header will be stripped before sending and the statusCode will be set.
 
-You can also override the custom content types by adding it to the file header:
+You can also override the default content types by adding a custom content type to the file header:
 
     //! contentType: application/vnd.custom+xml
     <xml>
