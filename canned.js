@@ -62,6 +62,10 @@ function getFileFromRequest(httpObj, files) {
   return false
 }
 
+function getContentType(mimetype){
+  return Response.content_types[mimetype]
+}
+
 Canned.prototype._extractOptions = function (data) {
   var lines = data.split('\n')
   var opts = {}
@@ -69,7 +73,9 @@ Canned.prototype._extractOptions = function (data) {
     try {
       var content = lines[0].replace('//!', '')
       content = content.split(',').map(function (s) {
-        return '"' + s.split(':')[0].trim() + '":' + s.split(':')[1]
+        var parts = s.split(':');
+        parts[0] = '"' + parts[0].trim() + '"'
+        return parts.join(':')
       }).join(',')
       opts = JSON.parse('{' + content  + '}')
     } catch (e) {
@@ -78,8 +84,9 @@ Canned.prototype._extractOptions = function (data) {
     }
     lines.splice(0, 1)
   }
-  var statusCode = opts.statusCode || 200
-  return { statusCode: statusCode, data: lines.join('\n') }
+  opts.statusCode = opts.statusCode || 200
+  opts.data = lines.join('\n')
+  return opts
 }
 
 Canned.prototype.sanatizeContent = function (data, fileObject) {
@@ -109,7 +116,7 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
     fs.readFile(filePath, { encoding: 'utf8' }, function (err, data) {
       var response
       if (err) {
-        response = new Response('html', '', 404, httpObj.res, that.response_opts)
+        response = new Response(getContentType('html'), '', 404, httpObj.res, that.response_opts)
         cb('Not found', response)
       } else {
         var _data = that._extractOptions(data)
@@ -117,17 +124,17 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         var statusCode = _data.statusCode
         var content = that.sanatizeContent(data, fileObject)
         if (content) {
-          response = new Response(fileObject.mimetype, content, statusCode, httpObj.res, that.response_opts)
+          response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts)
           cb(null, response)
         } else {
           content = 'Internal Server error invalid input file'
-          response = new Response('html', content, 500, httpObj.res, that.response_opts)
+          response = new Response(getContentType('html'), content, 500, httpObj.res, that.response_opts)
           cb(null, response)
         }
       }
     })
   } else {
-    var response = new Response('html', '', 404, httpObj.res, that.response_opts)
+    var response = new Response(getContentType('html'), '', 404, httpObj.res, that.response_opts)
     cb('Not found', response)
   }
 }
