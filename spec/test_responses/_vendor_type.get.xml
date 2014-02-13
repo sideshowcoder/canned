@@ -1,0 +1,4 @@
+//! statusCode  :  200   ,contentType  :     "application/vnd.custom+xml"   
+<xml>
+	<created>1</created>
+</xml>
