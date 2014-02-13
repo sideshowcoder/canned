@@ -81,6 +81,19 @@ file header like so
 
 The header will be stripped before sending and the statusCode will be set.
 
+You can also override the custom content types by adding it to the file header:
+
+    //! contentType: application/vnd.custom+xml
+    <xml>
+        <created>1</created>
+    </xml>
+
+This will be returned with a `Content-type: application/vnd.custom+xml` header.
+
+Multiple headers need to be written on one single line and comma-separated, like so:
+
+    //! statusCode:201, contentType: application/vnd.custom+xml
+
 How about some docs inside for the responses?
 ---------------------------------------------
 Most content types support comments nativly, like html or javascript. Sadly the
@@ -171,6 +184,7 @@ Contributors
 * [leifg](https://github.com/leifg)
 * [runemadsen](https://github.com/runemadsen)
 * [mulderp](https://github.com/mulderp)
+* [creynders](https://github.com/creynders)
 
 License
 -------
