@@ -83,7 +83,7 @@ The header will be stripped before sending and the statusCode will be set.
 
 You can also override the default content types by adding a custom content type to the file header:
 
-    //! contentType: application/vnd.custom+xml
+    //! contentType: "application/vnd.custom+xml"
     <xml>
         <created>1</created>
     </xml>
@@ -92,7 +92,7 @@ This will be returned with a `Content-type: application/vnd.custom+xml` header.
 
 Multiple headers need to be written on one single line and comma-separated, like so:
 
-    //! statusCode:201, contentType: application/vnd.custom+xml
+    //! statusCode:201, contentType: "application/vnd.custom+xml"
 
 How about some docs inside for the responses?
 ---------------------------------------------
