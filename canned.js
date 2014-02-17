@@ -2,12 +2,12 @@
 
 var _ = require('lodash');
 var express = require('express');
-var Args = require('args-js');
+var argsParser = require('args-js');
 var defaultPort = 3000;
 
 function serve(dir){
   return require('./lib/parser')(dir);
-};
+}
 
 function Canned(dir, opts){
   this._dir = dir;
@@ -16,12 +16,12 @@ function Canned(dir, opts){
     port   : defaultPort
   });
   console.log(this._opts);
-};
+}
 
 Canned.prototype.listen = function(port, app){
-  var args = Args([
-    {port : Args.INT | Args.Optional, _default : this._opts.port},
-    {app : Args.OBJECT | Args.Optional}
+  var args = argsParser([
+    {port : argsParser.INT | argsParser.Optional, _default : this._opts.port},
+    {app : argsParser.OBJECT | argsParser.Optional}
   ], arguments);
   this._opts.port = args.port;
   var server = this._server = args.app || express();
@@ -34,7 +34,7 @@ function createCanned(dir, opts){
   var canned = new Canned(dir, opts);
   canned.listen();
   return canned;
-};
+}
 
 createCanned.serve = serve;
 createCanned.defaultPort = defaultPort;
