@@ -3,7 +3,7 @@ var canned = require('../canned')
 ,   http = require('http')
 ,   optimist = require('optimist')
 ,   argv = optimist
-          .default('p', 3000)
+          .default('p', canned.defaultPort)
           .alias('p', 'port')
           .describe('p', 'server port')
           .default('cors', true)
@@ -38,6 +38,5 @@ if (argv.q) {
   process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
-var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers})
-http.createServer(can).listen(port)
+var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers, port: port})
 

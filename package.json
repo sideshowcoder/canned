@@ -13,7 +13,11 @@
     "url": "https://github.com/sideshowcoder/canned"
   },
   "dependencies": {
-    "optimist": "~0.3.7"
+    "optimist": "~0.3.7",
+    "express": "~3.4.8",
+    "lodash": "~2.4.1",
+    "mime": "~1.2.11",
+    "args-js": "~0.10.3"
   },
   "devDependencies": {
     "node-dev": "~2.0.1",
