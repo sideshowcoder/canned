@@ -84,13 +84,24 @@ Canned.prototype._extractOptions = function (data) {
     }
     lines.splice(0, 1)
   }
-  opts.statusCode = opts.statusCode || 200
+  var defaultStatusCode
+  if (lines.length === 0 || lines[0].length === 0) {
+    defaultStatusCode = 204
+  } else {
+    defaultStatusCode = 200
+  }
+  opts.statusCode = opts.statusCode || defaultStatusCode
   opts.data = lines.join('\n')
   return opts
 }
 
 Canned.prototype.sanatizeContent = function (data, fileObject) {
   var sanatized
+
+  if (data.length === 0) {
+    return data
+  }
+
   switch (fileObject.mimetype) {
   case 'json':
     // make sure we return valid JSON even so we support comments
@@ -123,7 +134,7 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         data = _data.data
         var statusCode = _data.statusCode
         var content = that.sanatizeContent(data, fileObject)
-        if (content) {
+        if (content !== false) {
           response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts)
           cb(null, response)
         } else {
