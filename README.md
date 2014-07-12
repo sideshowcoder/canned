@@ -178,6 +178,14 @@ How to Contribute
 I try to review the pull requests as quickly as possible, should it take to long
 feel free to [bug me on twitter](https://twitter.com/ischi)
 
+Release History
+---------------
+### 0.2.3
+* added support for empty response with 204 for no content (@jkjustjoshing)
+
+### everything before
+* sorry haven't kept a version history, yet. Will now!
+
 Contributors
 ------------
 * [sideshowcoder](https://github.com/sideshowcoder)
