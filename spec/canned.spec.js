@@ -62,6 +62,24 @@ describe('canned', function () {
       }
       can(req, res)
     })
+
+    it('sets 204 for empty file', function (done) {
+      req.url = '/empty'
+      res.end = function () {
+        expect(res.statusCode).toBe(204)
+        done()
+      }
+      can(req, res)
+    })
+
+    it('sets specified status for empty file with headers set', function (done) {
+      req.url = '/empty_with_headers'
+      res.end = function () {
+        expect(res.statusCode).toBe(420)
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('content type', function () {
