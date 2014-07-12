@@ -185,6 +185,7 @@ Contributors
 * [runemadsen](https://github.com/runemadsen)
 * [mulderp](https://github.com/mulderp)
 * [creynders](https://github.com/creynders)
+* [jkjustjoshing](https://github.com/jkjustjoshing)
 
 License
 -------

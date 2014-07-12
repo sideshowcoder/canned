@@ -84,7 +84,7 @@ Canned.prototype._extractOptions = function (data) {
     }
     lines.splice(0, 1)
   }
-  var defaultStatusCode;
+  var defaultStatusCode
   if (lines.length === 0 || lines[0].length === 0) {
     defaultStatusCode = 204
   } else {
@@ -99,7 +99,7 @@ Canned.prototype.sanatizeContent = function (data, fileObject) {
   var sanatized
 
   if (data.length === 0) {
-    return data;
+    return data
   }
 
   switch (fileObject.mimetype) {
