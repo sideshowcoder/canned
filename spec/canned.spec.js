@@ -195,6 +195,16 @@ describe('canned', function () {
       }
       can(req, res)
     })
+
+    it('allows for multiple files to match', function (done) {
+      req.url = '/multimatch'
+      res.end = function (content) {
+        var multimatch = JSON.parse(content).multimatch
+        expect(multimatch).toBeTruthy()
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('content modifier', function () {
