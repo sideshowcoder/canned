@@ -147,6 +147,9 @@ these can be added like this (thanks to runemadsen)
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
+Already using grunt? [Great there is a plugin for that,](https://github.com/jkjustjoshing/grunt-canned) 
+thanks to jkjustjoshing.
+
 
 It does not work :(
 -------------------
