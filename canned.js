@@ -4,6 +4,7 @@ var url = require('url')
 var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
+var swagger = require('./swagger')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -12,6 +13,7 @@ function Canned(dir, options) {
     cors_headers: options.cors_headers
   }
   this.dir = process.cwd() + '/' + dir
+  swagger.setApisDir(this.dir)
 }
 
 function matchFile(matchString, fname, method) {
@@ -190,8 +192,15 @@ Canned.prototype.respondWithAny = function (httpObj, files) {
   })
 }
 
-Canned.prototype.responder = function (req, res) {
+Canned.prototype.options = function (req, res) {
+  that._log('Options request, serving CORS Headers\n')
+  var response = new Response(null, '', 200, res,  this.response_opts)
+  return response.send()
+}
+
+Canned.prototype.regular = function (req, res) {
   var that = this
+
   var parsedurl = url.parse(req.url)
 
   var httpObj = {}
@@ -204,12 +213,6 @@ Canned.prototype.responder = function (req, res) {
   httpObj.res       = res
 
   this._log('request: ' + httpObj.method + ' ' + req.url)
-
-  if (httpObj.method === 'options') {
-    that._log('Options request, serving CORS Headers\n')
-    var response = new Response(null, '', 200, res,  this.response_opts)
-    return response.send()
-  }
 
   fs.readdir(httpObj.path, function (err, files) {
     fs.stat(httpObj.path + '/' + httpObj.dname, function (err, stats) {
@@ -231,6 +234,23 @@ Canned.prototype.responder = function (req, res) {
       }
     })
   })
+}
+
+Canned.prototype.swagger = function (req, res) {
+  swagger.process.apply(swagger, arguments)
+}
+
+Canned.prototype.responder = function (req, res) {
+  var path = url.parse(req.url).path
+
+  // Routes
+  var action = 'regular'
+  if (req.method.toLowerCase() === 'options') {
+    action = 'options'
+  }else if(path.indexOf(swagger.getFolder()) !== -1){
+    action = 'swagger'
+  }
+  return this[action].apply(this, arguments)
 }
 
 var canned = function (dir, options) {
