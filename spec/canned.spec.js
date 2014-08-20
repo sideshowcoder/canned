@@ -196,11 +196,11 @@ describe('canned', function () {
       can(req, res)
     })
 
-    it('allows for multiple files to match', function (done) {
+    it('allows for multiple files to match via the .NUMBER extension and pick 1 by default', function (done) {
       req.url = '/multimatch'
       res.end = function (content) {
         var multimatch = JSON.parse(content).multimatch
-        expect(multimatch).toBeTruthy()
+        expect(multimatch).toBe(1)
         done()
       }
       can(req, res)
