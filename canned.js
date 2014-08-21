@@ -191,7 +191,7 @@ Canned.prototype.respondWithAny = function (httpObj, files) {
 }
 
 Canned.prototype.options = function (req, res) {
-  that._log('Options request, serving CORS Headers\n')
+  this._log('Options request, serving CORS Headers\n')
   var response = new Response(null, '', 200, res,  this.response_opts)
   return response.send()
 }
