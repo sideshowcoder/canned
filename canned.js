@@ -244,7 +244,7 @@ Canned.prototype.responder = function (req, res, next) {
   }
   return this[action].apply(this, arguments)
 
-  next()
+  next(null)
 }
 
 var canned = function (dir, options) {

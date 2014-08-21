@@ -49,7 +49,7 @@ var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers})
  * Becouse this will enable us to end processing
  */
 var extensions
-if(typeof argv.extensions === 'sting'){
+if(typeof argv.extensions === 'string'){
   extensions  = argv.extensions.split(',')
 }else{
   extensions = []
@@ -64,36 +64,26 @@ async.map(
 
       extension = require(EXTENSIONS_DIR + '/' + extension + '/main.js')
 
-      cb(new extension({
-        app: app,
+      var f = new extension({
         argv: argv,
         dir: dir
-      }));
+      })
+
+      cb(null, f);
     })
   },
   function(err, extensions){
     extensions.filter(function(extension){
       return (typeof extension === 'function')
     })
-    extensions.unshift(can)
+    extensions.push(can)
     http.createServer(function(req, res){
       async.eachSeries(
         extensions,
         function(extension, cb){
-          extension(
-            req,
-            res,
-            function(res){
-              if(res === true){
-                cb()
-              }else{
-                throw 'break'
-              }
-            })
+          extension(req,res,cb)
         },
-        function(err, res){
-          console.log('err',err,'res',res)
-        }
+        function(err, res){}
       )
     }).listen(port)
   }

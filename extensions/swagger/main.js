@@ -47,7 +47,7 @@ var createMethod = function (method) {
   }
 }
 
-var processFolder = function (folder, req, res) {
+var processFolder = function (folder, req, res, next) {
   ITEM_TEMPLATE.basePath = 'http://' + req.headers.host;
   ITEM_TEMPLATE.resourcePath = folder;
 
@@ -79,15 +79,17 @@ var processFolder = function (folder, req, res) {
 
     res.writeHead(200, {'Content-Type': 'application/json'})
     res.end(JSON.stringify(ITEM_TEMPLATE))
+    next(true)
   });
 }
 
-var processPoint = function (req, res){
+var processPoint = function (req, res, next){
   var that = this
 
   var resp = function () {
     res.writeHead(200, {'Content-Type': 'application/json'})
     res.end(JSON.stringify(DESCRIPTION_TEMPLATE))
+    next(true)
   }
 
   if(DESCRIPTION_TEMPLATE.apis !== null){
@@ -117,29 +119,34 @@ var processPoint = function (req, res){
   }
 }
 
-var api = function (req, res) {
-  var path = url.parse(req.url).pathname
+var api = function (req, res, next) {
+  var path = url
+    .parse(req.url)
+    .pathname
+    .replace(this.endpoint + APIURL,'')
 
-  if(path === "/"){
-    processPoint.call(this, req, res)
+  if(path === ""){
+    processPoint.call(this, req, res, next)
   }else{
-    processFolder.call(this, path, req, res)
+    processFolder.call(this, path, req, res, next)
   }
 }
 
-var main = function (req, res) {
+var main = function (req, res, next) {
   var path = url.parse(req.url).path
 
-  var action = static
   if(path.indexOf(this.endpoint + APIURL) !== -1){
-    action = api
+    api.apply(this, arguments)
+  }else if(path.indexOf(this.endpoint) !== -1){
+    static.apply(this, arguments)
+  }else{
+    next(null)
   }
-  action.apply(this, arguments)
 }
 
-var static = function (request, response) {
-  var uri = url.parse(request.url).pathname
-  , filename = path.join(__dirname + '/static', uri);
+var static = function (request, response, next) {
+  var uri = url.parse(request.url).pathname.replace(this.endpoint,'')
+  , filename = path.join(__dirname + '/static', uri)
   fs.exists(filename, function(exists) {
     if(!exists) {
       response.writeHead(404, {"Content-Type": "text/plain"});
@@ -161,6 +168,7 @@ var static = function (request, response) {
       response.writeHead(200);
       response.write(file, "binary");
       response.end();
+      next(true)
     });
   });
 }
