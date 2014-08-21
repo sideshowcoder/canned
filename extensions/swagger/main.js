@@ -127,19 +127,57 @@ var api = function (req, res) {
   }
 }
 
+var main = function (req, res) {
+  var path = url.parse(req.url).path
+
+  var action = static
+  if(path.indexOf(this.endpoint + APIURL) !== -1){
+    action = api
+  }
+  action.apply(this, arguments)
+}
+
+var static = function (request, response) {
+  var uri = url.parse(request.url).pathname
+  , filename = path.join(__dirname + '/static', uri);
+  fs.exists(filename, function(exists) {
+    if(!exists) {
+      response.writeHead(404, {"Content-Type": "text/plain"});
+      response.write("404 Not Found\n");
+      response.end();
+      return;
+    }
+    
+    if (fs.statSync(filename).isDirectory()) filename += '/index.html';
+    
+    fs.readFile(filename, "binary", function(err, file) {
+      if(err) {
+        response.writeHead(500, {"Content-Type": "text/plain"});
+        response.write(err + "\n");
+        response.end();
+        return;
+      }
+      
+      response.writeHead(200);
+      response.write(file, "binary");
+      response.end();
+    });
+  });
+}
+
 module.exports = exports = function(options){
+  var obj = {}
   if(options.dir){
-    this.dir = options.dir
+    obj.dir = options.dir
   }else{
     return null
   }
 
   if(options.argv && options.argv.swaggerEndpoint){
-    this.endpoint = '/' + options.argv.swaggerEndpoint
+    obj.endpoint = '/' + options.argv.swaggerEndpoint
   }else{
-    this.endpoint = DEFAULT_ENDPOINT
+    obj.endpoint = DEFAULT_ENDPOINT
   }
 
-  options.app.use(this.endpoint, express.static(__dirname + '/static'));
-  options.app.use(this.endpoint + APIURL,api.bind(this))
+  return main.bind(obj)
 }

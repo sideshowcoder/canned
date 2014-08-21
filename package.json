@@ -14,8 +14,7 @@
   },
   "dependencies": {
     "optimist": "~0.3.7",
-    "async": "*",
-    "express": "*"
+    "async": "*"
   },
   "devDependencies": {
     "node-dev": "~2.0.1",

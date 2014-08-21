@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 var canned = require('../canned')
 ,   http = require('http')
-,   express = require('express')
 ,   optimist = require('optimist')
 ,   async = require('async')
 ,   fs = require('fs')
@@ -45,13 +44,6 @@ if (argv.q) {
 
 var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers})
 
-var app = express();
-
-var start = function(){
-  app.use(can)
-  app.listen(port)
-}
-
 /**
  * We have to use extensions before main app
  * Becouse this will enable us to end processing
@@ -63,23 +55,46 @@ if(typeof argv.extensions === 'sting'){
   extensions = []
 }
 
-async.each(
+async.map(
   extensions,
   function(extension, cb){
     fs.stat(EXTENSIONS_DIR + '/' + extension, function(err, stat){
       if(err || !stat.isDirectory())
-        return cb()
+        return cb(null)
 
       extension = require(EXTENSIONS_DIR + '/' + extension + '/main.js')
 
-      new extension({
+      cb(new extension({
         app: app,
         argv: argv,
         dir: dir
-      })
-
-      cb();
+      }));
     })
   },
-  start
+  function(err, extensions){
+    extensions.filter(function(extension){
+      return (typeof extension === 'function')
+    })
+    extensions.unshift(can)
+    http.createServer(function(req, res){
+      async.eachSeries(
+        extensions,
+        function(extension, cb){
+          extension(
+            req,
+            res,
+            function(res){
+              if(res === true){
+                cb()
+              }else{
+                throw 'break'
+              }
+            })
+        },
+        function(err, res){
+          console.log('err',err,'res',res)
+        }
+      )
+    }).listen(port)
+  }
 )
