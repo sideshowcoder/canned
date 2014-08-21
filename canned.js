@@ -4,7 +4,6 @@ var url = require('url')
 var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
-var swagger = require('./swagger')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -13,7 +12,6 @@ function Canned(dir, options) {
     cors_headers: options.cors_headers
   }
   this.dir = process.cwd() + '/' + dir
-  swagger.setApisDir(this.dir)
 }
 
 function matchFile(matchString, fname, method) {
@@ -236,21 +234,17 @@ Canned.prototype.regular = function (req, res) {
   })
 }
 
-Canned.prototype.swagger = function (req, res) {
-  swagger.process.apply(swagger, arguments)
-}
-
-Canned.prototype.responder = function (req, res) {
+Canned.prototype.responder = function (req, res, next) {
   var path = url.parse(req.url).path
 
   // Routes
   var action = 'regular'
   if (req.method.toLowerCase() === 'options') {
     action = 'options'
-  }else if(path.indexOf(swagger.getFolder()) !== -1){
-    action = 'swagger'
   }
   return this[action].apply(this, arguments)
+
+  next()
 }
 
 var canned = function (dir, options) {

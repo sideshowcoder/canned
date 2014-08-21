@@ -2,10 +2,11 @@ var url = require("url")
 var path = require("path")
 var fs = require("fs")
 var async = require("async")
+var express = require("express")
 
 // Constants
-var FOLDER = "/swagger"
 var APIURL = "/api-docs"
+var DEFAULT_ENDPOINT = '/swagger'
 
 var DESCRIPTION_TEMPLATE = {
   apiVersion:"1.0.0",
@@ -30,9 +31,6 @@ var ITEM_TEMPLATE = {
   apis: null
 }
 
-// Private vars
-var apisDir;
-
 var createPath = function (path) {
   return {
     path: path,
@@ -53,7 +51,7 @@ var processFolder = function (folder, req, res) {
   ITEM_TEMPLATE.basePath = 'http://' + req.headers.host;
   ITEM_TEMPLATE.resourcePath = folder;
 
-  fs.readdir(apisDir + folder, function(err, files){
+  fs.readdir(this.dir + folder, function(err, files){
     var apis = {}
     files.forEach(function(file){
       var parts = file.split('.')
@@ -85,6 +83,8 @@ var processFolder = function (folder, req, res) {
 }
 
 var processPoint = function (req, res){
+  var that = this
+
   var resp = function () {
     res.writeHead(200, {'Content-Type': 'application/json'})
     res.end(JSON.stringify(DESCRIPTION_TEMPLATE))
@@ -93,13 +93,14 @@ var processPoint = function (req, res){
   if(DESCRIPTION_TEMPLATE.apis !== null){
     resp()
   }else{
-    fs.readdir(apisDir, function(err, files){
+    fs.readdir(that.dir, function(err, files){
       if (err) return console.log(err);
       async.map(
         files,
         function(file, cb){
-          fs.stat(apisDir + '/' + file, cb);
+          fs.stat(that.dir + '/' + file, cb);
         }, function(err, stats){
+
           var dirs = files.filter(function(file){
             return stats[files.indexOf(file)].isDirectory()
           })
@@ -117,61 +118,28 @@ var processPoint = function (req, res){
 }
 
 var api = function (req, res) {
-  var path = url.parse(req.url)
-    .pathname.replace(FOLDER + APIURL, "")
-  
-  if(path === ""){
-    processPoint(req, res)
+  var path = url.parse(req.url).pathname
+
+  if(path === "/"){
+    processPoint.call(this, req, res)
   }else{
-    processFolder(path, req, res)
+    processFolder.call(this, path, req, res)
   }
 }
 
-var static = function (request, response) {
-  var uri = url.parse(request.url).pathname
-  , filename = path.join(process.cwd(), uri);
-  fs.exists(filename, function(exists) {
-    if(!exists) {
-      response.writeHead(404, {"Content-Type": "text/plain"});
-      response.write("404 Not Found\n");
-      response.end();
-      return;
-    }
-    
-    if (fs.statSync(filename).isDirectory()) filename += '/index.html';
-    
-    fs.readFile(filename, "binary", function(err, file) {
-      if(err) {
-        response.writeHead(500, {"Content-Type": "text/plain"});
-        response.write(err + "\n");
-        response.end();
-        return;
-      }
-      
-      response.writeHead(200);
-      response.write(file, "binary");
-      response.end();
-    });
-  });
-}
-
-var main = function (req, res) {
-  var path = url.parse(req.url).path
-
-  var action = static
-  if(path.indexOf(FOLDER + APIURL) !== -1){
-    action = api
+module.exports = exports = function(options){
+  if(options.dir){
+    this.dir = options.dir
+  }else{
+    return null
   }
-  action.apply(this, arguments)
-  
-}
 
-module.exports = exports = {
-  process: main,
-  getFolder: function () {
-    return FOLDER
-  },
-  setApisDir: function (dir) {
-    apisDir = dir
+  if(options.argv && options.argv.swaggerEndpoint){
+    this.endpoint = '/' + options.argv.swaggerEndpoint
+  }else{
+    this.endpoint = DEFAULT_ENDPOINT
   }
+
+  options.app.use(this.endpoint, express.static(__dirname + '/static'));
+  options.app.use(this.endpoint + APIURL,api.bind(this))
 }
