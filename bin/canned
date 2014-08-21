@@ -2,6 +2,8 @@
 var canned = require('../canned')
 ,   http = require('http')
 ,   optimist = require('optimist')
+,   async = require('async')
+,   fs = require('fs')
 ,   argv = optimist
           .default('p', 3000)
           .alias('p', 'port')
@@ -15,6 +17,8 @@ var canned = require('../canned')
           .describe('h', 'show the help')
           .usage('Usage: $0 [dir]')
           .argv
+
+var EXTENSIONS_DIR = __dirname + '/../extensions'
 
 if (argv.h) {
   optimist.showHelp()
@@ -39,5 +43,48 @@ if (argv.q) {
 }
 
 var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers})
-http.createServer(can).listen(port)
 
+/**
+ * We have to use extensions before main app
+ * Becouse this will enable us to end processing
+ */
+var extensions
+if(typeof argv.extensions === 'string'){
+  extensions  = argv.extensions.split(',')
+}else{
+  extensions = []
+}
+
+async.map(
+  extensions,
+  function(extension, cb){
+    fs.stat(EXTENSIONS_DIR + '/' + extension, function(err, stat){
+      if(err || !stat.isDirectory())
+        return cb(null)
+
+      extension = require(EXTENSIONS_DIR + '/' + extension + '/main.js')
+
+      var f = new extension({
+        argv: argv,
+        dir: dir
+      })
+
+      cb(null, f);
+    })
+  },
+  function(err, extensions){
+    extensions.filter(function(extension){
+      return (typeof extension === 'function')
+    })
+    extensions.push(can)
+    http.createServer(function(req, res){
+      async.eachSeries(
+        extensions,
+        function(extension, cb){
+          extension(req,res,cb)
+        },
+        function(err, res){}
+      )
+    }).listen(port)
+  }
+)
