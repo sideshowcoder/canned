@@ -1,0 +1,9 @@
+//! header: {"authorization": "abc"}
+{
+    "response": "response for abc"
+}
+
+//! header: {"authorization": "123"}
+{
+    "response": "response for 123"
+}

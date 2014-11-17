@@ -4,6 +4,7 @@ var url = require('url')
 var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
+var qs = require('querystring')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -66,10 +67,58 @@ function getContentType(mimetype){
   return Response.content_types[mimetype]
 }
 
-Canned.prototype._extractOptions = function (data) {
+// replace any body comments in format //! [string]
+function stripBodyComments(data) {
+  return data && data.replace(/\/\/\! [\w]*: ([\w {}":,@./]*)/, '').trim()
+}
+
+function getSelectedResponse(responses, content, headers) {
+  var selectedResponse = null
+
+  // find request matches and assign to chosenResponse
+  responses.forEach(function(response) {
+    var regex = new RegExp(/\/\/\! [A-z]*: ([\w {}":,@.]*)/g)
+    var request = JSON.parse(regex.exec(response)[1])
+    var variation = content || headers
+
+    for(var entry in request) {
+      if(request[entry] === variation[entry])  {
+        selectedResponse = stripBodyComments(response)
+        break
+      }
+    }
+  })
+
+  return selectedResponse
+}
+
+// return multiple response bodies as array
+Canned.prototype.getEachResponse = function(data) {
+  return data.match(/(\/\/\! [\w]*:[\w\s"{}:]*)((?!\/\/\!)[\w\s{}":@.,_<>\[\]/])*/g) || []
+}
+
+Canned.prototype.getVariableResponse = function(data, content, headers) {
+
+  // return sanatized data if no conditional body comments
+  if(!data.match(/\/\/\! [\w]*: {.*}/)) {
+    return JSON.stringify(stripBodyComments(data))
+  }
+
+  var responses = this.getEachResponse(data)
+  var selectedResponse = getSelectedResponse(responses, content, headers)
+
+  // return first entry if there is no request match
+  if(selectedResponse === null) {
+    return JSON.stringify(stripBodyComments(responses[0]))
+  }
+
+  return JSON.stringify(selectedResponse)
+}
+
+Canned.prototype._extractOptions = function (data, httpObj) {
   var lines = data.split('\n')
   var opts = {}
-  if (lines[0].indexOf('//!') !== -1) {
+  if (lines[0].indexOf('//! status') !== -1) {
     try {
       var content = lines[0].replace('//!', '')
       content = content.split(',').map(function (s) {
@@ -90,13 +139,16 @@ Canned.prototype._extractOptions = function (data) {
   } else {
     defaultStatusCode = 200
   }
+
   opts.statusCode = opts.statusCode || defaultStatusCode
-  opts.data = lines.join('\n')
+
+  opts.data = JSON.parse(this.getVariableResponse(data, httpObj.content, httpObj.headers));
+
   return opts
 }
 
 Canned.prototype.sanatizeContent = function (data, fileObject) {
-  var sanatized
+  var sanatized;
 
   if (data.length === 0) {
     return data
@@ -130,10 +182,11 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         response = new Response(getContentType('html'), '', 404, httpObj.res, that.response_opts)
         cb('Not found', response)
       } else {
-        var _data = that._extractOptions(data)
+        var _data = that._extractOptions(data, httpObj)
         data = _data.data
         var statusCode = _data.statusCode
         var content = that.sanatizeContent(data, fileObject)
+
         if (content !== false) {
           response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts)
           cb(null, response)
@@ -190,11 +243,13 @@ Canned.prototype.respondWithAny = function (httpObj, files) {
   })
 }
 
-Canned.prototype.responder = function (req, res) {
+Canned.prototype.responder = function(body, req, res) {
+  var httpObj = {}
   var that = this
   var parsedurl = url.parse(req.url)
 
-  var httpObj = {}
+  httpObj.headers   = req.headers
+  httpObj.content   = body
   httpObj.pathname  = parsedurl.pathname.split('/')
   httpObj.dname     = httpObj.pathname.pop()
   httpObj.fname     = '_' + httpObj.dname
@@ -233,10 +288,27 @@ Canned.prototype.responder = function (req, res) {
   })
 }
 
+Canned.prototype.responseFilter = function (req, res) {
+  var that = this
+  var body = ''
+
+  // assemble response body if POST/PUT
+  if(req.method === 'PUT' || req.method === 'POST') {
+    req.on('data', function (data) {
+      body += data
+    })
+    req.on('end', function () {
+      that.responder(qs.parse(body), req, res)
+    })
+  } else {
+    that.responder(body, req, res)
+  }
+}
+
 var canned = function (dir, options) {
   if (!options) options = {}
   var c = new Canned(dir, options)
-  return c.responder.bind(c)
+  return c.responseFilter.bind(c)
 }
 
 module.exports = canned

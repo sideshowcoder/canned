@@ -275,4 +275,159 @@ describe('canned', function () {
       can2(req, res)
     })
   })
+
+  describe('variable GET responses', function () {
+    it('should return the first JSON response body if no header match', function (done) {
+      req.headers = {}
+      req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response":"response for abc"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first text response body if no header match', function (done) {
+      req.headers = {}
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('response for abc')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first JSON response body on header match', function (done) {
+      req.headers = {
+        "authorization": 'abc'
+      }
+      req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response":"response for abc"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first text response body on header match', function (done) {
+      req.headers = {
+        "authorization": 'abc'
+      }
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('response for abc')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response body on header match', function (done) {
+      req.headers = {
+        "authorization": '123'
+      }
+      req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response":"response for 123"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response body on header match', function (done) {
+      req.headers = {
+        "authorization": '123'
+      }
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('response for 123')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should be able to return html', function (done) {
+      req.headers = {
+        "authorization": 'html'
+      }
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('<h1>response for html</h1>')
+        done()
+      }
+      can(req, res)
+    })
+  })
+
+  describe("variable POST responses", function() {
+    var req, data
+    beforeEach(function() {
+      req = {
+        method: 'POST',
+        on: function(event, fn) {
+          fn(data)
+        }
+      }
+    })
+
+    it('should return the first response body if no payload match', function (done) {
+      data = 'email=nobody@example.com'
+      req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for one@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first response body if no payload match', function (done) {
+      data = 'email=nobody@example.com'
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('response for one@example.com')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first response body on payload match', function (done) {
+      data = 'email=one@example.com'
+      req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for one@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first response body on payload match', function (done) {
+      data = 'email=one@example.com'
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('response for one@example.com')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response body on payload match', function (done) {
+      data = 'email=two@example.com'
+      req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for two@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response body on payload match', function (done) {
+      data = 'email=two@example.com'
+      req.url = '/multiple_responses_text'
+      res.end = function (content) {
+        expect(content).toEqual('response for two@example.com')
+        done()
+      }
+      can(req, res)
+    })
+  })
+
 })
