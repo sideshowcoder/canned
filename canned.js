@@ -148,7 +148,7 @@ Canned.prototype._extractOptions = function (data, httpObj) {
 }
 
 Canned.prototype.sanatizeContent = function (data, fileObject) {
-  var sanatized;
+  var sanatized
 
   if (data.length === 0) {
     return data

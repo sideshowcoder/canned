@@ -96,9 +96,11 @@ Multiple headers need to be written on one single line and comma-separated, like
 
 Variable responses
 ------------------
-You can get a different response by using specifying request data in variant comments. If the request data matches the comment data the matching response is returned. If there is no match the first response is returned
+You can get a different response by using specifying request data in variant
+comments. If the request data matches the comment data the matching response is
+returned. If there is no match the first response is returned
 
-*Note:* comments must be on a single line
+*Note: comments must be on a single line*
 
 Custom headers:
 
@@ -112,7 +114,8 @@ Custom headers:
         "response": "response for 123"
     }
 
-If you need different responses based on request body then you can specify the request you want matched via body comments:
+If you need different responses based on request body then you can specify the
+request you want matched via body comments:
 
     //! body: {"email": "one@example.com"}
     {
