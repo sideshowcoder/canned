@@ -356,6 +356,31 @@ describe('canned', function () {
       }
       can(req, res)
     })
+
+    it('should return correct status code and the first JSON response body on header match', function (done) {
+      req.headers = {
+        "authorization": 'abc'
+      }
+      req.url = '/201_multiple_responses'
+      res.end = function (content) {
+        expect(res.statusCode).toBe(201)
+        expect(content).toEqual(JSON.stringify({"response":"response for abc"}))
+        done()
+      }
+      can(req, res)
+    })
+    it('should return correct status code and the second response body on header match', function (done) {
+      req.headers = {
+        "authorization": '123'
+      }
+      req.url = '/201_multiple_responses'
+      res.end = function (content) {
+        expect(res.statusCode).toBe(201)
+        expect(content).toEqual(JSON.stringify({"response":"response for 123"}))
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe("variable POST responses", function() {

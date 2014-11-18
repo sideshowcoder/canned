@@ -127,6 +127,18 @@ request you want matched via body comments:
         "response": "response for two@example.com"
     }
 
+To use in conjunction with response headers, list the response header first.
+
+	//! statusCode: 201
+	//! header: {"authorization": "abc"}
+	{
+	    "response": "response for abc"
+	}
+	//! header: {"authorization": "123"}
+	{
+	    "response": "response for 123"
+	}
+
 How about some docs inside for the responses?
 ---------------------------------------------
 Most content types support comments nativly, like html or javascript. Sadly the
@@ -230,6 +242,7 @@ Contributors
 * [mulderp](https://github.com/mulderp)
 * [creynders](https://github.com/creynders)
 * [jkjustjoshing](https://github.com/jkjustjoshing)
+* [hungrydavid](https://github.com/hungrydavid)
 
 License
 -------
