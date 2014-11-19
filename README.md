@@ -94,6 +94,51 @@ Multiple headers need to be written on one single line and comma-separated, like
 
     //! statusCode:201, contentType: "application/vnd.custom+xml"
 
+Variable responses
+------------------
+You can get a different response by using specifying request data in variant
+comments. If the request data matches the comment data the matching response is
+returned. If there is no match the first response is returned
+
+*Note: comments must be on a single line*
+
+Custom headers:
+
+    //! header: {"authorization": "abc"}
+    {
+        "response": "response for abc"
+    }
+
+    //! header: {"authorization": "123"}
+    {
+        "response": "response for 123"
+    }
+
+If you need different responses based on request body then you can specify the
+request you want matched via body comments:
+
+    //! body: {"email": "one@example.com"}
+    {
+        "response": "response for one@example.com"
+    }
+
+    //! body: {"email": "two@example.com"}
+    {
+        "response": "response for two@example.com"
+    }
+
+To use in conjunction with response headers, list the response header first.
+
+	//! statusCode: 201
+	//! header: {"authorization": "abc"}
+	{
+	    "response": "response for abc"
+	}
+	//! header: {"authorization": "123"}
+	{
+	    "response": "response for 123"
+	}
+
 How about some docs inside for the responses?
 ---------------------------------------------
 Most content types support comments nativly, like html or javascript. Sadly the
@@ -147,7 +192,7 @@ these can be added like this (thanks to runemadsen)
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
-Already using grunt? [Great there is a plugin for that,](https://github.com/jkjustjoshing/grunt-canned) 
+Already using grunt? [Great there is a plugin for that,](https://github.com/jkjustjoshing/grunt-canned)
 thanks to jkjustjoshing.
 
 
@@ -197,6 +242,7 @@ Contributors
 * [mulderp](https://github.com/mulderp)
 * [creynders](https://github.com/creynders)
 * [jkjustjoshing](https://github.com/jkjustjoshing)
+* [hungrydavid](https://github.com/hungrydavid)
 
 License
 -------
