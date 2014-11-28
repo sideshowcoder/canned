@@ -127,6 +127,22 @@ request you want matched via body comments:
         "response": "response for two@example.com"
     }
 
+If you need different responses based on request parameters then you can specify
+them via parameters comments:
+
+    //! params: {"foo": "bar"}
+    {
+        "response": "response for bar"
+    }
+
+    //! params: {"foo": "baz"}
+    {
+        "response": "response for baz"
+    }
+
+this would match `http://my.local.server/my_get_request_path?foo=bar` or
+`http://my.local.server/my_get_request_path?foo=baz` respectively.
+
 To use in conjunction with response headers, list the response header first.
 
 	//! statusCode: 201
@@ -134,6 +150,7 @@ To use in conjunction with response headers, list the response header first.
 	{
 	    "response": "response for abc"
 	}
+
 	//! header: {"authorization": "123"}
 	{
 	    "response": "response for 123"
@@ -228,6 +245,11 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+### 0.3
+* support for multiple responses per file (@hungrydavid)
+* support for GET responses without the need for special characters in the
+  filename (@sideshowcoder based on the work by @hungrydavid)
+
 ### 0.2.3
 * added support for empty response with 204 for no content (@jkjustjoshing)
 
