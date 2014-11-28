@@ -1,5 +1,5 @@
 "use strict";
-
+var querystring = require("querystring")
 var canned = require('../canned')
 
 describe('canned', function () {
@@ -377,6 +377,31 @@ describe('canned', function () {
       res.end = function (content) {
         expect(res.statusCode).toBe(201)
         expect(content).toEqual(JSON.stringify({"response":"response for 123"}))
+        done()
+      }
+      can(req, res)
+    })
+  })
+
+  describe("variable GET responses based on params", function() {
+    var req, data
+    beforeEach(function() {
+      req = { method: 'GET' }
+    })
+
+    it("should select the right response based on the GET request data", function (done) {
+      req.url = "/multiple_get_responses?" + querystring.stringify({ foo: "bar" })
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for bar"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    xit("should select the first response with no query string", function (done) {
+      req.url = "/multiple_get_responses"
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for baz"}))
         done()
       }
       can(req, res)

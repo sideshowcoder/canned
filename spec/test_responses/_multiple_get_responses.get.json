@@ -1,0 +1,9 @@
+//! params: {"foo": "baz"}
+{
+    "response": "response for baz"
+}
+
+//! params: {"foo": "bar"}
+{
+    "response": "response for bar"
+}

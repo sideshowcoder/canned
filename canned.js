@@ -4,7 +4,8 @@ var url = require('url')
 var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
-var qs = require('querystring')
+var querystring = require('querystring')
+var url = require('url')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -292,16 +293,27 @@ Canned.prototype.responseFilter = function (req, res) {
   var that = this
   var body = ''
 
-  // assemble response body if POST/PUT
-  if(req.method === 'PUT' || req.method === 'POST') {
+  // assemble response body if GET/POST/PUT
+  switch(req.method) {
+  case 'PUT':
+  case 'POST':
     req.on('data', function (data) {
       body += data
     })
     req.on('end', function () {
-      that.responder(qs.parse(body), req, res)
+      that.responder(querystring.parse(body), req, res)
     })
-  } else {
+    break;
+  case 'GET':
+    var query = url.parse(req.url).query
+    if (query && query.length > 0) {
+      body = querystring.parse(query)
+    }
     that.responder(body, req, res)
+    break;
+  default:
+    that.responder(body, req, res)
+    break;
   }
 }
 
