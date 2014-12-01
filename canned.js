@@ -74,7 +74,9 @@ function stripBodyComments(data) {
 }
 
 function getSelectedResponse(responses, content, headers) {
-  var selectedResponse = null
+  var selectedResponse = responses[0]
+
+  if(!(content || headers)) return selectedResponse // noting to select on
 
   // find request matches and assign to chosenResponse
   responses.forEach(function(response) {
@@ -82,12 +84,13 @@ function getSelectedResponse(responses, content, headers) {
     var request = JSON.parse(regex.exec(response)[1])
     var variation = content || headers
 
-    for(var entry in request) {
-      if(request[entry] === variation[entry])  {
-        selectedResponse = stripBodyComments(response)
-        break
+    if(typeof request !== 'object') return; // nothing to match on
+
+    Object.keys(request).forEach(function(key) {
+      if(request[key] === variation[key])  {
+        selectedResponse = response
       }
-    }
+    })
   })
 
   return selectedResponse
@@ -106,12 +109,7 @@ Canned.prototype.getVariableResponse = function(data, content, headers) {
   }
 
   var responses = this.getEachResponse(data)
-  var selectedResponse = getSelectedResponse(responses, content, headers)
-
-  // return first entry if there is no request match
-  if(selectedResponse === null) {
-    return JSON.stringify(stripBodyComments(responses[0]))
-  }
+  var selectedResponse = stripBodyComments(getSelectedResponse(responses, content, headers))
 
   return JSON.stringify(selectedResponse)
 }

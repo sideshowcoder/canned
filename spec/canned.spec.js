@@ -398,7 +398,7 @@ describe('canned', function () {
       can(req, res)
     })
 
-    xit("should select the first response with no query string", function (done) {
+    it("should select the first response with no query string", function (done) {
       req.url = "/multiple_get_responses"
       res.end = function (content) {
         expect(content).toEqual(JSON.stringify({"response": "response for baz"}))
