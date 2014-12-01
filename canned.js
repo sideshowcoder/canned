@@ -4,7 +4,8 @@ var url = require('url')
 var fs = require('fs')
 var util = require('util')
 var Response = require('./lib/response')
-var qs = require('querystring')
+var querystring = require('querystring')
+var url = require('url')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -73,7 +74,9 @@ function stripBodyComments(data) {
 }
 
 function getSelectedResponse(responses, content, headers) {
-  var selectedResponse = null
+  var selectedResponse = responses[0]
+
+  if(!(content || headers)) return selectedResponse // noting to select on
 
   // find request matches and assign to chosenResponse
   responses.forEach(function(response) {
@@ -81,12 +84,13 @@ function getSelectedResponse(responses, content, headers) {
     var request = JSON.parse(regex.exec(response)[1])
     var variation = content || headers
 
-    for(var entry in request) {
-      if(request[entry] === variation[entry])  {
-        selectedResponse = stripBodyComments(response)
-        break
+    if(typeof request !== 'object') return; // nothing to match on
+
+    Object.keys(request).forEach(function(key) {
+      if(request[key] === variation[key])  {
+        selectedResponse = response
       }
-    }
+    })
   })
 
   return selectedResponse
@@ -105,12 +109,7 @@ Canned.prototype.getVariableResponse = function(data, content, headers) {
   }
 
   var responses = this.getEachResponse(data)
-  var selectedResponse = getSelectedResponse(responses, content, headers)
-
-  // return first entry if there is no request match
-  if(selectedResponse === null) {
-    return JSON.stringify(stripBodyComments(responses[0]))
-  }
+  var selectedResponse = stripBodyComments(getSelectedResponse(responses, content, headers))
 
   return JSON.stringify(selectedResponse)
 }
@@ -292,16 +291,27 @@ Canned.prototype.responseFilter = function (req, res) {
   var that = this
   var body = ''
 
-  // assemble response body if POST/PUT
-  if(req.method === 'PUT' || req.method === 'POST') {
+  // assemble response body if GET/POST/PUT
+  switch(req.method) {
+  case 'PUT':
+  case 'POST':
     req.on('data', function (data) {
       body += data
     })
     req.on('end', function () {
-      that.responder(qs.parse(body), req, res)
+      that.responder(querystring.parse(body), req, res)
     })
-  } else {
+    break
+  case 'GET':
+    var query = url.parse(req.url).query
+    if (query && query.length > 0) {
+      body = querystring.parse(query)
+    }
     that.responder(body, req, res)
+    break
+  default:
+    that.responder(body, req, res)
+    break
   }
 }
 

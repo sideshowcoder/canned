@@ -53,7 +53,14 @@ mapping with nested endpoints.
     /comments/any.get.json          | GET /comments/:id
     /comments/_search.get.json      | GET /comments/search
 
-You can even add query parameters to your filenames to return different responses on the same route. If the all query params in a filename match the incoming request, this file will be returned. It will fall back to returning the file with no query params if it exists.
+You can even add query parameters to your filenames to return different
+responses on the same route. If the all query params in a filename match the
+incoming request, this file will be returned. It will fall back to returning the
+file with no query params if it exists.
+
+*Warning this will be deprecated in the future since canned now supports
+multiple response based on the request body or GET URL parameters in one file.
+This is the prefered way since filed with ? in the name do no work on Windows*
 
     file                            | resquest
     /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
@@ -127,6 +134,22 @@ request you want matched via body comments:
         "response": "response for two@example.com"
     }
 
+If you need different responses based on request parameters then you can specify
+them via parameters comments:
+
+    //! params: {"foo": "bar"}
+    {
+        "response": "response for bar"
+    }
+
+    //! params: {"foo": "baz"}
+    {
+        "response": "response for baz"
+    }
+
+this would match `http://my.local.server/my_get_request_path?foo=bar` or
+`http://my.local.server/my_get_request_path?foo=baz` respectively.
+
 To use in conjunction with response headers, list the response header first.
 
 	//! statusCode: 201
@@ -134,6 +157,7 @@ To use in conjunction with response headers, list the response header first.
 	{
 	    "response": "response for abc"
 	}
+
 	//! header: {"authorization": "123"}
 	{
 	    "response": "response for 123"
@@ -228,6 +252,11 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+### 0.3
+* support for multiple responses per file (@hungrydavid)
+* support for GET responses without the need for special characters in the
+  filename (@sideshowcoder based on the work by @hungrydavid)
+
 ### 0.2.3
 * added support for empty response with 204 for no content (@jkjustjoshing)
 
