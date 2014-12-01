@@ -303,17 +303,17 @@ Canned.prototype.responseFilter = function (req, res) {
     req.on('end', function () {
       that.responder(querystring.parse(body), req, res)
     })
-    break;
+    break
   case 'GET':
     var query = url.parse(req.url).query
     if (query && query.length > 0) {
       body = querystring.parse(query)
     }
     that.responder(body, req, res)
-    break;
+    break
   default:
     that.responder(body, req, res)
-    break;
+    break
   }
 }
 
