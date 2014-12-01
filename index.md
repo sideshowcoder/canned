@@ -56,7 +56,14 @@ mapping with nested endpoints.
     /comments/any.get.json          | GET /comments/:id
     /comments/_search.get.json      | GET /comments/search
 
-You can even add query parameters to your filenames to return different responses on the same route. If the all query params in a filename match the incoming request, this file will be returned. It will fall back to returning the file with no query params if it exists.
+You can even add query parameters to your filenames to return different
+responses on the same route. If the all query params in a filename match the
+incoming request, this file will be returned. It will fall back to returning the
+file with no query params if it exists.
+
+*Warning this will be deprecated in the future since canned now supports
+multiple response based on the request body or GET URL parameters in one file.
+This is the prefered way since filed with ? in the name do no work on Windows*
 
     file                            | resquest
     /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
@@ -83,6 +90,81 @@ file header like so
     </html>
 
 The header will be stripped before sending and the statusCode will be set.
+
+You can also override the default content types by adding a custom content type to the file header:
+
+    //! contentType: "application/vnd.custom+xml"
+    <xml>
+        <created>1</created>
+    </xml>
+
+This will be returned with a `Content-type: application/vnd.custom+xml` header.
+
+Multiple headers need to be written on one single line and comma-separated, like so:
+
+    //! statusCode:201, contentType: "application/vnd.custom+xml"
+
+Variable responses
+------------------
+You can get a different response by using specifying request data in variant
+comments. If the request data matches the comment data the matching response is
+returned. If there is no match the first response is returned
+
+*Note: comments must be on a single line*
+
+Custom headers:
+
+    //! header: {"authorization": "abc"}
+    {
+        "response": "response for abc"
+    }
+
+    //! header: {"authorization": "123"}
+    {
+        "response": "response for 123"
+    }
+
+If you need different responses based on request body then you can specify the
+request you want matched via body comments:
+
+    //! body: {"email": "one@example.com"}
+    {
+        "response": "response for one@example.com"
+    }
+
+    //! body: {"email": "two@example.com"}
+    {
+        "response": "response for two@example.com"
+    }
+
+If you need different responses based on request parameters then you can specify
+them via parameters comments:
+
+    //! params: {"foo": "bar"}
+    {
+        "response": "response for bar"
+    }
+
+    //! params: {"foo": "baz"}
+    {
+        "response": "response for baz"
+    }
+
+this would match `http://my.local.server/my_get_request_path?foo=bar` or
+`http://my.local.server/my_get_request_path?foo=baz` respectively.
+
+To use in conjunction with response headers, list the response header first.
+
+	//! statusCode: 201
+	//! header: {"authorization": "abc"}
+	{
+	    "response": "response for abc"
+	}
+
+	//! header: {"authorization": "123"}
+	{
+	    "response": "response for 123"
+	}
 
 How about some docs inside for the responses?
 ---------------------------------------------
@@ -137,6 +219,9 @@ these can be added like this (thanks to runemadsen)
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
+Already using grunt? [Great there is a plugin for that,](https://github.com/jkjustjoshing/grunt-canned)
+thanks to jkjustjoshing.
+
 
 It does not work :(
 -------------------
@@ -168,12 +253,28 @@ How to Contribute
 I try to review the pull requests as quickly as possible, should it take to long
 feel free to [bug me on twitter](https://twitter.com/ischi)
 
+Release History
+---------------
+### 0.3
+* support for multiple responses per file (@hungrydavid)
+* support for GET responses without the need for special characters in the
+  filename (@sideshowcoder based on the work by @hungrydavid)
+
+### 0.2.3
+* added support for empty response with 204 for no content (@jkjustjoshing)
+
+### everything before
+* sorry haven't kept a version history, yet. Will now!
+
 Contributors
 ------------
 * [sideshowcoder](https://github.com/sideshowcoder)
 * [leifg](https://github.com/leifg)
 * [runemadsen](https://github.com/runemadsen)
 * [mulderp](https://github.com/mulderp)
+* [creynders](https://github.com/creynders)
+* [jkjustjoshing](https://github.com/jkjustjoshing)
+* [hungrydavid](https://github.com/hungrydavid)
 
 License
 -------
