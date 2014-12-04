@@ -300,7 +300,7 @@ Canned.prototype.responseFilter = function (req, res) {
     })
     req.on('end', function () {
       var responderBody = querystring.parse(body);
-      if (req.headers['content-type'] === 'application/json') {
+      if (req.headers && req.headers['content-type'] === 'application/json') {
         try {
           var responderBody = JSON.parse(body)
         } catch (e) {
