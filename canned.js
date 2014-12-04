@@ -299,7 +299,15 @@ Canned.prototype.responseFilter = function (req, res) {
       body += data
     })
     req.on('end', function () {
-      that.responder(querystring.parse(body), req, res)
+      var responderBody = querystring.parse(body);
+      if (req.headers['content-type'] === 'application/json') {
+        try {
+          var responderBody = JSON.parse(body)
+        } catch (e) {
+          that._log('Invalid json content')
+        }
+      }
+      that.responder(responderBody, req, res)
     })
     break
   case 'GET':
@@ -307,7 +315,7 @@ Canned.prototype.responseFilter = function (req, res) {
     if (query && query.length > 0) {
       body = querystring.parse(query)
     }
-    that.responder(body, req, res)
+    v
     break
   default:
     that.responder(body, req, res)
