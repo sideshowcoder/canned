@@ -315,7 +315,7 @@ Canned.prototype.responseFilter = function (req, res) {
     if (query && query.length > 0) {
       body = querystring.parse(query)
     }
-    v
+    that.responder(body, req, res)
     break
   default:
     that.responder(body, req, res)
