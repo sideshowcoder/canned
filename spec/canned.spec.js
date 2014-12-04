@@ -413,6 +413,7 @@ describe('canned', function () {
     beforeEach(function() {
       req = {
         method: 'POST',
+        headers: {},
         on: function(event, fn) {
           fn(data)
         }
@@ -449,6 +450,28 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('should return the first response JSON body on payload match', function (done) {
+      data = '{"email":"one@example.com"}'
+      req.url = '/multiple_responses'
+      req.headers['content-type'] = 'application/json'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for one@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the first response JSON body on payload match (because JSON body is invalid)', function (done) {
+      data = 'bad json data'
+      req.url = '/multiple_responses'
+      req.headers['content-type'] = 'application/json'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for one@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
     it('should return the first response body on payload match', function (done) {
       data = 'email=one@example.com'
       req.url = '/multiple_responses_text'
@@ -462,6 +485,17 @@ describe('canned', function () {
     it('should return the second response body on payload match', function (done) {
       data = 'email=two@example.com'
       req.url = '/multiple_responses'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for two@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response JSON body on payload match', function (done) {
+      data = '{"email":"two@example.com"}'
+      req.url = '/multiple_responses'
+      req.headers['content-type'] = 'application/json'
       res.end = function (content) {
         expect(content).toEqual(JSON.stringify({"response": "response for two@example.com"}))
         done()
