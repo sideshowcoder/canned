@@ -2,6 +2,7 @@
 
 var url = require('url')
 var fs = require('fs')
+var path = require('path')
 var util = require('util')
 var Response = require('./lib/response')
 var querystring = require('querystring')
@@ -325,7 +326,8 @@ Canned.prototype.responseFilter = function (req, res) {
 
 var canned = function (dir, options) {
   if (!options) options = {}
-  var c = new Canned(dir, options)
+  var normalizedPath = path.relative(__dirname, path.resolve(dir))
+  var c = new Canned(normalizedPath, options)
   return c.responseFilter.bind(c)
 }
 

@@ -1,6 +1,7 @@
 "use strict";
 var querystring = require("querystring")
 var canned = require('../canned')
+var path = require('path')
 
 describe('canned', function () {
 
@@ -9,6 +10,22 @@ describe('canned', function () {
     can = canned('./spec/test_responses')
     req = { method: 'GET' }
     res = { setHeader: function () {}, end: function () {} }
+  })
+
+  describe('paths', function () {
+    beforeEach(function () {
+      var fullpath = path.resolve('./spec/test_responses')
+      can = canned(fullpath)
+    })
+
+    it('resolve requests when passed an absolute path', function (done) {
+      req.url = '/a'
+      res.end = function () {
+        expect(res.statusCode).toBe(200)
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('error messages', function () {
