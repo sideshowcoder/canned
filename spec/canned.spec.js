@@ -425,6 +425,18 @@ describe('canned', function () {
     })
   })
 
+  describe("Issues", function () {
+    it("#49", function (done) {
+      req.url = "/regexmatchbug?u=root&p=root&q=select+mean(value)+from+%22Coraid.1Controller.ZFS.VOps-3008.gauge.wlat%22+where+time+%3E++now()+-+86400000000u+and+time+%3C+now()+-+0u+group+by+time(240000000u)+fill(null)"
+      res.end = function (content) {
+        var response = JSON.parse(content)
+        expect(response.itworks).toBeTruthy()
+        done()
+      }
+      can(req, res)
+    })
+  })
+
   describe("variable POST responses", function() {
     var req, data
     beforeEach(function() {
