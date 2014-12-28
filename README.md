@@ -252,6 +252,12 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+
+### 0.3.1
+* fixes for variable responses with JSON body (@bibounde)
+* fixes for relative paths on start (@sideshowcoder)
+* complex get parameters causing regexp match on file to fail (@sideshowcoder)
+
 ### 0.3
 * support for multiple responses per file (@hungrydavid)
 * support for GET responses without the need for special characters in the
@@ -272,6 +278,7 @@ Contributors
 * [creynders](https://github.com/creynders)
 * [jkjustjoshing](https://github.com/jkjustjoshing)
 * [hungrydavid](https://github.com/hungrydavid)
+* [bibounde](https://github.com/bibounde)
 
 License
 -------
