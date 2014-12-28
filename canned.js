@@ -27,9 +27,18 @@ function matchFileWithQuery(matchString) {
   return matchString.match(/(.*)\?(.*)\.(.*)\.(.*)/)
 }
 
+function escapeRegexSpecialChars(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
+
 function matchFileWithExactQuery(matchString, fname, queryString, method) {
+  var escapedQueryString = escapeRegexSpecialChars(queryString)
   return matchString.match(
-    new RegExp(fname + "(?=.*" + queryString.split("&").join(")(?=.*") + ").+" + method)
+    new RegExp(fname +
+               "(?=.*" +
+               escapedQueryString.split("&").join(")(?=.*") +
+               ").+" +
+               method)
   )
 }
 
@@ -303,7 +312,7 @@ Canned.prototype.responseFilter = function (req, res) {
       var responderBody = querystring.parse(body);
       if (req.headers && req.headers['content-type'] === 'application/json') {
         try {
-          var responderBody = JSON.parse(body)
+          responderBody = JSON.parse(body)
         } catch (e) {
           that._log('Invalid json content')
         }
