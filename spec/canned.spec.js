@@ -541,6 +541,28 @@ describe('canned', function () {
       }
       can(req, res)
     })
+
+    it('should return the first response xml on header match', function (done) {
+      data = ''
+      req.url = '/multiple_responses_xml'
+      req.headers['action'] = 'foo'
+      res.end = function (content) {
+        expect(content).toEqual('<SOAP:Envelope><SOAP:Body><Foo Time="2015-01-22T08:30:00.000+05:30"/></SOAP:Body></SOAP:Envelope>')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response xml on header match', function (done) {
+      data = ''
+      req.url = '/multiple_responses_xml'
+      req.headers['action'] = 'bar'
+      res.end = function (content) {
+        expect(content).toEqual('<SOAP:Envelope><SOAP:Body><Bar Time="2015-01-22T08:30:00.000+05:30"/></SOAP:Body></SOAP:Envelope>')
+        done()
+      }
+      can(req, res)
+    })
   })
 
 })
