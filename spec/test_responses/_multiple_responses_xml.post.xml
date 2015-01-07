@@ -1,0 +1,5 @@
+//! header: {"action": "foo"}
+<SOAP:Envelope><SOAP:Body><Foo Time="2015-01-22T08:30:00.000+05:30"/></SOAP:Body></SOAP:Envelope>
+
+//! header: {"action": "bar"}
+<SOAP:Envelope><SOAP:Body><Bar Time="2015-01-22T08:30:00.000+05:30"/></SOAP:Body></SOAP:Envelope>

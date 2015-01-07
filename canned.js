@@ -27,6 +27,19 @@ function matchFileWithQuery(matchString) {
   return matchString.match(/(.*)\?(.*)\.(.*)\.(.*)/)
 }
 
+function extend(target) {
+    var sources = [].slice.call(arguments, 1);
+    sources.forEach(function (source) {
+        for (var prop in source) {
+            if(source.hasOwnProperty(prop)){
+                target[prop] = source[prop];
+            }
+        }
+    });
+    return target;
+}
+
+
 function escapeRegexSpecialChars(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 }
@@ -92,7 +105,7 @@ function getSelectedResponse(responses, content, headers) {
   responses.forEach(function(response) {
     var regex = new RegExp(/\/\/\! [A-z]*: ([\w {}":,@.]*)/g)
     var request = JSON.parse(regex.exec(response)[1])
-    var variation = content || headers
+    var variation = extend({}, content, headers)
 
     if(typeof request !== 'object') return; // nothing to match on
 
@@ -108,7 +121,7 @@ function getSelectedResponse(responses, content, headers) {
 
 // return multiple response bodies as array
 Canned.prototype.getEachResponse = function(data) {
-  return data.match(/(\/\/\! [\w]*:[\w\s"{}:]*)((?!\/\/\!)[\w\s{}":@.,_<>\[\]/])*/g) || []
+  return data.match(/(\/\/\! [\w]*:[\w\s"{}:]*)((?!\/\/\!)[\w\s{}\=\-\+|":@.,_<>\[\]/])*/g) || []
 }
 
 Canned.prototype.getVariableResponse = function(data, content, headers) {
