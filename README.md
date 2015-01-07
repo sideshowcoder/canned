@@ -253,6 +253,9 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 Release History
 ---------------
 
+### next
+* support for XML headers to support SOAP (@vikalp)
+
 ### 0.3.1
 * fixes for variable responses with JSON body (@bibounde)
 * fixes for relative paths on start (@sideshowcoder)
@@ -279,6 +282,7 @@ Contributors
 * [jkjustjoshing](https://github.com/jkjustjoshing)
 * [hungrydavid](https://github.com/hungrydavid)
 * [bibounde](https://github.com/bibounde)
+* [vikalp](https://github.com/vikalp)
 
 License
 -------
