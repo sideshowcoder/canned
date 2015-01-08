@@ -7,6 +7,7 @@ var util = require('util')
 var Response = require('./lib/response')
 var querystring = require('querystring')
 var url = require('url')
+var cannedUtils = require('./lib/utils')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -27,25 +28,8 @@ function matchFileWithQuery(matchString) {
   return matchString.match(/(.*)\?(.*)\.(.*)\.(.*)/)
 }
 
-function extend(target) {
-  var sources = [].slice.call(arguments, 1);
-  sources.forEach(function (source) {
-    for (var prop in source) {
-      if(source.hasOwnProperty(prop)){
-        target[prop] = source[prop];
-      }
-    }
-  });
-  return target;
-}
-
-
-function escapeRegexSpecialChars(text) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-}
-
 function matchFileWithExactQuery(matchString, fname, queryString, method) {
-  var escapedQueryString = escapeRegexSpecialChars(queryString)
+  var escapedQueryString = cannedUtils.escapeRegexSpecialChars(queryString)
   return matchString.match(
     new RegExp(fname +
                "(?=.*" +
@@ -53,10 +37,6 @@ function matchFileWithExactQuery(matchString, fname, queryString, method) {
                ").+" +
                method)
   )
-}
-
-function removeJSLikeComments(text) {
-  return text.replace(/\/\*.+?\*\/|\/\/\s.*(?=[\n\r])/g, '')
 }
 
 function getFileFromRequest(httpObj, files) {
@@ -105,7 +85,7 @@ function getSelectedResponse(responses, content, headers) {
   responses.forEach(function(response) {
     var regex = new RegExp(/\/\/\! [A-z]*: ([\w {}":,@.]*)/g)
     var request = JSON.parse(regex.exec(response)[1])
-    var variation = extend({}, content, headers)
+    var variation = cannedUtils.extend({}, content, headers)
 
     if(typeof request !== 'object') return; // nothing to match on
 
@@ -180,7 +160,7 @@ Canned.prototype.sanatizeContent = function (data, fileObject) {
   case 'json':
     // make sure we return valid JSON even so we support comments
     try {
-      sanatized = JSON.stringify(JSON.parse(removeJSLikeComments(data)))
+      sanatized = JSON.stringify(JSON.parse(cannedUtils.removeJSLikeComments(data)))
     } catch (err) {
       this._log("problem sanatizing content for " + fileObject.fname + " " + err)
       return false
