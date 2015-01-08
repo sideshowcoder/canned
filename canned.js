@@ -328,8 +328,8 @@ Canned.prototype.responseFilter = function (req, res) {
 
 var canned = function (dir, options) {
   if (!options) options = {}
-  var normalizedPath = path.relative(__dirname, path.resolve(dir))
-  var c = new Canned(normalizedPath, options)
+  dir = path.relative(process.cwd(), dir)
+  var c = new Canned(dir, options)
   return c.responseFilter.bind(c)
 }
 
