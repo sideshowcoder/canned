@@ -16,9 +16,9 @@
     "optimist": "~0.3.7"
   },
   "devDependencies": {
-    "node-dev": "~2.0.1",
-    "jasmine-node": "~1.10.2",
-    "jshint": "~2.3.0"
+    "jasmine-node": "^1.10.2",
+    "jshint": "~2.3.0",
+    "node-dev": "~2.0.1"
   },
   "engines": {
     "node": ">=0.10.3"

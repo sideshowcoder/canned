@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var canned = require('../canned')
+,   path = require('path')
 ,   http = require('http')
 ,   optimist = require('optimist')
 ,   argv = optimist
@@ -33,8 +34,7 @@ if (argv.q) {
   logger = null // be quiet
 } else {
   logger = process.stdout
-  cannedDir = dir
-  if (cannedDir.length === 0) cannedDir = './'
+  cannedDir = path.resolve(dir)
   process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
