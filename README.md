@@ -254,7 +254,10 @@ Release History
 ---------------
 
 ### next
+
+### 0.3.2
 * support for XML headers to support SOAP (@vikalp)
+* fix relative path again... (@sideshowcoder)
 
 ### 0.3.1
 * fixes for variable responses with JSON body (@bibounde)
