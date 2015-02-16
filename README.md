@@ -286,6 +286,7 @@ Contributors
 * [hungrydavid](https://github.com/hungrydavid)
 * [bibounde](https://github.com/bibounde)
 * [vikalp](https://github.com/vikalp)
+* [simonprickett](https://github.com/simonprickett)
 
 License
 -------
