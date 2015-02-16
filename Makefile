@@ -18,7 +18,7 @@ docs:
 	@git reset README.md
 	@rm README.md
 	@git add index.md
-	git commit -m "updated docs"
-	git push origin gh-pages
+	-git commit -m "updated docs"
+	-git push origin gh-pages
 	@git checkout ${CURRENT_BRANCH}
-	@git stash apply
+	-@git stash apply
