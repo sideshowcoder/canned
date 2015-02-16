@@ -63,7 +63,7 @@ file with no query params if it exists.
 
 *Warning this will be deprecated in the future since canned now supports
 multiple response based on the request body or GET URL parameters in one file.
-This is the prefered way since filed with ? in the name do no work on Windows*
+This is the prefered way since files with ? in the name do not work on Windows*
 
     file                            | resquest
     /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
@@ -106,7 +106,7 @@ Multiple headers need to be written on one single line and comma-separated, like
 
 Variable responses
 ------------------
-You can get a different response by using specifying request data in variant
+You can get a different response by specifying request data in variant
 comments. If the request data matches the comment data the matching response is
 returned. If there is no match the first response is returned
 
@@ -168,10 +168,10 @@ To use in conjunction with response headers, list the response header first.
 
 How about some docs inside for the responses?
 ---------------------------------------------
-Most content types support comments nativly, like html or javascript. Sadly the
-probaly most used type (JSON) does not :(. So canned actually extends the JSON
+Most content types support comments natively, like html or javascript. Sadly the
+probably most used type (JSON) does not :(. So canned actually extends the JSON
 syntax a little so it can include comments with _//_ or _/**/_. In case you use
-the json files directly on the backend side as test cases make sure you strip
+the JSON files directly on the backend side as test cases make sure you strip
 those out as well!
 
 
@@ -255,6 +255,18 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+
+### next
+
+### 0.3.2
+* support for XML headers to support SOAP (@vikalp)
+* fix relative path again... (@sideshowcoder)
+
+### 0.3.1
+* fixes for variable responses with JSON body (@bibounde)
+* fixes for relative paths on start (@sideshowcoder)
+* complex get parameters causing regexp match on file to fail (@sideshowcoder)
+
 ### 0.3
 * support for multiple responses per file (@hungrydavid)
 * support for GET responses without the need for special characters in the
@@ -275,6 +287,9 @@ Contributors
 * [creynders](https://github.com/creynders)
 * [jkjustjoshing](https://github.com/jkjustjoshing)
 * [hungrydavid](https://github.com/hungrydavid)
+* [bibounde](https://github.com/bibounde)
+* [vikalp](https://github.com/vikalp)
+* [simonprickett](https://github.com/simonprickett)
 
 License
 -------
