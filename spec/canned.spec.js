@@ -435,6 +435,14 @@ describe('canned', function () {
       }
       can(req, res)
     })
+    it("#58", function(done) {
+      req.url = "/multiple_get_responses?" + querystring.stringify({foo: "apostrophe"})
+      res.end = function(content) {
+        expect(content).toEqual(JSON.stringify({"response": "response with 'apostrophes'"}))
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe("variable POST responses", function() {
