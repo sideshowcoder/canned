@@ -1,5 +1,23 @@
+// this response is the default: 
+//! params: {"search": "default"}
 {
   "search":"result",
   "key":"value"
 }
 
+//! params: {"search": "specific"}
+{
+  "search" : "specific result",
+  "key": "value"
+}
+
+//! params: {"search": "apostrophe"}
+{
+  "search":"Mary",
+  "results": [
+    {
+      "id":1,
+      "title":"There's something about Mary"
+    }
+  ]
+}
