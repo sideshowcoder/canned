@@ -1,8 +1,6 @@
 "use strict";
 var querystring = require("querystring")
-var canned_module = require('../canned')
-var canned = canned_module.server
-var Canned = canned_module.Canned
+var canned = require('../canned')
 var VariableResponseParser = require('../lib/variable-response')
 var path = require('path')
 var fs = require('fs')
