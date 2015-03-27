@@ -101,7 +101,9 @@ function getSelectedResponse(responses, content, headers) {
 
 // return multiple response bodies as array
 Canned.prototype.getEachResponse = function(data) {
-  return data.match(/(\/\/\! [\w]*:[\w\s"{}:]*)((?!\/\/\!)[\w\s{}\=\-\+|":@.,_<>\[\]/])*/g) || []
+  data = cannedUtils.removeJSLikeComments(data)
+  var responses = data.split(/\n(?=[\/\/!])/).filter(function (e) { return e !== '' })
+  return responses
 }
 
 Canned.prototype.getVariableResponse = function(data, content, headers) {
