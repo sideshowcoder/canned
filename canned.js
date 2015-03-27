@@ -335,5 +335,5 @@ var canned = function (dir, options) {
   return c.responseFilter.bind(c)
 }
 
-module.exports = canned
+module.exports = {"server": canned, "Canned": Canned};
 
