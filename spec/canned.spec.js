@@ -4,6 +4,30 @@ var canned_module = require('../canned')
 var canned = canned_module.server
 var Canned = canned_module.Canned
 var path = require('path')
+var fs = require('fs')
+
+describe('Canned.prototype.getEachResponse', function(){
+  it('splits responses on "//!"', function(done){
+    var filename = './spec/test_responses/_multiple_get_responses.get.json'
+    fs.readFile(filename, {encoding:'utf-8'}, function(err, data){
+      var responses = Canned.prototype.getEachResponse(data);
+      expect(responses.length).toEqual(3);
+      done()
+    })
+  })
+  
+  it('leaves the //! block on the first line', function(done){
+    var filename = './spec/test_responses/_multiple_get_responses.get.json'
+    fs.readFile(filename, {encoding:'utf-8'}, function(err, data){
+      var responses = Canned.prototype.getEachResponse(data);
+      for(var i=0, len=responses.length; i<len; i++){
+        var lines = responses[i].split('\n')
+        expect(lines[0].substr(0, 3)).toEqual('//!')
+      }
+      done()
+    })
+  })  
+})
 
 describe('canned', function () {
 

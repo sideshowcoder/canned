@@ -1,4 +1,4 @@
-// this response is the default: 
+//! statusCode: 200
 //! params: {"search": "default"}
 {
   "search":"result",

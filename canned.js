@@ -101,9 +101,27 @@ function getSelectedResponse(responses, content, headers) {
 
 // return multiple response bodies as array
 Canned.prototype.getEachResponse = function(data) {
-  var matches;
-  matches = data.match(/(\/\/\! [\w]*:[\w\s"{}:]*)((?!\/\/\!)[\w\s{}\=\-\+|":@.,_<>\[\]/'\(\)\\#&^])*/g) || []
-  return matches
+  var lines = data.split('\n');
+  var responses = [];
+  var current = [];
+  
+  var line;
+  current.push(lines[0]);
+  for(var i=1, len=lines.length; i<len; i++){
+    line=lines[i]
+    if (line.substring(0, 3) === '//!'){
+      responses.push( current.join('\n') )
+      current = [];
+    } 
+    current.push(line); 
+    
+  }
+  if(current.length > 0){
+    responses.push(current.join('\n'))
+  }
+
+  return responses
+
 }
 
 Canned.prototype.getVariableResponse = function(data, content, headers) {
