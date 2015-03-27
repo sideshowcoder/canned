@@ -8,6 +8,7 @@ var Response = require('./lib/response')
 var querystring = require('querystring')
 var url = require('url')
 var cannedUtils = require('./lib/utils')
+var VariableResponseParser = require('./lib/variable-response')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -71,51 +72,11 @@ function getContentType(mimetype){
   return Response.content_types[mimetype]
 }
 
-// replace any body comments in format //! [string]
-function stripBodyComments(data) {
-  return data && data.replace(/\/\/\! [\w]*: ([\w {}":,@./]*)/, '').trim()
-}
 
-function getSelectedResponse(responses, content, headers) {
-  var selectedResponse = responses[0]
 
-  if(!(content || headers)) return selectedResponse // noting to select on
 
-  // find request matches and assign to chosenResponse
-  responses.forEach(function(response) {
-    var regex = new RegExp(/\/\/\! [A-z]*: ([\w {}":,@.]*)/g)
-    var request = JSON.parse(regex.exec(response)[1])
-    var variation = cannedUtils.extend({}, content, headers)
 
-    if(typeof request !== 'object') return; // nothing to match on
 
-    Object.keys(request).forEach(function(key) {
-      if(request[key] === variation[key])  {
-        selectedResponse = response
-      }
-    })
-  })
-
-  return selectedResponse
-}
-
-// return multiple response bodies as array
-Canned.prototype.getEachResponse = function(data) {
-  return data.match(/(\/\/\! [\w]*:[\w\s"{}:]*)((?!\/\/\!)[\w\s{}\=\-\+|":@.,_<>\[\]/])*/g) || []
-}
-
-Canned.prototype.getVariableResponse = function(data, content, headers) {
-
-  // return sanatized data if no conditional body comments
-  if(!data.match(/\/\/\! [\w]*: {.*}/)) {
-    return JSON.stringify(stripBodyComments(data))
-  }
-
-  var responses = this.getEachResponse(data)
-  var selectedResponse = stripBodyComments(getSelectedResponse(responses, content, headers))
-
-  return JSON.stringify(selectedResponse)
-}
 
 Canned.prototype._extractOptions = function (data, httpObj) {
   var lines = data.split('\n')
@@ -144,7 +105,7 @@ Canned.prototype._extractOptions = function (data, httpObj) {
 
   opts.statusCode = opts.statusCode || defaultStatusCode
 
-  opts.data = JSON.parse(this.getVariableResponse(data, httpObj.content, httpObj.headers));
+  opts.data = JSON.parse(VariableResponseParser.getVariableResponse(data, httpObj.content, httpObj.headers));
 
   return opts
 }

@@ -1,7 +1,33 @@
 "use strict";
 var querystring = require("querystring")
 var canned = require('../canned')
+var VariableResponseParser = require('../lib/variable-response')
 var path = require('path')
+var fs = require('fs')
+
+
+describe('variable-response module, getEachResponse(data)', function(){
+  it('splits responses on "//!"', function(done){
+    var filename = './spec/test_responses/_multiple_get_responses.get.json'
+    fs.readFile(filename, {encoding:'utf-8'}, function(err, data){
+      var responses = VariableResponseParser.getEachResponse(data);
+      expect(responses.length).toEqual(3);
+      done()
+    })
+  })
+  
+  it('leaves the //! block on the first line', function(done){
+    var filename = './spec/test_responses/_multiple_get_responses.get.json'
+    fs.readFile(filename, {encoding:'utf-8'}, function(err, data){
+      var responses = VariableResponseParser.getEachResponse(data);
+      for(var i=0, len=responses.length; i<len; i++){
+        var lines = responses[i].split('\n')
+        expect(lines[0].substr(0, 3)).toEqual('//!')
+      }
+      done()
+    })
+  })  
+})
 
 describe('canned', function () {
 
@@ -431,6 +457,14 @@ describe('canned', function () {
       res.end = function (content) {
         var response = JSON.parse(content)
         expect(response.itworks).toBeTruthy()
+        done()
+      }
+      can(req, res)
+    })
+    it("#58", function(done) {
+      req.url = "/multiple_get_responses?" + querystring.stringify({foo: "apostrophe"})
+      res.end = function(content) {
+        expect(content).toEqual(JSON.stringify({"response": "response with 'apostrophes'"}))
         done()
       }
       can(req, res)
