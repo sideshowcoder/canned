@@ -150,7 +150,8 @@ them via parameters comments:
 this would match `http://my.local.server/my_get_request_path?foo=bar` or
 `http://my.local.server/my_get_request_path?foo=baz` respectively.
 
-To use in conjunction with response headers, list the response header first.
+To use in conjunction with response headers and status codes, just add them on
+the line above.
 
 	//! statusCode: 201
 	//! header: {"authorization": "abc"}
@@ -158,6 +159,7 @@ To use in conjunction with response headers, list the response header first.
 	    "response": "response for abc"
 	}
 
+  //! statusCode: 201, contentType: "application/my-personal-json"
 	//! header: {"authorization": "123"}
 	{
 	    "response": "response for 123"
@@ -255,6 +257,12 @@ Release History
 
 ### next
 
+### 0.3.3
+* fix support for special characters in the header / params / body matches
+  (@simonprickett, @kevinschumacher, @sideshowcoder)
+* support differet statusCodes and content types in multiple response files
+  (@sideshowcoder)
+
 ### 0.3.2
 * support for XML headers to support SOAP (@vikalp)
 * fix relative path again... (@sideshowcoder)
@@ -287,6 +295,7 @@ Contributors
 * [bibounde](https://github.com/bibounde)
 * [vikalp](https://github.com/vikalp)
 * [simonprickett](https://github.com/simonprickett)
+* [kevinschumacher](https://github.com/kevinschumacher)
 
 License
 -------

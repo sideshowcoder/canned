@@ -71,27 +71,64 @@ function getContentType(mimetype){
   return Response.content_types[mimetype]
 }
 
-// replace any body comments in format //! [string]
-function stripBodyComments(data) {
-  return data && data.replace(/\/\/\! [\w]*: ([\w {}":,@./]*)/, '').trim()
+
+Canned.prototype.parseMetaData = function(response) {
+  var metaData = {}
+  var lines = response.split("\n")
+  var that = this
+
+  var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType]/g)
+  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":,@.]*)/g)
+
+  lines.forEach(function(line) {
+    if(line.indexOf("//!") === 0) { // special comment line
+      var matchedRequest = requestMatch.exec(line)
+      if(matchedRequest) {
+        metaData.request = JSON.parse(matchedRequest[1])
+        return
+      }
+      var matchedOptions = optionsMatch.exec(line)
+      if(matchedOptions) {
+        try {
+          line = line.replace("//!", '')
+          var content = line.split(',').map(function (s) {
+            var parts = s.split(':');
+            parts[0] = '"' + parts[0].trim() + '"'
+            return parts.join(':')
+          }).join(',')
+          var opts = JSON.parse('{' + content  + '}')
+          cannedUtils.extend(metaData, opts)
+        } catch(e) {
+          that._log('Invalid file header format try //! statusCode: 201')
+        }
+        return
+      }
+    }
+  })
+
+  return metaData
 }
 
-function getSelectedResponse(responses, content, headers) {
-  var selectedResponse = responses[0]
+Canned.prototype.getSelectedResponse = function(responses, content, headers) {
+  var that = this
+  var response = responses[0]
+  var metaData = that.parseMetaData(response)
+  var selectedResponse = {
+    data: cannedUtils.removeSpecialComments(response),
+    statusCode: metaData.statusCode || 200,
+    contentType: metaData.contentType
+  }
 
-  if(!(content || headers)) return selectedResponse // noting to select on
-
-  // find request matches and assign to chosenResponse
   responses.forEach(function(response) {
-    var regex = new RegExp(/\/\/\! [A-z]*: ([\w {}":,@.]*)/g)
-    var request = JSON.parse(regex.exec(response)[1])
+    var metaData = that.parseMetaData(response)
     var variation = cannedUtils.extend({}, content, headers)
 
-    if(typeof request !== 'object') return; // nothing to match on
+    if(typeof metaData.request !== 'object') return; // nothing to match on
 
-    Object.keys(request).forEach(function(key) {
-      if(request[key] === variation[key])  {
-        selectedResponse = response
+    Object.keys(metaData.request).forEach(function(key) {
+      if(metaData.request[key] === variation[key])  {
+        selectedResponse.data = cannedUtils.removeSpecialComments(response)
+        if(metaData.statusCode) selectedResponse.statusCode = metaData.statusCode
       }
     })
   })
@@ -102,53 +139,18 @@ function getSelectedResponse(responses, content, headers) {
 // return multiple response bodies as array
 Canned.prototype.getEachResponse = function(data) {
   data = cannedUtils.removeJSLikeComments(data)
-  var responses = data.split(/\n(?=[\/\/!])/).filter(function (e) { return e !== '' })
+  var responses = data.split(/\n\n(?=[\/\/!])/).filter(function (e) { return e !== '' })
   return responses
 }
 
 Canned.prototype.getVariableResponse = function(data, content, headers) {
-
-  // return sanatized data if no conditional body comments
-  if(!data.match(/\/\/\! [\w]*: {.*}/)) {
-    return JSON.stringify(stripBodyComments(data))
+  if(!data.length) {
+    return { statusCode: 204, data: '' }
   }
 
   var responses = this.getEachResponse(data)
-  var selectedResponse = stripBodyComments(getSelectedResponse(responses, content, headers))
-
-  return JSON.stringify(selectedResponse)
-}
-
-Canned.prototype._extractOptions = function (data, httpObj) {
-  var lines = data.split('\n')
-  var opts = {}
-  if (lines[0].indexOf('//! status') !== -1) {
-    try {
-      var content = lines[0].replace('//!', '')
-      content = content.split(',').map(function (s) {
-        var parts = s.split(':');
-        parts[0] = '"' + parts[0].trim() + '"'
-        return parts.join(':')
-      }).join(',')
-      opts = JSON.parse('{' + content  + '}')
-    } catch (e) {
-      this._log('Invalid file header format try //! statusCode: 201')
-      opts = {}
-    }
-    lines.splice(0, 1)
-  }
-  var defaultStatusCode
-  if (lines.length === 0 || lines[0].length === 0) {
-    defaultStatusCode = 204
-  } else {
-    defaultStatusCode = 200
-  }
-
-  opts.statusCode = opts.statusCode || defaultStatusCode
-
-  opts.data = JSON.parse(this.getVariableResponse(data, httpObj.content, httpObj.headers));
-
-  return opts
+  var response = this.getSelectedResponse(responses, content, headers)
+  return response
 }
 
 Canned.prototype.sanatizeContent = function (data, fileObject) {
@@ -186,7 +188,7 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         response = new Response(getContentType('html'), '', 404, httpObj.res, that.response_opts)
         cb('Not found', response)
       } else {
-        var _data = that._extractOptions(data, httpObj)
+        var _data = that.getVariableResponse(data, httpObj.content, httpObj.headers)
         data = _data.data
         var statusCode = _data.statusCode
         var content = that.sanatizeContent(data, fileObject)

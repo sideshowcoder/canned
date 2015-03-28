@@ -1,9 +1,11 @@
 //! statusCode: 201
-//! header: {"authorization": "abc"}
-{
-    "response": "response for abc"
-}
 //! header: {"authorization": "123"}
 {
     "response": "response for 123"
+}
+
+//! statusCode: 201
+//! header: {"authorization": "abc"}
+{
+    "response": "response for abc"
 }
