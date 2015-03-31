@@ -159,7 +159,7 @@ the line above.
 	    "response": "response for abc"
 	}
 
-  //! statusCode: 201, contentType: "application/my-personal-json"
+  	//! statusCode: 201, contentType: "application/my-personal-json"
 	//! header: {"authorization": "123"}
 	{
 	    "response": "response for 123"
