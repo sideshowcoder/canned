@@ -256,6 +256,7 @@ Release History
 ---------------
 
 ### next
+* update depedencies and dev-dependencies
 
 ### 0.3.3
 * fix support for special characters in the header / params / body matches
