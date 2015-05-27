@@ -99,7 +99,7 @@ This will be returned with a `Content-type: application/vnd.custom+xml` header.
 
 Multiple headers need to be written on one single line and comma-separated, like so:
 
-    //! statusCode:201, contentType: "application/vnd.custom+xml"
+    //! statusCode: 201, contentType: "application/vnd.custom+xml"
 
 Variable responses
 ------------------
