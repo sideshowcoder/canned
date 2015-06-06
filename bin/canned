@@ -7,6 +7,9 @@ var canned = require('../canned')
           .default('p', 3000)
           .alias('p', 'port')
           .describe('p', 'server port')
+          .default('w', 'any')
+          .alias('w', 'wildcard')
+          .describe('w', 'wildcard path name for ids')
           .default('cors', true)
           .describe('cors', 'disable cors support')
           .default('headers', false)
@@ -28,6 +31,7 @@ var dir = ''
 ,   cors_headers = argv.headers
 ,   logger
 ,   cannedDir
+,   wildcard = argv.wildcard
 
 if (argv._.length === 1) dir = argv._[0] // use the passed directory
 if (argv.q) {
@@ -38,6 +42,6 @@ if (argv.q) {
   process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
-var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers})
+var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers, wildcard: wildcard})
 http.createServer(can).listen(port)
 
