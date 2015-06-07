@@ -8,9 +8,11 @@ var Response = require('./lib/response')
 var querystring = require('querystring')
 var url = require('url')
 var cannedUtils = require('./lib/utils')
+var lookup = require('./lib/lookup')
 
 function Canned(dir, options) {
   this.logger = options.logger
+  this.wildcard = options.wildcard || 'any'
   this.response_opts = {
     cors_enabled: options.cors,
     cors_headers: options.cors_headers
@@ -217,7 +219,7 @@ Canned.prototype._logHTTPObject = function (httpObj) {
   this._log(' served via: .' + httpObj.pathname.join('/') + '/' + httpObj.filename + '\n')
 }
 
-Canned.prototype.respondWithDir = function (httpObj) {
+Canned.prototype.respondWithDir = function (httpObj, cb) {
   var that = this;
 
   var fpath = httpObj.path + '/' + httpObj.dname
@@ -225,27 +227,17 @@ Canned.prototype.respondWithDir = function (httpObj) {
     httpObj.fname = 'index'
     httpObj.path  = fpath
     that._responseForFile(httpObj, files, function (err, resp) {
-      if (err) {
-        that._log(' not found\n')
-      } else {
-        that._logHTTPObject(httpObj)
-      }
-      resp.send()
+      return cb(err, resp)
     })
   })
 }
 
-Canned.prototype.respondWithAny = function (httpObj, files) {
+Canned.prototype.respondWithAny = function (httpObj, files, cb) {
   var that = this;
 
   httpObj.fname = 'any';
   that._responseForFile(httpObj, files, function (err, resp) {
-    if (err) {
-      that._log(' not found\n')
-    } else {
-      that._logHTTPObject(httpObj)
-    }
-    resp.send()
+    return cb(err, resp);
   })
 }
 
@@ -253,7 +245,6 @@ Canned.prototype.responder = function(body, req, res) {
   var httpObj = {}
   var that = this
   var parsedurl = url.parse(req.url)
-
   httpObj.headers   = req.headers
   httpObj.content   = body
   httpObj.pathname  = parsedurl.pathname.split('/')
@@ -272,22 +263,45 @@ Canned.prototype.responder = function(body, req, res) {
     return response.send()
   }
 
+  var paths = lookup.getPaths(httpObj.pathname.join('/'), that.wildcard);
+  paths.splice(0,1); // The first path is the default
+
+  // Find a response for the first path
+  that.findResponse(httpObj, responseHandler);
+
+  function responseHandler(err, resp) {
+    if (err) {
+      // Try more paths, if there are any still
+      if (paths.length > 0) {
+        httpObj.path = that.dir + paths.splice(0, 1)[0];
+        return that.findResponse(httpObj, responseHandler);
+      } else {
+        that._log(' not found\n');
+      }
+    } else {
+      that._logHTTPObject(httpObj)
+    }
+    return resp.send();
+  }
+}
+
+Canned.prototype.findResponse = function(httpObj, cb) {
+  var that = this;
   fs.readdir(httpObj.path, function (err, files) {
     fs.stat(httpObj.path + '/' + httpObj.dname, function (err, stats) {
       if (err) {
         that._responseForFile(httpObj, files, function (err, resp) {
           if (err) {
-            that.respondWithAny(httpObj, files);
+            that.respondWithAny(httpObj, files, cb);
           } else {
-            that._logHTTPObject(httpObj)
-            resp.send()
+            return cb(null, resp);
           }
         })
       } else {
         if (stats.isDirectory()) {
-          that.respondWithDir(httpObj);
+          that.respondWithDir(httpObj, cb);
         } else {
-          new Response('html', '', 500, httpObj.res).send();
+          return cb(null, new Response('html', '', 500, httpObj.res));
         }
       }
     })
