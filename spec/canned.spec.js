@@ -168,6 +168,24 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('loads index from wildcard path for /d/1/', function (done) {
+      req.url = '/d/1/'
+      res.end = function (content) {
+        expect(content).toContain('{"wildcard":1}')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('loads index from real path for /d/2/', function (done) {
+      req.url = '/d/2/'
+      res.end = function (content) {
+        expect(content).toContain('{"not-wildcard":1}')
+        done()
+      }
+      can(req, res)
+    })
+
     it('looks for _file with query params', function (done) {
       req.url = '/a?name=Superman&age=30&idontneed=everyparaminfilename'
       res.end = function (content) {
