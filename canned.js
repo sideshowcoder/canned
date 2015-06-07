@@ -12,7 +12,7 @@ var lookup = require('./lib/lookup')
 
 function Canned(dir, options) {
   this.logger = options.logger
-  this.wildcard = options.wildcard
+  this.wildcard = options.wildcard || 'any'
   this.response_opts = {
     cors_enabled: options.cors,
     cors_headers: options.cors_headers
@@ -245,7 +245,6 @@ Canned.prototype.responder = function(body, req, res) {
   var httpObj = {}
   var that = this
   var parsedurl = url.parse(req.url)
-
   httpObj.headers   = req.headers
   httpObj.content   = body
   httpObj.pathname  = parsedurl.pathname.split('/')
