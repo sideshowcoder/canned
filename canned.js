@@ -8,6 +8,7 @@ var Response = require('./lib/response')
 var querystring = require('querystring')
 var url = require('url')
 var cannedUtils = require('./lib/utils')
+var lookup = require('./lib/lookup')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -263,7 +264,7 @@ Canned.prototype.responder = function(body, req, res) {
     return response.send()
   }
 
-  var paths = cannedUtils.generatePaths(httpObj.pathname.join('/'), that.wildcard);
+  var paths = lookup.getPaths(httpObj.pathname.join('/'), that.wildcard);
   paths.splice(0,1); // The first path is the default
 
   // Find a response for the first path
