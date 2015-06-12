@@ -165,6 +165,18 @@ the line above.
 	    "response": "response for 123"
 	}
 
+Wildcard responses are also supported, very useful to have 'wildcard'
+directories, so that if for given a request like:
+
+  GET /api/users/1/profile/
+
+you don't have a file in `./canned/api/users/1/profile/index.get.json` then
+it would look for a file in `./canned/api/users/any/index.get.json` or
+similar. Wildcards can be specified on the command line via
+
+  canned --wildcard iamawildcard
+
+
 How about some docs inside for the responses?
 ---------------------------------------------
 Most content types support comments natively, like html or javascript. Sadly the
@@ -257,6 +269,8 @@ Release History
 
 ### next
 * update depedencies and dev-dependencies
+* wildcard parameters thanks to [msurdi](https://github.com/msurdi) see
+  https://github.com/sideshowcoder/canned/pull/64
 
 ### 0.3.3
 * fix support for special characters in the header / params / body matches
