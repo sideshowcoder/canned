@@ -311,6 +311,7 @@ Contributors
 * [vikalp](https://github.com/vikalp)
 * [simonprickett](https://github.com/simonprickett)
 * [kevinschumacher](https://github.com/kevinschumacher)
+* [msurdi](https://github.com/msurdi)
 
 License
 -------
