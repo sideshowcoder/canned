@@ -242,6 +242,7 @@ Canned.prototype.respondWithAny = function (httpObj, files, cb) {
 }
 
 Canned.prototype.responder = function(body, req, res) {
+  var responseHandler
   var httpObj = {}
   var that = this
   var parsedurl = url.parse(req.url)
@@ -263,13 +264,10 @@ Canned.prototype.responder = function(body, req, res) {
     return response.send()
   }
 
-  var paths = lookup.getPaths(httpObj.pathname.join('/'), that.wildcard);
+  var paths = lookup(httpObj.pathname.join('/'), that.wildcard);
   paths.splice(0,1); // The first path is the default
 
-  // Find a response for the first path
-  that.findResponse(httpObj, responseHandler);
-
-  function responseHandler(err, resp) {
+  responseHandler = function (err, resp) {
     if (err) {
       // Try more paths, if there are any still
       if (paths.length > 0) {
@@ -283,6 +281,10 @@ Canned.prototype.responder = function(body, req, res) {
     }
     return resp.send();
   }
+
+  // Find a response for the first path
+  that.findResponse(httpObj, responseHandler);
+
 }
 
 Canned.prototype.findResponse = function(httpObj, cb) {
@@ -292,16 +294,16 @@ Canned.prototype.findResponse = function(httpObj, cb) {
       if (err) {
         that._responseForFile(httpObj, files, function (err, resp) {
           if (err) {
-            that.respondWithAny(httpObj, files, cb);
+            that.respondWithAny(httpObj, files, cb)
           } else {
-            return cb(null, resp);
+            cb(null, resp)
           }
         })
       } else {
         if (stats.isDirectory()) {
-          that.respondWithDir(httpObj, cb);
+          that.respondWithDir(httpObj, cb)
         } else {
-          return cb(null, new Response('html', '', 500, httpObj.res));
+          cb(null, new Response('html', '', 500, httpObj.res))
         }
       }
     })
