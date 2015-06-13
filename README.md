@@ -13,16 +13,18 @@ output something. This is what Canned is for!
 
 What does it do?
 ----------------
-Canned maps a folder structure to API responses
-
+Canned maps a folder structure to API responses. Given the following directory structure:
+    
+    /content/index.get.html
     /comment/any.get.json
-    /comment/index.get.html
+    /comment/1/votes/index.get.json
+    /comment/any/votes/index.get.json
 
 requests like
 
     GET /comment/:id
 
-are served as
+are served from the file `/comment/any.get.json` as
 
     Content-Type: application/json
     { "content": "I am a comment", "author": "sideshowcoder" }
@@ -31,12 +33,31 @@ requests like
 
     GET /content/
 
-are served as
+are served from the file `/content/index.get.html` as
 
     Content-Type: text/html
     <html>
       <body>Some html in here</body>
     </html>
+
+
+requests like
+
+    GET /comment/1/votes
+
+are served from the file `/comment/1/index.get.json` as
+
+    Content-Type: application/json
+    { "content": "I am comment 1", "author": "sideshowcoder" }
+
+requests like
+
+    GET /comment/123456789/votes
+ 
+are served from the file `/comment/any/index.get.json`
+
+    Content-Type: application/json
+    { "content": "I am a wildcard comment for any id", "author": "sideshowcoder" }
 
 
 
@@ -52,6 +73,7 @@ mapping with nested endpoints.
     /comments/index.get.json        | GET /comments/
     /comments/any.get.json          | GET /comments/:id
     /comments/_search.get.json      | GET /comments/search
+    /comments/any/index.get.json    | GET /comments/:id/
 
 You can even add query parameters to your filenames to return different
 responses on the same route. If the all query params in a filename match the
