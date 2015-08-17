@@ -123,6 +123,11 @@ Multiple headers need to be written on one single line and comma-separated, like
 
     //! statusCode: 201, contentType: "application/vnd.custom+xml"
 
+If you need to send bind custom HTTP headers to the response you can add them as a JSON object in the
+`customHeaders` attributes:
+
+    //! customHeaders: [{"MyCustomHeaderName": "MyCustomHeaderValue"}, {"SecondHeaderName": "SecondHeaderValue"}]
+
 Variable responses
 ------------------
 You can get a different response by specifying request data in variant
