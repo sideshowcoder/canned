@@ -295,6 +295,7 @@ Release History
 ---------------
 
 ### next
+* support for custom HTTP headers in responses
 
 ### 0.3.4
 * update depedencies and dev-dependencies
@@ -341,6 +342,7 @@ Contributors
 * [simonprickett](https://github.com/simonprickett)
 * [kevinschumacher](https://github.com/kevinschumacher)
 * [msurdi](https://github.com/msurdi)
+* [Brendan Rius](https://github.com/brendan-rius)
 
 License
 -------
