@@ -295,6 +295,8 @@ Release History
 ---------------
 
 ### next
+
+### 0.3.4
 * update depedencies and dev-dependencies
 * wildcard parameters thanks to [msurdi](https://github.com/msurdi) see
   https://github.com/sideshowcoder/canned/pull/64
