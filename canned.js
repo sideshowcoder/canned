@@ -79,7 +79,7 @@ Canned.prototype.parseMetaData = function(response) {
   var lines = response.split("\n")
   var that = this
 
-  var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType]/g)
+  var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType|customHeaders]/g)
   var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":,@.]*)/g)
 
   lines.forEach(function(line) {
@@ -118,7 +118,8 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
   var selectedResponse = {
     data: cannedUtils.removeSpecialComments(response),
     statusCode: metaData.statusCode || 200,
-    contentType: metaData.contentType
+    contentType: metaData.contentType,
+    customHeaders: metaData.customHeaders
   }
 
   responses.forEach(function(response) {
@@ -196,7 +197,7 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         var content = that.sanatizeContent(data, fileObject)
 
         if (content !== false) {
-          response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts)
+          response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts, _data.customHeaders)
           cb(null, response)
         } else {
           content = 'Internal Server error invalid input file'
