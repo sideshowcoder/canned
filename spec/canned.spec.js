@@ -293,7 +293,7 @@ describe('canned', function () {
       can(req, res)
     })
 
-    it('adds custom headers', function (done) {
+    it('adds custom CORS headers', function (done) {
       var can2 = canned('./spec/test_responses', { cors: true, cors_headers: "Authorization" })
       req.url = '/'
       var expectedHeaders = {
@@ -309,6 +309,25 @@ describe('canned', function () {
       }
       can2(req, res)
     })
+  })
+
+  it('adds custom configured headers', function (done) {
+    var can2 = canned('./spec/test_responses', { headers: {
+      'Content-Type': 'application/my-custom-type+json; charset=UTF8'
+    }})
+    req.url = '/empty'
+    var expectedHeaders = {
+      'Content-Type': 'application/my-custom-type+json; charset=UTF8'
+    }
+    res.setHeader = function (name, value) {
+      if (expectedHeaders[name]) {
+        expect(expectedHeaders[name]).toBe(value)
+        delete expectedHeaders[name]
+      }
+      // all expected headers have been set!
+      if (Object.keys(expectedHeaders).length === 0) done()
+    }
+    can2(req, res)
   })
 
   describe('variable GET responses', function () {

@@ -15,7 +15,8 @@ function Canned(dir, options) {
   this.wildcard = options.wildcard || 'any'
   this.response_opts = {
     cors_enabled: options.cors,
-    cors_headers: options.cors_headers
+    cors_headers: options.cors_headers,
+    configured_headers: options.headers
   }
   this.dir = process.cwd() + '/' + dir
 }
