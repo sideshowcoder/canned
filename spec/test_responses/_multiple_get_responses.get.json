@@ -12,3 +12,8 @@
 {
     "response": "response with 'apostrophes'"
 }
+
+//! params: {"foo": "bar", "index": 1}
+{
+    "response": "response with index 1"
+}
