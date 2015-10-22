@@ -343,6 +343,7 @@ Contributors
 * [kevinschumacher](https://github.com/kevinschumacher)
 * [msurdi](https://github.com/msurdi)
 * [Brendan Rius](https://github.com/brendan-rius)
+* [Rocco Russo](https://github.com/xdemocle)
 
 License
 -------
