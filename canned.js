@@ -9,6 +9,7 @@ var querystring = require('querystring')
 var url = require('url')
 var cannedUtils = require('./lib/utils')
 var lookup = require('./lib/lookup')
+var _ = require('lodash')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -87,6 +88,13 @@ Canned.prototype.parseMetaData = function(response) {
       var matchedRequest = requestMatch.exec(line)
       if(matchedRequest) {
         metaData.request = JSON.parse(matchedRequest[1])
+
+        // Force all requests values to be a string.
+        // Otherwise comparison in getSelectedResponse doesn't works
+        _.each(metaData.request, function(value, key){
+          metaData.request[key] = String(value)
+        })
+
         return
       }
       var matchedOptions = optionsMatch.exec(line)
@@ -129,7 +137,7 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
     if(typeof metaData.request !== 'object') return; // nothing to match on
 
     Object.keys(metaData.request).forEach(function(key) {
-      if(metaData.request[key] === variation[key])  {
+      if(_.isMatch(variation, metaData.request)) {
         selectedResponse.data = cannedUtils.removeSpecialComments(response)
         if(metaData.statusCode) selectedResponse.statusCode = metaData.statusCode
       }
