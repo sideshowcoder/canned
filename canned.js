@@ -9,6 +9,7 @@ var querystring = require('querystring')
 var url = require('url')
 var cannedUtils = require('./lib/utils')
 var lookup = require('./lib/lookup')
+var _ = require('lodash')
 
 function Canned(dir, options) {
   this.logger = options.logger
@@ -79,14 +80,21 @@ Canned.prototype.parseMetaData = function(response) {
   var lines = response.split("\n")
   var that = this
 
-  var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType]/g)
-  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":,@.]*)/g)
+  var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType|customHeaders]/g)
+  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":\-\+\%,@.]*)/g)
 
   lines.forEach(function(line) {
     if(line.indexOf("//!") === 0) { // special comment line
       var matchedRequest = requestMatch.exec(line)
       if(matchedRequest) {
         metaData.request = JSON.parse(matchedRequest[1])
+
+        // Force all requests values to be a string.
+        // Otherwise comparison in getSelectedResponse doesn't works
+        _.each(metaData.request, function(value, key){
+          metaData.request[key] = String(value)
+        })
+
         return
       }
       var matchedOptions = optionsMatch.exec(line)
@@ -118,7 +126,8 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
   var selectedResponse = {
     data: cannedUtils.removeSpecialComments(response),
     statusCode: metaData.statusCode || 200,
-    contentType: metaData.contentType
+    contentType: metaData.contentType,
+    customHeaders: metaData.customHeaders
   }
 
   responses.forEach(function(response) {
@@ -128,7 +137,7 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
     if(typeof metaData.request !== 'object') return; // nothing to match on
 
     Object.keys(metaData.request).forEach(function(key) {
-      if(metaData.request[key] === variation[key])  {
+      if(_.isMatch(variation, metaData.request)) {
         selectedResponse.data = cannedUtils.removeSpecialComments(response)
         if(metaData.statusCode) selectedResponse.statusCode = metaData.statusCode
       }
@@ -196,7 +205,7 @@ Canned.prototype._responseForFile = function (httpObj, files, cb) {
         var content = that.sanatizeContent(data, fileObject)
 
         if (content !== false) {
-          response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts)
+          response = new Response(_data.contentType || getContentType(fileObject.mimetype), content, statusCode, httpObj.res, that.response_opts, _data.customHeaders)
           cb(null, response)
         } else {
           content = 'Internal Server error invalid input file'
