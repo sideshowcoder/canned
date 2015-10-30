@@ -14,6 +14,7 @@ var _ = require('lodash')
 function Canned(dir, options) {
   this.logger = options.logger
   this.wildcard = options.wildcard || 'any'
+  this.fallback = options.fallback || false
   this.response_opts = {
     cors_enabled: options.cors,
     cors_headers: options.cors_headers
@@ -64,6 +65,7 @@ function getFileFromRequest(httpObj, files) {
 
   // if match regexp based on request to fname
   for (i = 0, e = files[i]; e != null; e = files[++i]) {
+    console.log("trying to match:"+ e+ " "+ httpObj.fname + "" + httpObj.method)
     m = matchFile(e, httpObj.fname, httpObj.method)
     if (m) return { fname : m[0], mimetype : m[1] }
   }
@@ -250,10 +252,8 @@ Canned.prototype.respondWithAny = function (httpObj, files, cb) {
   })
 }
 
-Canned.prototype.responder = function(body, req, res) {
-  var responseHandler
+Canned.prototype.httpObject = function (body, req, res) {
   var httpObj = {}
-  var that = this
   var parsedurl = url.parse(req.url)
   httpObj.headers   = req.headers
   httpObj.content   = body
@@ -261,9 +261,18 @@ Canned.prototype.responder = function(body, req, res) {
   httpObj.dname     = httpObj.pathname.pop()
   httpObj.fname     = '_' + httpObj.dname
   httpObj.path      = this.dir + httpObj.pathname.join('/')
+  httpObj.hasFallback= this.fallback?true:false
   httpObj.query     = parsedurl.query
   httpObj.method    = req.method.toLowerCase()
   httpObj.res       = res
+  return httpObj
+}
+
+Canned.prototype.responder = function(body, req, res) {
+  var responseHandler
+  var that = this
+  var httpObj = that.httpObject(body, req, res)
+
 
   this._log('request: ' + httpObj.method + ' ' + req.url)
 
@@ -280,10 +289,20 @@ Canned.prototype.responder = function(body, req, res) {
     if (err) {
       // Try more paths, if there are any still
       if (paths.length > 0) {
-        httpObj.path = that.dir + paths.splice(0, 1)[0];
+        httpObj.path = (httpObj.hasFallback ? that.dir : that.fallback )+ paths.splice(0, 1)[0];
         return that.findResponse(httpObj, responseHandler);
       } else {
-        that._log(' not found\n');
+        if ( httpObj.hasFallback ) {
+          // we have not found in sopecific location and we have fallback path, so using fallback
+          paths = lookup(httpObj.pathname.join('/'), that.wildcard);
+          httpObj = that.httpObject(body, req, res)
+          httpObj.hasFallback  = false
+          httpObj.path = that.fallback + paths.splice(0, 1)[0];
+          return that.findResponse(httpObj, responseHandler);
+        } else {
+          //nothing found
+          that._log(' not found\n');
+        }
       }
     } else {
       that._logHTTPObject(httpObj)

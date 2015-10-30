@@ -17,6 +17,8 @@ var canned = require('../canned')
           .default('h', false)
           .alias('h', 'help')
           .describe('h', 'show the help')
+          .default('fallback', false)
+          .describe('fallback', 'fallback default folder')
           .usage('Usage: $0 [dir]')
           .argv
 
@@ -32,6 +34,7 @@ var dir = ''
 ,   logger
 ,   cannedDir
 ,   wildcard = argv.wildcard
+,   fallback = argv.fallback
 
 if (argv._.length === 1) dir = argv._[0] // use the passed directory
 if (argv.q) {
@@ -39,9 +42,10 @@ if (argv.q) {
 } else {
   logger = process.stdout
   cannedDir = path.resolve(dir)
-  process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
+  fallbackNotice = fallback ? ", with fallback to "+path.resolve(fallback) : ""
+  process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir +  fallbackNotice + '\n')
 }
 
-var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers, wildcard: wildcard})
+var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers, wildcard: wildcard, fallback: fallback } )
 http.createServer(can).listen(port)
 
