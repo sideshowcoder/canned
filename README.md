@@ -296,6 +296,7 @@ Release History
 
 ### next
 * support for custom HTTP headers in responses
+* fix for matching multiple paramters in response #73 thanks [xdemocle](https://github.com/xdemocle)
 
 ### 0.3.4
 * update depedencies and dev-dependencies
