@@ -275,12 +275,12 @@ Canned.prototype.responder = function(body, req, res) {
 
   var paths = lookup(httpObj.pathname.join('/'), that.wildcard);
   paths.splice(0,1); // The first path is the default
-
   responseHandler = function (err, resp) {
     if (err) {
       // Try more paths, if there are any still
       if (paths.length > 0) {
         httpObj.path = that.dir + paths.splice(0, 1)[0];
+        httpObj.fname = '_' + httpObj.dname;
         return that.findResponse(httpObj, responseHandler);
       } else {
         that._log(' not found\n');

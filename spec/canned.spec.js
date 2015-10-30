@@ -177,6 +177,15 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('loads named response from wildcard path for /d/1/bar', function (done) {
+      req.url = '/d/1/bar'
+      res.end = function (content) {
+        expect(content).toContain('{"wildcard":"named_response"}')
+        done()
+      }
+      can(req, res)
+    })
+
     it('loads index from real path for /d/2/', function (done) {
       req.url = '/d/2/'
       res.end = function (content) {

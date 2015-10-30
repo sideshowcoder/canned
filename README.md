@@ -296,7 +296,10 @@ Release History
 
 ### next
 * support for custom HTTP headers in responses
-* fix for matching multiple paramters in response #73 thanks [xdemocle](https://github.com/xdemocle)
+* fix for matching multiple paramters in response #73 thanks
+  [xdemocle](https://github.com/xdemocle)
+* fix any wildcard in the middle of the path #66 thanks
+  [msurdi](https://github.com/msurdi)
 
 ### 0.3.4
 * update depedencies and dev-dependencies
