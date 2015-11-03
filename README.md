@@ -14,7 +14,7 @@ output something. This is what Canned is for!
 What does it do?
 ----------------
 Canned maps a folder structure to API responses. Given the following directory structure:
-    
+
     /content/index.get.html
     /comment/any.get.json
     /comment/1/votes/index.get.json
@@ -53,7 +53,7 @@ are served from the file `/comment/1/index.get.json` as
 requests like
 
     GET /comment/123456789/votes
- 
+
 are served from the file `/comment/any/index.get.json`
 
     Content-Type: application/json
@@ -295,6 +295,8 @@ Release History
 ---------------
 
 ### next
+
+### 0.3.5
 * support for custom HTTP headers in responses
 * fix for matching multiple paramters in response #73 thanks
   [xdemocle](https://github.com/xdemocle)
