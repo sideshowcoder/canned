@@ -249,6 +249,55 @@ describe('canned', function () {
       }
       can(req, res)
     })
+
+    it('selects json file for request with application/json accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'application/json'
+      }
+      res.end = function (content) {
+        var jsonResponse = JSON.parse(content)
+        expect(jsonResponse.type).toBe('json')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('selects js file for request with application/javascript accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'application/javascript'
+      }
+      res.end = function (content) {
+        expect(content).toBe('var type = \'js\';')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('selects txt file for request with text/plain accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'text/plain'
+      }
+      res.end = function (content) {
+        expect(content).toBe('text type')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('selects txt file for request with text/html accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'text/html'
+      }
+      res.end = function (content) {
+        expect(content).toBe('<type>html</type>')
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe('content modifier', function () {
