@@ -16,16 +16,18 @@ output something. This is what Canned is for!
 
 What does it do?
 ----------------
-Canned maps a folder structure to API responses
+Canned maps a folder structure to API responses. Given the following directory structure:
 
+    /content/index.get.html
     /comment/any.get.json
-    /comment/index.get.html
+    /comment/1/votes/index.get.json
+    /comment/any/votes/index.get.json
 
 requests like
 
     GET /comment/:id
 
-are served as
+are served from the file `/comment/any.get.json` as
 
     Content-Type: application/json
     { "content": "I am a comment", "author": "sideshowcoder" }
@@ -34,12 +36,31 @@ requests like
 
     GET /content/
 
-are served as
+are served from the file `/content/index.get.html` as
 
     Content-Type: text/html
     <html>
       <body>Some html in here</body>
     </html>
+
+
+requests like
+
+    GET /comment/1/votes
+
+are served from the file `/comment/1/index.get.json` as
+
+    Content-Type: application/json
+    { "content": "I am comment 1", "author": "sideshowcoder" }
+
+requests like
+
+    GET /comment/123456789/votes
+
+are served from the file `/comment/any/index.get.json`
+
+    Content-Type: application/json
+    { "content": "I am a wildcard comment for any id", "author": "sideshowcoder" }
 
 
 
@@ -55,6 +76,7 @@ mapping with nested endpoints.
     /comments/index.get.json        | GET /comments/
     /comments/any.get.json          | GET /comments/:id
     /comments/_search.get.json      | GET /comments/search
+    /comments/any/index.get.json    | GET /comments/:id/
 
 You can even add query parameters to your filenames to return different
 responses on the same route. If the all query params in a filename match the
@@ -102,7 +124,12 @@ This will be returned with a `Content-type: application/vnd.custom+xml` header.
 
 Multiple headers need to be written on one single line and comma-separated, like so:
 
-    //! statusCode:201, contentType: "application/vnd.custom+xml"
+    //! statusCode: 201, contentType: "application/vnd.custom+xml"
+
+If you need to send bind custom HTTP headers to the response you can add them as a JSON object in the
+`customHeaders` attributes:
+
+    //! customHeaders: [{"MyCustomHeaderName": "MyCustomHeaderValue"}, {"SecondHeaderName": "SecondHeaderValue"}]
 
 Variable responses
 ------------------
@@ -153,7 +180,8 @@ them via parameters comments:
 this would match `http://my.local.server/my_get_request_path?foo=bar` or
 `http://my.local.server/my_get_request_path?foo=baz` respectively.
 
-To use in conjunction with response headers, list the response header first.
+To use in conjunction with response headers and status codes, just add them on
+the line above.
 
 	//! statusCode: 201
 	//! header: {"authorization": "abc"}
@@ -161,10 +189,23 @@ To use in conjunction with response headers, list the response header first.
 	    "response": "response for abc"
 	}
 
+  	//! statusCode: 201, contentType: "application/my-personal-json"
 	//! header: {"authorization": "123"}
 	{
 	    "response": "response for 123"
 	}
+
+Wildcard responses are also supported, very useful to have 'wildcard'
+directories, so that if for given a request like:
+
+  GET /api/users/1/profile/
+
+you don't have a file in `./canned/api/users/1/profile/index.get.json` then
+it would look for a file in `./canned/api/users/any/index.get.json` or
+similar. Wildcards can be specified on the command line via
+
+  canned --wildcard iamawildcard
+
 
 How about some docs inside for the responses?
 ---------------------------------------------
@@ -257,6 +298,25 @@ Release History
 ---------------
 
 ### next
+* support checking the `ACCEPT HEADER` for the response type (thanks git-jiby-me) #81
+
+### 0.3.5
+* support for custom HTTP headers in responses
+* fix for matching multiple paramters in response #73 thanks
+  [xdemocle](https://github.com/xdemocle)
+* fix any wildcard in the middle of the path #66 thanks
+  [msurdi](https://github.com/msurdi)
+
+### 0.3.4
+* update depedencies and dev-dependencies
+* wildcard parameters thanks to [msurdi](https://github.com/msurdi) see
+  https://github.com/sideshowcoder/canned/pull/64
+
+### 0.3.3
+* fix support for special characters in the header / params / body matches
+  (@simonprickett, @kevinschumacher, @sideshowcoder)
+* support differet statusCodes and content types in multiple response files
+  (@sideshowcoder)
 
 ### 0.3.2
 * support for XML headers to support SOAP (@vikalp)
@@ -290,6 +350,11 @@ Contributors
 * [bibounde](https://github.com/bibounde)
 * [vikalp](https://github.com/vikalp)
 * [simonprickett](https://github.com/simonprickett)
+* [kevinschumacher](https://github.com/kevinschumacher)
+* [msurdi](https://github.com/msurdi)
+* [Brendan Rius](https://github.com/brendan-rius)
+* [Rocco Russo](https://github.com/xdemocle)
+* [git-jiby-me](https://github.com/git-jiby-me)
 
 License
 -------
