@@ -21,24 +21,32 @@ function Canned(dir, options) {
   this.dir = process.cwd() + '/' + dir
 }
 
-function matchFile(matchString, fname, method) {
+function matchFile(matchString, fname, method, ctype) {
+  if(!ctype) {
+    ctype = '(.+)';
+  }
   return matchString.match(
-    new RegExp(fname + '\\.' + method + '\\.(.+)')
+    new RegExp(fname + '\\.' + method + '\\.' + ctype)
   )
 }
 
-function matchFileWithQuery(matchString) {
-  return matchString.match(/(.*)\?(.*)\.(.*)\.(.*)/)
+function matchFileWithQuery(matchString, ctype) {
+  if(!ctype) {
+    ctype = '(.+)';
+  }
+  return matchString.match(
+    new RegExp('(.*)\\?(.*)\\.(.*)\\.' + ctype)
+    )
 }
 
-function matchFileWithExactQuery(matchString, fname, queryString, method) {
+function matchFileWithExactQuery(matchString, fname, queryString, method, ctype) {
   var escapedQueryString = cannedUtils.escapeRegexSpecialChars(queryString)
   return matchString.match(
     new RegExp(fname +
                "(?=.*" +
                escapedQueryString.split("&").join(")(?=.*") +
                ").+" +
-               method)
+               method + "\\." + ctype)
   )
 }
 
@@ -46,26 +54,31 @@ function getFileFromRequest(httpObj, files) {
 
   if (!files) return false
 
-  var m, i, e, matchString, matchPattern, fileMatch
+  var m, i, e, matchString, matchPattern, fileMatch, ctype
 
   // if query params, match regexp based on fname to request
   if(httpObj.query)
   {
     for (i = 0, e = files[i]; e != null; e = files[++i]) {
-      fileMatch = matchFileWithQuery(e)
+      fileMatch = matchFileWithQuery(e, httpObj.ctype)
       if (fileMatch)
       {
-        matchString = httpObj.fname + "?" + httpObj.query + "." + httpObj.method
-        m = matchFileWithExactQuery(matchString, fileMatch[1], fileMatch[2], fileMatch[3])
-        if (m) return { fname: e, mimetype: fileMatch[4] }
+        ctype = httpObj.ctype || fileMatch[4];
+        matchString = httpObj.fname + "?" + httpObj.query + "." + httpObj.method + "." + ctype
+        m = matchFileWithExactQuery(matchString, fileMatch[1], fileMatch[2], fileMatch[3], ctype)
+        if (m) return { fname: e, mimetype: ctype }
       }
     }
   }
 
   // if match regexp based on request to fname
   for (i = 0, e = files[i]; e != null; e = files[++i]) {
-    m = matchFile(e, httpObj.fname, httpObj.method)
-    if (m) return { fname : m[0], mimetype : m[1] }
+
+    m = matchFile(e, httpObj.fname, httpObj.method, httpObj.ctype)
+    if (m) {
+      ctype = httpObj.ctype || m[1];
+      return { fname : m[0], mimetype : ctype }
+    }
   }
   return false
 }
@@ -256,6 +269,7 @@ Canned.prototype.responder = function(body, req, res) {
   var that = this
   var parsedurl = url.parse(req.url)
   httpObj.headers   = req.headers
+  httpObj.accept    = (req.headers && req.headers.accept) ? req.headers.accept.trim().split(',') : []
   httpObj.content   = body
   httpObj.pathname  = parsedurl.pathname.split('/')
   httpObj.dname     = httpObj.pathname.pop()
@@ -264,6 +278,7 @@ Canned.prototype.responder = function(body, req, res) {
   httpObj.query     = parsedurl.query
   httpObj.method    = req.method.toLowerCase()
   httpObj.res       = res
+  httpObj.ctype     = ''
 
   this._log('request: ' + httpObj.method + ' ' + req.url)
 
@@ -273,6 +288,14 @@ Canned.prototype.responder = function(body, req, res) {
     return response.send()
   }
 
+  if (httpObj.accept.length) {
+    for(var type in Response.content_types){
+      if(Response.content_types[type] === httpObj.accept[0].trim()){
+        httpObj.ctype = type;
+      }
+    }
+  }
+  
   var paths = lookup(httpObj.pathname.join('/'), that.wildcard);
   paths.splice(0,1); // The first path is the default
   responseHandler = function (err, resp) {
