@@ -295,6 +295,7 @@ Release History
 ---------------
 
 ### next
+* support checking the `ACCEPT HEADER` for the response type (thanks git-jiby-me) #81
 
 ### 0.3.5
 * support for custom HTTP headers in responses
@@ -350,6 +351,7 @@ Contributors
 * [msurdi](https://github.com/msurdi)
 * [Brendan Rius](https://github.com/brendan-rius)
 * [Rocco Russo](https://github.com/xdemocle)
+* [git-jiby-me](https://github.com/git-jiby-me)
 
 License
 -------
