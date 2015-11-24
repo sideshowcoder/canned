@@ -295,6 +295,8 @@ Release History
 ---------------
 
 ### next
+
+### 0.3.6
 * support checking the `ACCEPT HEADER` for the response type (thanks git-jiby-me) #81
 
 ### 0.3.5
