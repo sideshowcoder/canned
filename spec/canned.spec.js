@@ -1,6 +1,6 @@
 "use strict";
 var querystring = require("querystring")
-var canned = require('../canned')
+var canned = require('../index')
 var path = require('path')
 
 describe('canned', function () {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var canned = require('../canned')
+var canned = require('../index')
 ,   path = require('path')
 ,   http = require('http')
 ,   optimist = require('optimist')

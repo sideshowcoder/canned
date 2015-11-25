@@ -8,7 +8,7 @@ test:
 	cd test && ./bin_test.sh
 
 hint:
-	./node_modules/.bin/jshint bin/canned canned.js lib/ spec/
+	./node_modules/.bin/jshint bin/canned index.js lib/ spec/
 
 docs:
 	@git stash
