@@ -296,8 +296,18 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
-
 ### next
+
+### 0.3.7
+* The regex for matching request, was not considering arrays in the request JSON
+  #82
+* For request with a request body, canned was checking content type to exactly
+  match application/json, which is not good as browsers may sent charset as well
+  with the content type. #82
+* For matching request and filters with more accuracy, we were converting the
+  values of all keys in request to string before comparing, but this was being
+  done wrong as it was creating string of Objects and arrays as well, which it
+  shouldn’t #82
 
 ### 0.3.6
 * support checking the `ACCEPT HEADER` for the response type (thanks git-jiby-me) #81
