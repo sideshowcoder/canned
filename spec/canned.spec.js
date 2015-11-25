@@ -529,6 +529,23 @@ describe('canned', function () {
       }
       can(req, res)
     })
+
+    it("#79", function (done) {
+        var Canned = require('../lib/canned')
+        var can = new Canned('./spec/test_responses', {});
+        var mock_text = '//! params: {"serialkey": "abc"}\r\n{\r\n"errorCode": "ERROR1"\r\n}\r\n' +
+                        '//! params: {"serialkey": "12121"}\r\n{\r\n"errorCode": "ERROR2"\r\n}';
+        var parsedMeta = can.parseMetaData(mock_text);
+        expect(parsedMeta).toEqual({
+          request: {
+            serialkey: 'abc'
+          },
+          params: {
+            serialkey: '12121'
+          }
+        });
+        done();
+    })
   })
 
   describe("variable POST responses", function() {
