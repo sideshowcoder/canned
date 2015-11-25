@@ -7,7 +7,7 @@ var canned = function (dir, options) {
   if (!options) options = {}
   dir = path.relative(process.cwd(), dir)
   var c = new Canned(dir, options)
-  return c.responseFilter.bind(c)
+  return c.responder.bind(c)
 }
 
 module.exports = canned
