@@ -702,4 +702,56 @@ describe('canned', function () {
     })
   })
 
+  describe("proxy requests for unknown paths", function () {
+    it('should return 404 if path unknown and proxy not configured', function (done) {
+      req.url = '/unkown_path'
+      res.end = function (content) {
+        expect(res.statusCode).toEqual(404);
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return mock if path known and proxy  configured', function (done) {
+      var can = canned('./spec/test_responses', {
+        proxy: 'http://localhost:9615'
+      })
+      
+      req.url = '/a'
+      res.end = function (content) {
+        expect(res.statusCode).toEqual(200);
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should proxy request if path unknown and proxy is configured', function (done) {
+      var proxy = require('http').createServer(function (req, res) {
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.end('OK');
+        req.on('data', function (data) {
+          expect(data.toString()).toEqual('test');
+        })
+      }).listen(9615);
+
+      var can = canned('./spec/test_responses', {
+        proxy: 'http://localhost:9615'
+      })
+
+      var req = new require('stream').Readable();
+      req._read = function noop() {};
+      req.push('test');
+      req.method = 'POST'
+      req.url = '/unkown_path'
+
+      var res = new require('stream').Writable();
+      res._write = function noop(data) {
+        expect(data.toString()).toEqual('OK');
+        proxy.close()
+        done()
+      };
+      can(req, res)
+    })
+  })
+
 })
