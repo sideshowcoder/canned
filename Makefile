@@ -10,6 +10,12 @@ test:
 hint:
 	./node_modules/.bin/jshint bin/canned index.js lib/ spec/
 
+release: docs
+	@read -p "Version to release: " version; \
+	git tag -a $$version -m "version $$version release"
+	git push --tags
+	npm publish
+
 docs:
 	@git stash
 	@git checkout gh-pages
