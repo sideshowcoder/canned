@@ -87,10 +87,10 @@ function getContentType(mimetype){
   return Response.content_types[mimetype]
 }
 
-function traverseAndSanitize(object) {
+function stringifyValues(object) {
   _.each(object, function(value, key) {
     if (typeof value === "object") {
-      traverseAndSanitize(value);
+      stringifyValues(value);
     } else {
       object[key] = String(value)
     }
@@ -111,10 +111,7 @@ Canned.prototype.parseMetaData = function(response) {
       var matchedRequest = requestMatch.exec(line)
       if(matchedRequest) {
         metaData.request = JSON.parse(matchedRequest[1])
-
-        // Force all requests values to be a string.
-        // Otherwise comparison in getSelectedResponse doesn't works
-        traverseAndSanitize(metaData.request);
+        stringifyValues(metaData.request);
         return
       }
       var matchedOptions = optionsMatch.exec(line)
@@ -150,7 +147,7 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
     customHeaders: metaData.customHeaders
   }
 
-  traverseAndSanitize(content);
+  stringifyValues(content);
 
   responses.forEach(function(response) {
     var metaData = that.parseMetaData(response)
