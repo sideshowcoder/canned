@@ -108,6 +108,8 @@ function isContentTypeJson(request) {
 
 Canned.prototype.parseMetaData = function(response) {
   var metaData = {}
+  // convert CR+LF => LF+LF, CR => LF, fixes line breaks causing issues in windows
+  response = response.replace("\r", "\n");
   var lines = response.split("\n")
   var that = this
 
