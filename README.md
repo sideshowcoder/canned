@@ -294,6 +294,7 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 Release History
 ---------------
 ### next
+* fix improper handling of carriage return in windows #79 (@git-jiby-me)
 
 ### 0.3.7
 * The regex for matching request, was not considering arrays in the request JSON
