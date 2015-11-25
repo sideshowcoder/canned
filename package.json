@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "lodash": "^3.10.1",
-    "optimist": "^0.6.0"
+    "optimist": "^0.6.0",
+    "request": "^2.67.0"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.2",
