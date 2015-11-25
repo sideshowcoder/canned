@@ -10,7 +10,7 @@ test:
 hint:
 	./node_modules/.bin/jshint bin/canned canned.js lib/ spec/
 
-release:
+release: docs
 	@read -p "Version to release: " version; \
 	git tag -a $$version -m "version $$version release"
 	git push --tags
