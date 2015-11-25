@@ -7,3 +7,8 @@
 {
     "response": "response for two@example.com"
 }
+
+//! body: {"email": "two@example.com", "topics": ["1","2"]}
+{
+    "response": "response for two@example.com topics 1,2"
+}

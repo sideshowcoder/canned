@@ -87,6 +87,24 @@ function getContentType(mimetype){
   return Response.content_types[mimetype]
 }
 
+function stringifyValues(object) {
+  _.each(object, function(value, key) {
+    if (typeof value === "object") {
+      stringifyValues(value);
+    } else {
+      object[key] = String(value)
+    }
+  })
+}
+
+function isContentTypeJson(request) {
+  var isJson = false;
+  if (request.headers && request.headers['content-type']) {
+    isJson = request.headers['content-type'].indexOf('application/json') !== -1;
+  }
+  return isJson;
+}
+
 
 Canned.prototype.parseMetaData = function(response) {
   var metaData = {}
@@ -94,20 +112,14 @@ Canned.prototype.parseMetaData = function(response) {
   var that = this
 
   var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType|customHeaders]/g)
-  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":\-\+\%,@.]*)/g)
+  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":\[\]\-\+\%,@.]*)/g)
 
   lines.forEach(function(line) {
     if(line.indexOf("//!") === 0) { // special comment line
       var matchedRequest = requestMatch.exec(line)
       if(matchedRequest) {
         metaData.request = JSON.parse(matchedRequest[1])
-
-        // Force all requests values to be a string.
-        // Otherwise comparison in getSelectedResponse doesn't works
-        _.each(metaData.request, function(value, key){
-          metaData.request[key] = String(value)
-        })
-
+        stringifyValues(metaData.request);
         return
       }
       var matchedOptions = optionsMatch.exec(line)
@@ -142,6 +154,8 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
     contentType: metaData.contentType,
     customHeaders: metaData.customHeaders
   }
+
+  stringifyValues(content);
 
   responses.forEach(function(response) {
     var metaData = that.parseMetaData(response)
@@ -355,7 +369,7 @@ Canned.prototype.responseFilter = function (req, res) {
     })
     req.on('end', function () {
       var responderBody = querystring.parse(body);
-      if (req.headers && req.headers['content-type'] === 'application/json') {
+      if (isContentTypeJson(req)) {
         try {
           responderBody = JSON.parse(body)
         } catch (e) {
