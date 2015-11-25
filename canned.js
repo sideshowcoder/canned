@@ -97,6 +97,14 @@ function stringifyValues(object) {
   })
 }
 
+function isContentTypeJson(request) {
+  var isJson = false;
+  if (request.headers && request.headers['content-type']) {
+    isJson = request.headers['content-type'].indexOf('application/json') !== -1;
+  }
+  return isJson;
+}
+
 
 Canned.prototype.parseMetaData = function(response) {
   var metaData = {}
@@ -361,8 +369,7 @@ Canned.prototype.responseFilter = function (req, res) {
     })
     req.on('end', function () {
       var responderBody = querystring.parse(body);
-      if (req.headers && req.headers['content-type'] && 
-                    req.headers['content-type'].indexOf('application/json') !== -1) {
+      if (isContentTypeJson(req)) {
         try {
           responderBody = JSON.parse(body)
         } catch (e) {
