@@ -584,6 +584,28 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('should return the first response JSON body on payload match even if content type has charset', function (done) {
+      data = '{"email":"one@example.com"}'
+      req.url = '/multiple_responses'
+      req.headers['content-type'] = 'application/json; charset=UTF-8'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for one@example.com"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should handle request bodies containing arrays', function (done) {
+      data = '{"email": "two@example.com","topics": [1,2]}'
+      req.url = '/multiple_responses'
+      req.headers['content-type'] = 'application/json; charset=UTF-8'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for two@example.com topics 1,2"}))
+        done()
+      }
+      can(req, res)
+    })
+
     it('should return the first response JSON body on payload match (because JSON body is invalid)', function (done) {
       data = 'bad json data'
       req.url = '/multiple_responses'

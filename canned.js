@@ -87,6 +87,16 @@ function getContentType(mimetype){
   return Response.content_types[mimetype]
 }
 
+function traverseAndSanitise(object) {
+  _.each(object, function(value, key) {
+    if (typeof value === "object") {
+      traverseAndSanitise(value);
+    } else {
+      object[key] = String(value)
+    }
+  })
+}
+
 
 Canned.prototype.parseMetaData = function(response) {
   var metaData = {}
@@ -94,7 +104,7 @@ Canned.prototype.parseMetaData = function(response) {
   var that = this
 
   var optionsMatch = new RegExp(/\/\/!.*[statusCode|contentType|customHeaders]/g)
-  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":\-\+\%,@.]*)/g)
+  var requestMatch = new RegExp(/\/\/! [body|params|header]+: ([\w {}":\[\]\-\+\%,@.]*)/g)
 
   lines.forEach(function(line) {
     if(line.indexOf("//!") === 0) { // special comment line
@@ -104,10 +114,7 @@ Canned.prototype.parseMetaData = function(response) {
 
         // Force all requests values to be a string.
         // Otherwise comparison in getSelectedResponse doesn't works
-        _.each(metaData.request, function(value, key){
-          metaData.request[key] = String(value)
-        })
-
+        traverseAndSanitise(metaData.request);
         return
       }
       var matchedOptions = optionsMatch.exec(line)
@@ -142,6 +149,8 @@ Canned.prototype.getSelectedResponse = function(responses, content, headers) {
     contentType: metaData.contentType,
     customHeaders: metaData.customHeaders
   }
+
+  traverseAndSanitise(content);
 
   responses.forEach(function(response) {
     var metaData = that.parseMetaData(response)
@@ -355,7 +364,8 @@ Canned.prototype.responseFilter = function (req, res) {
     })
     req.on('end', function () {
       var responderBody = querystring.parse(body);
-      if (req.headers && req.headers['content-type'] === 'application/json') {
+      if (req.headers && req.headers['content-type'] && 
+                    req.headers['content-type'].indexOf('application/json') !== -1) {
         try {
           responderBody = JSON.parse(body)
         } catch (e) {
