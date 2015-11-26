@@ -295,6 +295,7 @@ Release History
 ---------------
 ### next
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
+* support to proxy unknown paths to another domain #56 (@git-jiby-me)
 
 ### 0.3.7
 * The regex for matching request, was not considering arrays in the request JSON
