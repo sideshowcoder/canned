@@ -195,14 +195,15 @@ the line above.
 Wildcard responses are also supported, very useful to have 'wildcard'
 directories, so that if for given a request like:
 
-  GET /api/users/1/profile/
+  	GET /api/users/1/profile/
 
 you don't have a file in `./canned/api/users/1/profile/index.get.json` then
 it would look for a file in `./canned/api/users/any/index.get.json` or
 similar. Wildcards can be specified on the command line via
 
-  canned --wildcard iamawildcard
+  	canned --wildcard myany
 
+This would change the lookup to `./canned/api/users/myany/index.get.json`
 
 How about some docs inside for the responses?
 ---------------------------------------------
