@@ -200,8 +200,9 @@ directories, so that if for given a request like:
 you don't have a file in `./canned/api/users/1/profile/index.get.json` then
 it would look for a file in `./canned/api/users/any/index.get.json` or
 similar. Wildcards can be specified on the command line via
-
-  canned --wildcard iamawildcard
+```
+canned --wildcard iamawildcard
+```
 
 Proxy unknown requests
 ----------------------
@@ -209,8 +210,9 @@ Proxy unknown requests
 You can configure canned to forward requests that dont have a response defined to a proxy domain, this is helpful when you want to mock some api, but forward the not defined ones to the actual API server.
 
 Proxy can be specified on the command line via
-
+```
 canned --proxy http://api.domain.com
+```
 
 Proxy can also be configured when using canned programatically by passing `proxy` as an option, for example
 ```
