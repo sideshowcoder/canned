@@ -1,6 +1,8 @@
 Canned fake API server
 ======================
 
+[![Join the chat at https://gitter.im/sideshowcoder/canned](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sideshowcoder/canned?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned) [![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 
