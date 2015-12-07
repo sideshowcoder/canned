@@ -1,10 +1,13 @@
 Canned fake API server
 ======================
 
-[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned) [![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned)
+[![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sideshowcoder/canned?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-
-View the docs on [Docs](http://sideshowcoder.github.io/canned)
+View the docs on [Docs](http://sideshowcoder.github.io/canned), and join the
+chat at [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sideshowcoder/canned?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Working with APIs, more often than not, during development you want to work
 with a fixed version of the responses provided. This is especially true if the
