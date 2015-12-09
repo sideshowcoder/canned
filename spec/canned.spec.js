@@ -546,6 +546,16 @@ describe('canned', function () {
         });
         done();
     })
+
+    it("#87", function (done) {
+      req.url = "/d/FooBar/bar"
+      res.end = function (content) {
+        expect(res.statusCode).toBe(200)
+        expect(content).toContain('{"wildcard":"named_response"}')
+        done()
+      }
+      can(req, res)
+    })
   })
 
   describe("variable POST responses", function() {
