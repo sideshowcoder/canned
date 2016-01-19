@@ -623,6 +623,17 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('should handle request bodies containing urls', function (done) {
+      data = '{"url": "http://example.com"}'
+      req.url = '/response_with_url_param'
+      req.headers['content-type'] = 'application/json'
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response for url in param"}))
+        done()
+      }
+      can(req, res)
+    })
+
     it('should return the first response JSON body on payload match (because JSON body is invalid)', function (done) {
       data = 'bad json data'
       req.url = '/multiple_responses'
