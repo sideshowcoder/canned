@@ -299,6 +299,7 @@ Release History
 ---------------
 ### next
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
+* fix handling for urls in request body #90 (@wadtech)
 
 ### 0.3.7
 * The regex for matching request, was not considering arrays in the request JSON
