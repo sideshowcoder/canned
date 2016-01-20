@@ -311,6 +311,7 @@ Release History
 ### next
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
 * fix handling for urls in request body #90 (@wadtech)
+* documentation and test cases for cors headers #91 (@wadtech)
 
 ### 0.3.7
 * The regex for matching request, was not considering arrays in the request JSON
@@ -381,6 +382,7 @@ Contributors
 * [Brendan Rius](https://github.com/brendan-rius)
 * [Rocco Russo](https://github.com/xdemocle)
 * [git-jiby-me](https://github.com/git-jiby-me)
+* [wadtech](https://github.com/wadtech)
 
 License
 -------
