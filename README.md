@@ -234,7 +234,7 @@ There are 2 ways here, either you embed it somewhere programmatically
 
     var canned = require('canned')
     ,   http = require('http')
-    ,   opts = { cors: true, logger: process.stdout }
+    ,   opts = { logger: process.stdout }
 
     can = canned('/path/to/canned/response/folder', opts)
 
@@ -258,6 +258,17 @@ Also if you need additional headers to be served alongside the CORS headers
 these can be added like this (thanks to runemadsen)
 
     $ canned --headers "Authorization, Another-Header"
+
+To enable CORS programatically, you can use the following options:
+
+    var canned = require('canned')
+    ,   http = require('http')
+    ,   opts = { 
+            cors: true, 
+            cors_headers: ["Content-Type", "Location"]
+        }
+
+Optionally, the cors_headers value can be a comma-separated string, as per the CLI option.
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 

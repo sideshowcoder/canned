@@ -351,11 +351,28 @@ describe('canned', function () {
       can(req, res)
     })
 
-    it('adds custom headers', function (done) {
-      var can2 = canned('./spec/test_responses', { cors: true, cors_headers: "Authorization" })
+    it('adds custom headers from a string', function (done) {
+      var can2 = canned('./spec/test_responses', { cors: true, cors_headers: "Authorization, Content-Type" })
       req.url = '/'
       var expectedHeaders = {
-        'Access-Control-Allow-Headers': "X-Requested-With, Authorization"
+        'Access-Control-Allow-Headers': "X-Requested-With, Authorization, Content-Type"
+      }
+      res.setHeader = function (name, value) {
+        if (expectedHeaders[name]) {
+          expect(expectedHeaders[name]).toBe(value)
+          delete expectedHeaders[name]
+        }
+        // all expected headers have been set!
+        if (Object.keys(expectedHeaders).length === 0) done()
+      }
+      can2(req, res)
+    })
+
+    it('adds custom headers from an array', function (done) {
+      var can2 = canned('./spec/test_responses', { cors: true, cors_headers: ["Authorization", "Content-Type"] })
+      req.url = '/'
+      var expectedHeaders = {
+        'Access-Control-Allow-Headers': "X-Requested-With, Authorization, Content-Type"
       }
       res.setHeader = function (name, value) {
         if (expectedHeaders[name]) {
