@@ -566,9 +566,14 @@ describe('canned', function () {
   })
 
   describe("parsing metadata", function() {
+    var Canned, can;
+
+    beforeEach(function() {
+      Canned = require('../lib/canned')
+      can = new Canned('./spec/test_responses', {});
+    })
+
     it("Should accept statusCode", function(done) {
-      var Canned = require('../lib/canned')
-      var can = new Canned('./spec/test_responses', {});
       var mock_text = '//! statusCode: 418';
       var parsedMeta = can.parseMetaData(mock_text);
 
@@ -579,8 +584,6 @@ describe('canned', function () {
     })
 
     it("Should accept customHeaders", function(done) {
-      var Canned = require('../lib/canned')
-      var can = new Canned('./spec/test_responses', {});
       var mock_text = '//! statusCode: 418\n' +
                       '//! customHeaders: {"Authorization": "Bearer xyz"}';
       var parsedMeta = can.parseMetaData(mock_text);
@@ -595,8 +598,6 @@ describe('canned', function () {
     })
 
     it("Should accept request body", function(done) {
-      var Canned = require('../lib/canned')
-      var can = new Canned('./spec/test_responses', {});
       var mock_text = '//! statusCode: 418\n' +
                       '//! customHeaders: {"Authorization": "Bearer xyz"}\n' +
                       '//! body: {"colour": "green"}';
@@ -635,8 +636,6 @@ describe('canned', function () {
     })
 
     it("Should apply the latest request params, body or header specified", function(done) {
-      var Canned = require('../lib/canned')
-      var can = new Canned('./spec/test_responses', {});
       var mock_text = '//! statusCode: 418\n' +
                       '//! customHeaders: {"Authorization": "Bearer xyz"}\n' +
                       '//! body: {"colour": "green"}\n' +
