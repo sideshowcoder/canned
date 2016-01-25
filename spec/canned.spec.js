@@ -556,9 +556,6 @@ describe('canned', function () {
         expect(parsedMeta).toEqual({
           request: {
             serialkey: 'abc'
-          },
-          params: {
-            serialkey: '12121'
           }
         });
         done();
@@ -600,13 +597,15 @@ describe('canned', function () {
     it("Should accept request body", function(done) {
       var mock_text = '//! statusCode: 418\n' +
                       '//! customHeaders: {"Authorization": "Bearer xyz"}\n' +
+                      '//! customHeaders: {"Location": "Wimbledon Common"}\n' +
                       '//! body: {"colour": "green"}';
       var parsedMeta = can.parseMetaData(mock_text);
 
       expect(parsedMeta).toEqual({
         statusCode: 418,
         customHeaders: {
-          Authorization: 'Bearer xyz'
+          Authorization: 'Bearer xyz',
+          Location: 'Wimbledon Common'
         },
         request: {
           colour: 'green'
