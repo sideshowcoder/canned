@@ -556,12 +556,101 @@ describe('canned', function () {
         expect(parsedMeta).toEqual({
           request: {
             serialkey: 'abc'
-          },
-          params: {
-            serialkey: '12121'
           }
         });
         done();
+    })
+  })
+
+  describe("parsing metadata", function() {
+    var Canned, can;
+
+    beforeEach(function() {
+      Canned = require('../lib/canned')
+      can = new Canned('./spec/test_responses', {});
+    })
+
+    it("Should accept statusCode", function(done) {
+      var mock_text = '//! statusCode: 418';
+      var parsedMeta = can.parseMetaData(mock_text);
+
+      expect(parsedMeta).toEqual({
+        statusCode: 418
+      });
+      done();
+    })
+
+    it("Should accept customHeaders", function(done) {
+      var mock_text = '//! statusCode: 418\n' +
+                      '//! customHeaders: {"Authorization": "Bearer xyz"}';
+      var parsedMeta = can.parseMetaData(mock_text);
+
+      expect(parsedMeta).toEqual({
+        statusCode: 418,
+        customHeaders: {
+          Authorization: 'Bearer xyz'
+        }
+      });
+      done();
+    })
+
+    it("Should accept request body", function(done) {
+      var mock_text = '//! statusCode: 418\n' +
+                      '//! customHeaders: {"Authorization": "Bearer xyz"}\n' +
+                      '//! customHeaders: {"Location": "Wimbledon Common"}\n' +
+                      '//! body: {"colour": "green"}';
+      var parsedMeta = can.parseMetaData(mock_text);
+
+      expect(parsedMeta).toEqual({
+        statusCode: 418,
+        customHeaders: {
+          Authorization: 'Bearer xyz',
+          Location: 'Wimbledon Common'
+        },
+        request: {
+          colour: 'green'
+        }
+      });
+      done();
+    })
+
+    it("Should accept request body", function(done) {
+      var Canned = require('../lib/canned')
+      var can = new Canned('./spec/test_responses', {});
+      var mock_text = '//! statusCode: 418\n' +
+                      '//! customHeaders: {"Authorization": "Bearer xyz"}\n' +
+                      '//! body: {"colour": "green"}';
+      var parsedMeta = can.parseMetaData(mock_text);
+
+      expect(parsedMeta).toEqual({
+        statusCode: 418,
+        customHeaders: {
+          Authorization: 'Bearer xyz'
+        },
+        request: {
+          colour: 'green'
+        }
+      });
+      done();
+    })
+
+    it("Should apply the latest request params, body or header specified", function(done) {
+      var mock_text = '//! statusCode: 418\n' +
+                      '//! customHeaders: {"Authorization": "Bearer xyz"}\n' +
+                      '//! body: {"colour": "green"}\n' +
+                      '//! params: {"count": 126}';
+      var parsedMeta = can.parseMetaData(mock_text);
+
+      expect(parsedMeta).toEqual({
+        statusCode: 418,
+        customHeaders: {
+          Authorization: 'Bearer xyz'
+        },
+        request: {
+          count: '126',
+        }
+      });
+      done();
     })
   })
 
