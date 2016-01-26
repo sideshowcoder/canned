@@ -291,6 +291,9 @@ every install since you won't be able to run any global module bins if not.
 make sure you run a version of node which is 0.10.3 or higher, because it fixes
 a problem for the encoding handling when reading files
 
+### My JSON request body is not matching any responses
+Set the "Content-Type" header to contain "application/json".
+
 How to Contribute
 -----------------
 * Checkout the repository
