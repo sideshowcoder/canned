@@ -43,7 +43,7 @@ describe('canned', function () {
       var regex = new RegExp('.*Syntax.*')
       writeLog = function (message) {
         if (regex.test(message)) {
-          expect(message).toBe("problem sanatizing content for _invalid_syntax.get.json SyntaxError: Unexpected token I")
+          expect(message).toContain("problem sanatizing content for _invalid_syntax.get.json SyntaxError: Unexpected token I")
           done()
         }
       }
@@ -698,6 +698,16 @@ describe('canned', function () {
       req.url = '/multiple_responses_text'
       res.end = function (content) {
         expect(content).toEqual('response for two@example.com')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('should return the second response body on xml (or really any string) payload match', function (done) {
+      data = '<xml>b</xml>'
+      req.url = '/multiple_responses_xml_request_body'
+      res.end = function (content) {
+        expect(content).toEqual('<xml>B</xml>')
         done()
       }
       can(req, res)
