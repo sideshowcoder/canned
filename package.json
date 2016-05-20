@@ -1,6 +1,6 @@
 {
   "name": "canned",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "serve canned responses to mock an api, based on files in a folder",
   "main": "index.js",
   "scripts": {
