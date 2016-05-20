@@ -43,7 +43,7 @@ describe('canned', function () {
       var regex = new RegExp('.*Syntax.*')
       writeLog = function (message) {
         if (regex.test(message)) {
-          expect(message).toBe("problem sanatizing content for _invalid_syntax.get.json SyntaxError: Unexpected token I")
+          expect(message).toContain("problem sanatizing content for _invalid_syntax.get.json SyntaxError: Unexpected token I")
           done()
         }
       }
