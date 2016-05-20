@@ -703,6 +703,16 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('should return the second response body on xml (or really any string) payload match', function (done) {
+      data = '<xml>b</xml>'
+      req.url = '/multiple_responses_xml_request_body'
+      res.end = function (content) {
+        expect(content).toEqual('<xml>B</xml>')
+        done()
+      }
+      can(req, res)
+    })
+
     it('should return the first response xml on header match', function (done) {
       data = ''
       req.url = '/multiple_responses_xml'
