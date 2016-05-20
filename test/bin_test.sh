@@ -16,6 +16,10 @@ assert "echo $?" "0"
 curl -sL http://127.0.0.1:8765/search?search=apostrophe | grep "There's something about Mary"
 assert "echo $?" "0"
 
+response="`curl -sL http://127.0.0.1:8765/xml_request_body -X POST -d '<xml>b</xml>'`"
+echo $response
+assert "echo \"$response\"" '<xml>B</xml>'
+
 kill $CPID
 
 assert_end examples

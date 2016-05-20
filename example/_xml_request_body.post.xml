@@ -1,0 +1,5 @@
+//! body: <xml>a</xml>
+<xml>A</xml>
+
+//! body: <xml>b</xml>
+<xml>B</xml>

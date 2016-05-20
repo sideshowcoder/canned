@@ -383,6 +383,7 @@ Contributors
 * [Rocco Russo](https://github.com/xdemocle)
 * [git-jiby-me](https://github.com/git-jiby-me)
 * [wadtech](https://github.com/wadtech)
+* [ftes](https://github.com/ftes)
 
 License
 -------
