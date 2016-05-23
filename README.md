@@ -308,7 +308,7 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
-### next
+### 0.3.8
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
 * fix handling for urls in request body #90 (@wadtech)
 * documentation and test cases for cors headers #91 (@wadtech)
