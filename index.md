@@ -4,10 +4,13 @@ layout: index
 Canned fake API server
 ======================
 
-[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned) [![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned)
+[![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sideshowcoder/canned?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-
-View the docs on [Docs](http://sideshowcoder.github.io/canned)
+View the docs on [Docs](http://sideshowcoder.github.io/canned), and join the
+chat at [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sideshowcoder/canned?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Working with APIs, more often than not, during development you want to work
 with a fixed version of the responses provided. This is especially true if the
@@ -198,14 +201,15 @@ the line above.
 Wildcard responses are also supported, very useful to have 'wildcard'
 directories, so that if for given a request like:
 
-  GET /api/users/1/profile/
+  	GET /api/users/1/profile/
 
 you don't have a file in `./canned/api/users/1/profile/index.get.json` then
 it would look for a file in `./canned/api/users/any/index.get.json` or
 similar. Wildcards can be specified on the command line via
 
-  canned --wildcard iamawildcard
+  	canned --wildcard myany
 
+This would change the lookup to `./canned/api/users/myany/index.get.json`
 
 How about some docs inside for the responses?
 ---------------------------------------------
@@ -233,7 +237,7 @@ There are 2 ways here, either you embed it somewhere programmatically
 
     var canned = require('canned')
     ,   http = require('http')
-    ,   opts = { cors: true, logger: process.stdout }
+    ,   opts = { logger: process.stdout }
 
     can = canned('/path/to/canned/response/folder', opts)
 
@@ -257,6 +261,17 @@ Also if you need additional headers to be served alongside the CORS headers
 these can be added like this (thanks to runemadsen)
 
     $ canned --headers "Authorization, Another-Header"
+
+To enable CORS programatically, you can use the following options:
+
+    var canned = require('canned')
+    ,   http = require('http')
+    ,   opts = { 
+            cors: true, 
+            cors_headers: ["Content-Type", "Location"]
+        }
+
+Optionally, the cors_headers value can be a comma-separated string, as per the CLI option.
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
@@ -296,7 +311,12 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
-### next
+### 0.3.8
+* fix improper handling of carriage return in windows #79 (@git-jiby-me)
+* fix handling for urls in request body #90 (@wadtech)
+* documentation and test cases for cors headers #91 (@wadtech)
+* enable matching raw request body rather than property-based #96 (@ftes)
+* fix query string param handling #97 (@wadtech @targoo)
 
 ### 0.3.7
 * The regex for matching request, was not considering arrays in the request JSON
@@ -367,6 +387,9 @@ Contributors
 * [Brendan Rius](https://github.com/brendan-rius)
 * [Rocco Russo](https://github.com/xdemocle)
 * [git-jiby-me](https://github.com/git-jiby-me)
+* [wadtech](https://github.com/wadtech)
+* [ftes](https://github.com/ftes)
+* [targoo](https://github.com/targoo)
 
 License
 -------
