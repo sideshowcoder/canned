@@ -508,6 +508,24 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it("should select the right response based on the GET request data", function (done) {
+      req.url = "/multiple_get_responses?" + querystring.stringify({ foo: "apostrophe" })
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response with 'apostrophes'"}))
+        done()
+      }
+      can(req, res)
+    })
+
+    it("should select the right response based on the GET request data", function (done) {
+      req.url = "/multiple_get_responses?" + querystring.stringify({ foo: "bar", index: 1 })
+      res.end = function (content) {
+        expect(content).toEqual(JSON.stringify({"response": "response with index 1"}))
+        done()
+      }
+      can(req, res)
+    })
+
     it("should select the first response with no query string", function (done) {
       req.url = "/multiple_get_responses"
       res.end = function (content) {

@@ -312,6 +312,8 @@ Release History
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
 * fix handling for urls in request body #90 (@wadtech)
 * documentation and test cases for cors headers #91 (@wadtech)
+* enable matching raw request body rather than property-based #96 (@ftes)
+* fix query string param handling #97 (@wadtech @targoo)
 
 ### 0.3.7
 * The regex for matching request, was not considering arrays in the request JSON
@@ -384,6 +386,7 @@ Contributors
 * [git-jiby-me](https://github.com/git-jiby-me)
 * [wadtech](https://github.com/wadtech)
 * [ftes](https://github.com/ftes)
+* [targoo](https://github.com/targoo)
 
 License
 -------
