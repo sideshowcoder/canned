@@ -10,6 +10,8 @@ var canned = require('../index')
           .default('w', 'any')
           .alias('w', 'wildcard')
           .describe('w', 'wildcard path name for ids')
+          .default('iterate_accept', false)
+          .describe('iterate_accept', 'iterates through Accept header values from beginning to end')
           .default('cors', true)
           .describe('cors', 'disable cors support')
           .default('headers', false)
@@ -27,6 +29,7 @@ if (argv.h) {
 
 var dir = ''
 ,   port = argv.p
+,   iterate_accept = (argv.iterate_accept === "true")
 ,   cors = argv.cors
 ,   cors_headers = argv.headers
 ,   logger
@@ -42,6 +45,12 @@ if (argv.q) {
   process.stdout.write('starting canned on port ' + port + ' for ' + cannedDir + '\n')
 }
 
-var can = canned(dir, { logger: logger, cors: cors, cors_headers: cors_headers, wildcard: wildcard})
-http.createServer(can).listen(port)
+var can = canned(dir, {
+  logger: logger,
+  iterate_accept: iterate_accept,
+  cors: cors,
+  cors_headers: cors_headers,
+  wildcard: wildcard
+})
 
+http.createServer(can).listen(port)
