@@ -19,7 +19,9 @@ output something. This is what Canned is for!
 
 What does it do?
 ----------------
-Canned maps a folder structure to API responses. Given the following directory structure:
+
+Canned maps a folder structure to API responses. Given the following directory
+structure:
 
     /content/index.get.html
     /comment/any.get.json
@@ -28,6 +30,7 @@ Canned maps a folder structure to API responses. Given the following directory s
 
 requests like
 
+    Accept: application/json
     GET /comment/:id
 
 are served from the file `/comment/any.get.json` as
@@ -37,6 +40,7 @@ are served from the file `/comment/any.get.json` as
 
 requests like
 
+    Accept: text/html
     GET /content/
 
 are served from the file `/content/index.get.html` as
@@ -49,6 +53,7 @@ are served from the file `/content/index.get.html` as
 
 requests like
 
+    Accept: application/json
     GET /comment/1/votes
 
 are served from the file `/comment/1/index.get.json` as
@@ -58,6 +63,7 @@ are served from the file `/comment/1/index.get.json` as
 
 requests like
 
+    Accept: application/json
     GET /comment/123456789/votes
 
 are served from the file `/comment/any/index.get.json`
@@ -65,7 +71,23 @@ are served from the file `/comment/any/index.get.json`
     Content-Type: application/json
     { "content": "I am a wildcard comment for any id", "author": "sideshowcoder" }
 
+The matching works on the filename by treating it as `PATH.VERB.CONTENT_TYPE` so
+`index.get.json` has the path `index` the verb is `get` and the content-type
+`json`. Supported content types are
 
+```
+json => application/json
+html => text/html
+txt  => text/plain
+js   => application/javascript
+```
+
+So an example is for querying (with canned running on localhost:3000)
+
+```
+$ curl -H "Accept: text/javascript" http://localhost:3000/comment/1
+> { "content": "I am a comment", "author": "sideshowcoder" }
+```
 
 Awesome! so what is supported?
 ------------------------------
@@ -253,6 +275,10 @@ Which serves the current folder with canned responses on port 3000
 
 will serve the relative folder via port 5000
 
+If you want canned to iterate through all accepted content types in the `Accept` header, use
+
+    $ canned --relaxed_accept=true ./my/reponses/
+
 If for whatever reason you want to turn of CORS support do so via
 
     $ canned --cors=false ./my/responses/
@@ -266,8 +292,8 @@ To enable CORS programatically, you can use the following options:
 
     var canned = require('canned')
     ,   http = require('http')
-    ,   opts = { 
-            cors: true, 
+    ,   opts = {
+            cors: true,
             cors_headers: ["Content-Type", "Location"]
         }
 
