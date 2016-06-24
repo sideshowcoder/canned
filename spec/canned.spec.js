@@ -300,7 +300,7 @@ describe('canned', function () {
     })
 
     it('selects json file when application/json is not first in the Accept header', function (done) {
-      can = canned('./spec/test_responses', {"iterate_accept": true})
+      can = canned('./spec/test_responses', {"relaxed_accept": true})
       req.url = '/d/multiple-accept-types'
       req.headers = {
         accept: 'text/html, application/json'

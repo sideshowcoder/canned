@@ -10,8 +10,8 @@ var canned = require('../index')
           .default('w', 'any')
           .alias('w', 'wildcard')
           .describe('w', 'wildcard path name for ids')
-          .default('iterate_accept', false)
-          .describe('iterate_accept', 'iterates through Accept header values from beginning to end')
+          .default('relaxed_accept', false)
+          .describe('relaxed_accept', 'iterates through Accept header values from beginning to end')
           .default('cors', true)
           .describe('cors', 'disable cors support')
           .default('headers', false)
@@ -29,7 +29,7 @@ if (argv.h) {
 
 var dir = ''
 ,   port = argv.p
-,   iterate_accept = (argv.iterate_accept === "true")
+,   relaxed_accept = argv.relaxed_accept
 ,   cors = argv.cors
 ,   cors_headers = argv.headers
 ,   logger
@@ -47,7 +47,7 @@ if (argv.q) {
 
 var can = canned(dir, {
   logger: logger,
-  iterate_accept: iterate_accept,
+  relaxed_accept: relaxed_accept,
   cors: cors,
   cors_headers: cors_headers,
   wildcard: wildcard

@@ -274,7 +274,7 @@ will serve the relative folder via port 5000
 
 If you want canned to iterate through all accepted content types in the `Accept` header, use
 
-    $ canned --iterate_accept=true ./my/reponses/
+    $ canned --relaxed_accept=true ./my/reponses/
 
 If for whatever reason you want to turn of CORS support do so via
 
