@@ -334,6 +334,11 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+### 0.3.9
+* relaxed handling for accept headers, meaning select the first result that can be 
+  served even if it is not the first accepted content type. option 
+`--relaxed-accept` #100 (@CheungJ)
+
 ### 0.3.8
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
 * fix handling for urls in request body #90 (@wadtech)
@@ -413,6 +418,7 @@ Contributors
 * [wadtech](https://github.com/wadtech)
 * [ftes](https://github.com/ftes)
 * [targoo](https://github.com/targoo)
+* [CheungJ](https://github.com/CheungJ)
 
 License
 -------
