@@ -334,6 +334,9 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+### next 
+* Windows line ending support #102 (@antxxxx)
+
 ### 0.3.9
 * relaxed handling for accept headers, meaning select the first result that can be 
   served even if it is not the first accepted content type. option 
@@ -419,6 +422,7 @@ Contributors
 * [ftes](https://github.com/ftes)
 * [targoo](https://github.com/targoo)
 * [CheungJ](https://github.com/CheungJ)
+* [antxxxx](https://github.com/antxxxx)
 
 License
 -------
