@@ -339,6 +339,7 @@ Release History
 ---------------
 ### next 
 * Windows line ending support #102 (@antxxxx)
+* cleanup and documentation #95 (@wadtech)
 
 ### 0.3.9
 * relaxed handling for accept headers, meaning select the first result that can be 
