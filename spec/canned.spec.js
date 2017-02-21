@@ -10,6 +10,8 @@ describe('canned', function () {
     can = canned('./spec/test_responses')
     req = { method: 'GET' }
     res = { setHeader: function () {}, end: function () {} }
+    spyOn(res, 'setHeader')
+
   })
 
   describe('paths', function () {
@@ -129,6 +131,27 @@ describe('canned', function () {
       can(req, res)
     })
   })
+
+    describe('custom response header', function(){
+      it('populates custom header with single header', function(done){
+          req.url = '/single_custom_header'
+          res.end = function() {
+            expect(res.setHeader).toHaveBeenCalledWith('Header-Key', 'Header-Content')
+            done()
+        }
+          can(req, res)
+      })
+
+      it('populates custom headers with multiple headers', function(done){
+          req.url = '/multiple_custom_header'
+          res.end = function() {
+            expect(res.setHeader).toHaveBeenCalledWith('Header-Key', 'Header-Content')
+            expect(res.setHeader).toHaveBeenCalledWith('Header-Key2', 'Header-Content2')
+            done()
+        }
+          can(req, res)
+      })
+    })
 
   describe('resolve file paths', function () {
 
