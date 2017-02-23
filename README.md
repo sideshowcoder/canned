@@ -148,10 +148,15 @@ Multiple headers need to be written on one single line and comma-separated, like
 
     //! statusCode: 201, contentType: "application/vnd.custom+xml"
 
-If you need to send bind custom HTTP headers to the response you can add them as a JSON object in the
-`customHeaders` attributes:
+If you need to send bind custom HTTP headers to the response you can add them as headers to the response file using
+ the keyword `customHeader`:
 
-    //! customHeaders: [{"MyCustomHeaderName": "MyCustomHeaderValue"}, {"SecondHeaderName": "SecondHeaderValue"}]
+    //! customHeader: {"MyCustomHeaderName": "MyCustomHeaderValue"}
+
+In case you need more then one custom header in the response, you can just use the same keyword multiple times:
+
+    //! customHeader: {"MyCustomHeaderName": "MyCustomHeaderValue"}
+    //! customHeader: {"SecondHeaderName": "SecondHeaderValue"}
 
 Variable responses
 ------------------
