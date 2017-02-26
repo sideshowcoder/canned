@@ -151,10 +151,15 @@ Multiple headers need to be written on one single line and comma-separated, like
 
     //! statusCode: 201, contentType: "application/vnd.custom+xml"
 
-If you need to send bind custom HTTP headers to the response you can add them as a JSON object in the
-`customHeaders` attributes:
+If you need to send bind custom HTTP headers to the response you can add them as headers to the response file using
+ the keyword `customHeader`:
 
-    //! customHeaders: [{"MyCustomHeaderName": "MyCustomHeaderValue"}, {"SecondHeaderName": "SecondHeaderValue"}]
+    //! customHeader: {"MyCustomHeaderName": "MyCustomHeaderValue"}
+
+In case you need more then one custom header in the response, you can just use the same keyword multiple times:
+
+    //! customHeader: {"MyCustomHeaderName": "MyCustomHeaderValue"}
+    //! customHeader: {"SecondHeaderName": "SecondHeaderValue"}
 
 Variable responses
 ------------------
@@ -320,6 +325,9 @@ every install since you won't be able to run any global module bins if not.
 make sure you run a version of node which is 0.10.3 or higher, because it fixes
 a problem for the encoding handling when reading files
 
+### My JSON request body is not matching any responses
+Set the "Content-Type" header to contain "application/json".
+
 How to Contribute
 -----------------
 * Checkout the repository
@@ -337,6 +345,18 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
+### next
+
+### 0.3.10
+* Windows line ending support #102 (@antxxxx)
+* cleanup and documentation #95 (@wadtech)
+* customHeader handling #110 (@mazoni)
+
+### 0.3.9
+* relaxed handling for accept headers, meaning select the first result that can be 
+  served even if it is not the first accepted content type. option 
+`--relaxed-accept` #100 (@CheungJ)
+
 ### 0.3.8
 * fix improper handling of carriage return in windows #79 (@git-jiby-me)
 * fix handling for urls in request body #90 (@wadtech)
@@ -416,6 +436,9 @@ Contributors
 * [wadtech](https://github.com/wadtech)
 * [ftes](https://github.com/ftes)
 * [targoo](https://github.com/targoo)
+* [CheungJ](https://github.com/CheungJ)
+* [antxxxx](https://github.com/antxxxx)
+* [mazoni](https://github.com/mazoni)
 
 License
 -------
