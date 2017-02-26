@@ -342,9 +342,12 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
-### next 
+### next
+
+### 0.3.10
 * Windows line ending support #102 (@antxxxx)
 * cleanup and documentation #95 (@wadtech)
+* customHeader handling #110 (@mazoni)
 
 ### 0.3.9
 * relaxed handling for accept headers, meaning select the first result that can be 
@@ -432,6 +435,7 @@ Contributors
 * [targoo](https://github.com/targoo)
 * [CheungJ](https://github.com/CheungJ)
 * [antxxxx](https://github.com/antxxxx)
+* [mazoni](https://github.com/mazoni)
 
 License
 -------
