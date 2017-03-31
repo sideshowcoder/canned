@@ -343,6 +343,7 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 Release History
 ---------------
 ### next
+* adding PATCH to default Access-Control-Allow-Method Cors header #113 (@william-mcmillian)
 
 ### 0.3.10
 * Windows line ending support #102 (@antxxxx)
@@ -436,6 +437,7 @@ Contributors
 * [CheungJ](https://github.com/CheungJ)
 * [antxxxx](https://github.com/antxxxx)
 * [mazoni](https://github.com/mazoni)
+* [william-mcmillian](https://github.com/william-mcmillian)
 
 License
 -------
