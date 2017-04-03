@@ -374,7 +374,7 @@ describe('canned', function () {
       var expectedHeaders = {
         'Access-Control-Allow-Origin': "*",
         'Access-Control-Allow-Headers': "X-Requested-With",
-        'Access-Control-Allow-Methods': "GET, POST, PUT, DELETE, OPTIONS"
+        'Access-Control-Allow-Methods': "GET, POST, PUT, PATCH, DELETE, OPTIONS"
       }
       res.setHeader = function (name, value) {
         if (expectedHeaders[name]) {
