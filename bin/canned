@@ -10,6 +10,8 @@ var canned = require('../index')
           .default('w', 'any')
           .alias('w', 'wildcard')
           .describe('w', 'wildcard path name for ids')
+          .default('response_delay', 0)
+          .describe('response_delay', 'response resolve delay')
           .default('relaxed_accept', false)
           .describe('relaxed_accept', 'iterates through Accept header values from beginning to end')
           .default('cors', true)
@@ -35,6 +37,7 @@ var dir = ''
 ,   logger
 ,   cannedDir
 ,   wildcard = argv.wildcard
+,   response_delay = argv.response_delay
 
 if (argv._.length === 1) dir = argv._[0] // use the passed directory
 if (argv.q) {
@@ -50,7 +53,8 @@ var can = canned(dir, {
   relaxed_accept: relaxed_accept,
   cors: cors,
   cors_headers: cors_headers,
-  wildcard: wildcard
+  wildcard: wildcard,
+  response_delay: response_delay
 })
 
 http.createServer(can).listen(port)
