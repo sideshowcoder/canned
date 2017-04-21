@@ -442,6 +442,7 @@ Contributors
 * [antxxxx](https://github.com/antxxxx)
 * [mazoni](https://github.com/mazoni)
 * [william-mcmillian](https://github.com/william-mcmillian)
+* [Onatolich](https://github.com/Onatolich)
 
 License
 -------
