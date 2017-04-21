@@ -277,6 +277,10 @@ Which serves the current folder with canned responses on port 3000
 
 will serve the relative folder via port 5000
 
+If you need canned to respond with some delay, pass delay in ms to `response_delay` arg
+
+    $ canned --response_delay=1000 ./my/reponses/
+
 If you want canned to iterate through all accepted content types in the `Accept` header, use
 
     $ canned --relaxed_accept=true ./my/reponses/
@@ -438,6 +442,7 @@ Contributors
 * [antxxxx](https://github.com/antxxxx)
 * [mazoni](https://github.com/mazoni)
 * [william-mcmillian](https://github.com/william-mcmillian)
+* [Onatolich](https://github.com/Onatolich)
 
 License
 -------
