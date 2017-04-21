@@ -348,6 +348,7 @@ Release History
 ---------------
 ### next
 * adding PATCH to default Access-Control-Allow-Method Cors header #113 (@william-mcmillian)
+* adding support for delayed responses #114 (@Onatolich)
 
 ### 0.3.10
 * Windows line ending support #102 (@antxxxx)
