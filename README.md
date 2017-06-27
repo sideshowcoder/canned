@@ -106,7 +106,7 @@ file with no query params if it exists.
 
 *Warning this will be deprecated in the future since canned now supports
 multiple response based on the request body or GET URL parameters in one file.
-This is the prefered way since files with ? in the name do not work on Windows*
+This is the preferred way since files with ? in the name do not work on Windows*
 
     file                            | resquest
     /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
@@ -293,7 +293,7 @@ these can be added like this (thanks to runemadsen)
 
     $ canned --headers "Authorization, Another-Header"
 
-To enable CORS programatically, you can use the following options:
+To enable CORS programmatically, you can use the following options:
 
     var canned = require('canned')
     ,   http = require('http')
@@ -303,6 +303,15 @@ To enable CORS programatically, you can use the following options:
         }
 
 Optionally, the cors_headers value can be a comma-separated string, as per the CLI option.
+
+Other optional options include:
+    
+    var opts = {
+            sanitize: false, // get responses as is without any sanitization
+            response_delay: 2000, // delay the response for 2 seconds
+            relaxed_accept: true // iterate through all accepted content types in the `Accept` header
+            wildcard: 'myany', // specify 'wildcard' directory, e.g. ./canned/api/users/myany/index.get.json
+        }
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
@@ -382,13 +391,13 @@ Release History
 
 ### 0.3.5
 * support for custom HTTP headers in responses
-* fix for matching multiple paramters in response #73 thanks
+* fix for matching multiple parameters in response #73 thanks
   [xdemocle](https://github.com/xdemocle)
 * fix any wildcard in the middle of the path #66 thanks
   [msurdi](https://github.com/msurdi)
 
 ### 0.3.4
-* update depedencies and dev-dependencies
+* update dependencies and dev-dependencies
 * wildcard parameters thanks to [msurdi](https://github.com/msurdi) see
   https://github.com/sideshowcoder/canned/pull/64
 
