@@ -56,13 +56,13 @@ describe('canned', function () {
 
   describe('sanitization', function () {
     var writeLog, logCan
+    var logger = {
+      write: function (msg) {
+        if (writeLog) writeLog(msg)
+      }
+    }
     describe('with sanitization enabled', function() {
       beforeEach(function () {
-        var logger = {
-          write: function (msg) {
-            if (writeLog) writeLog(msg)
-          }
-        }
         logCan = canned('./spec/test_responses', { logger: logger })
       })
 
@@ -81,11 +81,6 @@ describe('canned', function () {
 
     describe('with sanitization disabled', function() {
       beforeEach(function () {
-        var logger = {
-          write: function (msg) {
-            if (writeLog) writeLog(msg)
-          }
-        }
         logCan = canned('./spec/test_responses', { logger: logger, sanitize: false })
       })
 
