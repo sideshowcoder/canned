@@ -54,6 +54,52 @@ describe('canned', function () {
     })
   })
 
+  describe('sanitization', function () {
+    var writeLog, logCan
+    describe('with sanitization enabled', function() {
+      beforeEach(function () {
+        var logger = {
+          write: function (msg) {
+            if (writeLog) writeLog(msg)
+          }
+        }
+        logCan = canned('./spec/test_responses', { logger: logger })
+      })
+
+      it('displays an error for json containing unexpected markup', function (done) {
+        var regex = new RegExp('.*Syntax.*')
+        writeLog = function (message) {
+          if (regex.test(message)) {
+            expect(message).toContain("problem sanatizing content for _broken_sanitize.get.json SyntaxError: Unexpected token")
+            done()
+          }
+        }
+        req.url = '/broken_sanitize'
+        logCan(req, res)
+      })
+    })
+
+    describe('with sanitization disabled', function() {
+      beforeEach(function () {
+        var logger = {
+          write: function (msg) {
+            if (writeLog) writeLog(msg)
+          }
+        }
+        logCan = canned('./spec/test_responses', { logger: logger, sanitize: false })
+      })
+
+      it('loads content from _broken_sanitize.get.json', function (done) {
+        req.url = '/broken_sanitize'
+        res.end = function (content) {
+          expect(content).toContain('"whatAmI": "I have been copy/pasted into a WYSIWYG editor by your grandma"')
+          done()
+        }
+        logCan(req, res)
+      })
+    })
+  })
+
   describe('status codes', function () {
     it('sets 404 for non resolveable request', function (done) {
       req.url = '/i_do_not_exist'
