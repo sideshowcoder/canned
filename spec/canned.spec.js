@@ -10,6 +10,8 @@ describe('canned', function () {
     can = canned('./spec/test_responses')
     req = { method: 'GET' }
     res = { setHeader: function () {}, end: function () {} }
+    spyOn(res, 'setHeader')
+
   })
 
   describe('paths', function () {
@@ -49,6 +51,47 @@ describe('canned', function () {
       }
       req.url = '/invalid_syntax'
       logCan(req, res)
+    })
+  })
+
+  describe('sanitization', function () {
+    var writeLog, logCan
+    var logger = {
+      write: function (msg) {
+        if (writeLog) writeLog(msg)
+      }
+    }
+    describe('with sanitization enabled', function() {
+      beforeEach(function () {
+        logCan = canned('./spec/test_responses', { logger: logger })
+      })
+
+      it('displays an error for json containing unexpected markup', function (done) {
+        var regex = new RegExp('.*Syntax.*')
+        writeLog = function (message) {
+          if (regex.test(message)) {
+            expect(message).toContain("problem sanatizing content for _broken_sanitize.get.json SyntaxError: Unexpected token")
+            done()
+          }
+        }
+        req.url = '/broken_sanitize'
+        logCan(req, res)
+      })
+    })
+
+    describe('with sanitization disabled', function() {
+      beforeEach(function () {
+        logCan = canned('./spec/test_responses', { logger: logger, sanitize: false })
+      })
+
+      it('loads content from _broken_sanitize.get.json', function (done) {
+        req.url = '/broken_sanitize'
+        res.end = function (content) {
+          expect(content).toContain('"whatAmI": "I have been copy/pasted into a WYSIWYG editor by your grandma"')
+          done()
+        }
+        logCan(req, res)
+      })
     })
   })
 
@@ -129,6 +172,27 @@ describe('canned', function () {
       can(req, res)
     })
   })
+
+    describe('custom response header', function(){
+      it('populates custom header with single header', function(done){
+          req.url = '/single_custom_header'
+          res.end = function() {
+            expect(res.setHeader).toHaveBeenCalledWith('Header-Key', 'Header-Content')
+            done()
+        }
+          can(req, res)
+      })
+
+      it('populates custom headers with multiple headers', function(done){
+          req.url = '/multiple_custom_header'
+          res.end = function() {
+            expect(res.setHeader).toHaveBeenCalledWith('Header-Key', 'Header-Content')
+            expect(res.setHeader).toHaveBeenCalledWith('Header-Key2', 'Header-Content2')
+            done()
+        }
+          can(req, res)
+      })
+    })
 
   describe('resolve file paths', function () {
 

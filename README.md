@@ -3,7 +3,6 @@ Canned fake API server
 
 [![Build Status](https://travis-ci.org/sideshowcoder/canned.png?branch=master)](https://travis-ci.org/sideshowcoder/canned)
 [![Code Climate](https://codeclimate.com/github/sideshowcoder/canned.png)](https://codeclimate.com/github/sideshowcoder/canned)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sideshowcoder/canned/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sideshowcoder/canned?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 View the docs on [Docs](http://sideshowcoder.github.io/canned), and join the
@@ -107,7 +106,7 @@ file with no query params if it exists.
 
 *Warning this will be deprecated in the future since canned now supports
 multiple response based on the request body or GET URL parameters in one file.
-This is the prefered way since files with ? in the name do not work on Windows*
+This is the preferred way since files with ? in the name do not work on Windows*
 
     file                            | resquest
     /index?name=Superman.get.json   | GET /?name=Superman&NotAllParams=NeedToMatch
@@ -148,10 +147,15 @@ Multiple headers need to be written on one single line and comma-separated, like
 
     //! statusCode: 201, contentType: "application/vnd.custom+xml"
 
-If you need to send bind custom HTTP headers to the response you can add them as a JSON object in the
-`customHeaders` attributes:
+If you need to send bind custom HTTP headers to the response you can add them as headers to the response file using
+ the keyword `customHeader`:
 
-    //! customHeaders: [{"MyCustomHeaderName": "MyCustomHeaderValue"}, {"SecondHeaderName": "SecondHeaderValue"}]
+    //! customHeader: {"MyCustomHeaderName": "MyCustomHeaderValue"}
+
+In case you need more then one custom header in the response, you can just use the same keyword multiple times:
+
+    //! customHeader: {"MyCustomHeaderName": "MyCustomHeaderValue"}
+    //! customHeader: {"SecondHeaderName": "SecondHeaderValue"}
 
 Variable responses
 ------------------
@@ -272,6 +276,10 @@ Which serves the current folder with canned responses on port 3000
 
 will serve the relative folder via port 5000
 
+If you need canned to respond with some delay, pass delay in ms to `response_delay` arg
+
+    $ canned --response_delay=1000 ./my/reponses/
+
 If you want canned to iterate through all accepted content types in the `Accept` header, use
 
     $ canned --relaxed_accept=true ./my/reponses/
@@ -285,7 +293,7 @@ these can be added like this (thanks to runemadsen)
 
     $ canned --headers "Authorization, Another-Header"
 
-To enable CORS programatically, you can use the following options:
+To enable CORS programmatically, you can use the following options:
 
     var canned = require('canned')
     ,   http = require('http')
@@ -295,6 +303,15 @@ To enable CORS programatically, you can use the following options:
         }
 
 Optionally, the cors_headers value can be a comma-separated string, as per the CLI option.
+
+Other optional options include:
+    
+    var opts = {
+            sanitize: false, // get responses as is without any sanitization
+            response_delay: 2000, // delay the response for 2 seconds
+            relaxed_accept: true // iterate through all accepted content types in the `Accept` header
+            wildcard: 'myany', // specify 'wildcard' directory, e.g. ./canned/api/users/myany/index.get.json
+        }
 
 For more information checkout [the pull request](https://github.com/sideshowcoder/canned/pull/9)
 
@@ -337,9 +354,15 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 
 Release History
 ---------------
-### next 
+### next
+* adding PATCH to default Access-Control-Allow-Method Cors header #113 (@william-mcmillian)
+* adding support for delayed responses #114 (@Onatolich)
+* adding support to make sanatize optional #115 (@YuliyaMarholina)
+
+### 0.3.10
 * Windows line ending support #102 (@antxxxx)
 * cleanup and documentation #95 (@wadtech)
+* customHeader handling #110 (@mazoni)
 
 ### 0.3.9
 * relaxed handling for accept headers, meaning select the first result that can be 
@@ -369,13 +392,13 @@ Release History
 
 ### 0.3.5
 * support for custom HTTP headers in responses
-* fix for matching multiple paramters in response #73 thanks
+* fix for matching multiple parameters in response #73 thanks
   [xdemocle](https://github.com/xdemocle)
 * fix any wildcard in the middle of the path #66 thanks
   [msurdi](https://github.com/msurdi)
 
 ### 0.3.4
-* update depedencies and dev-dependencies
+* update dependencies and dev-dependencies
 * wildcard parameters thanks to [msurdi](https://github.com/msurdi) see
   https://github.com/sideshowcoder/canned/pull/64
 
@@ -427,6 +450,9 @@ Contributors
 * [targoo](https://github.com/targoo)
 * [CheungJ](https://github.com/CheungJ)
 * [antxxxx](https://github.com/antxxxx)
+* [mazoni](https://github.com/mazoni)
+* [william-mcmillian](https://github.com/william-mcmillian)
+* [Onatolich](https://github.com/Onatolich)
 
 License
 -------
