@@ -351,7 +351,7 @@ describe('canned', function () {
       var expectedHeaders = {
         'Access-Control-Allow-Origin': "*",
         'Access-Control-Allow-Headers': "X-Requested-With",
-        'Access-Control-Allow-Methods': "GET, POST, PUT, DELETE, OPTIONS"
+        'Access-Control-Allow-Methods': "GET, POST, PUT, PATCH, DELETE, OPTIONS"
       }
       res.setHeader = function (name, value) {
         if (expectedHeaders[name]) {
@@ -550,15 +550,15 @@ describe('canned', function () {
   })
 
   describe("Issues", function () {
-    // it("#49", function (done) {
-    //   req.url = "/regexmatchbug?u=root&p=root&q=select+mean(value)+from+%22Coraid.1Controller.ZFS.VOps-3008.gauge.wlat%22+where+time+%3E++now()+-+86400000000u+and+time+%3C+now()+-+0u+group+by+time(240000000u)+fill(null)"
-    //   res.end = function (content) {
-    //     var response = JSON.parse(content)
-    //     expect(response.itworks).toBeTruthy()
-    //     done()
-    //   }
-    //   can(req, res)
-    // })
+    it("#49", function (done) {
+      req.url = "/regexmatchbug?u=root&p=root&q=select+from+%22Coraid-3008.gauge+time+%3E++now()+-+86400000000u+and+time+%3C+now()"
+      res.end = function (content) {
+        var response = JSON.parse(content)
+        expect(response.itworks).toBeTruthy()
+        done()
+      }
+      can(req, res)
+    })
 
     it("#58", function(done) {
       req.url = "/multiple_get_responses?" + querystring.stringify({foo: "apostrophe"})
