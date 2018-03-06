@@ -72,10 +72,14 @@ The matching works on the filename by treating it as `PATH.VERB.CONTENT_TYPE` so
 `json`. Supported content types are
 
 ```
-json => application/json
-html => text/html
-txt  => text/plain
-js   => application/javascript
+json   => application/json
+html   => text/html
+txt    => text/plain
+js     => application/javascript
+csv    => text/csv
+// linked-data formats:
+nt     => application/n-triples
+jsonld => application/ld+json
 ```
 
 So an example is for querying (with canned running on localhost:3000)
