@@ -327,6 +327,43 @@ describe('canned', function () {
       can(req, res)
     })
 
+    it('selects jsonld file for request with application/ld+json accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'application/ld+json'
+      }
+      res.end = function (content) {
+        var jsonResponse = JSON.parse(content)
+        expect(jsonResponse['@context']).toBe('http://schema.org/')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('selects nt file for request with application/n-triples accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'application/n-triples'
+      }
+      res.end = function (content) {
+        expect(content).toBe('_:b0 <http://schema.org/name> \"Jane Doe\" .')
+        done()
+      }
+      can(req, res)
+    })
+
+    it('selects csv file for request with text/csv accept header', function (done) {
+      req.url = '/multiple_type';
+      req.headers = {
+        accept: 'text/csv'
+      }
+      res.end = function (content) {
+        expect(content).toBe('Jane Doe,Professor,(425) 123-4567,http://www.janedoe.com')
+        done()
+      }
+      can(req, res)
+    })
+
     it('selects js file for request with application/javascript accept header', function (done) {
       req.url = '/multiple_type';
       req.headers = {
