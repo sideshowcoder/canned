@@ -1,7 +1,10 @@
 .PHONY: test hint default
 CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
-default: hint test
+default: bootstrap hint test
+
+bootstrap:
+	npm install
 
 test:
 	./node_modules/.bin/jasmine-node --captureExceptions spec
