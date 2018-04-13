@@ -260,16 +260,7 @@ describe('canned', function () {
     })
 
     it('looks for _file with query params', function (done) {
-      req.url = '/a?name=Superman&age=30&idontneed=everyparaminfilename'
-      res.end = function (content) {
-        expect(content).toContain('Superman!')
-        done()
-      }
-      can(req, res)
-    })
-
-    it('looks for index file with query params', function (done) {
-      req.url = '/?name=Superman'
+      req.url = '/multimatch_query_param?name=Superman&age=30&idontneed=everyparaminfilename'
       res.end = function (content) {
         expect(content).toContain('Superman!')
         done()
@@ -278,7 +269,7 @@ describe('canned', function () {
     })
 
     it('can tell different query param files a part', function (done) {
-      req.url = '/a?name=Batman&age=30&idontneed=everyparaminfilename'
+      req.url = '/multimatch_query_param?name=Batman&age=30&idontneed=everyparaminfilename'
       res.end = function (content) {
         expect(content).toContain('Batman!')
         done()
