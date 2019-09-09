@@ -13,13 +13,13 @@
     "url": "https://github.com/sideshowcoder/canned"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "optimist": "^0.6.0"
   },
   "devDependencies": {
-    "jasmine-node": "^1.14.2",
-    "jshint": "^2.7.0",
-    "node-dev": "^3.1.3"
+    "jasmine-node": "^3.0.0",
+    "jshint": "^2.10.2",
+    "node-dev": "^4.0.0"
   },
   "engines": {
     "node": ">=0.10.3"
