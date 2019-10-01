@@ -128,7 +128,7 @@ and all requests will serve the CORS Headers as well
     /                           | OPTIONS serve all the options needed for CORS
     /index.get.json             | GET serves /... + CORS Headers
 
-If you need some custum return codes, just add them to the file via adding a
+If you need some custom return codes, just add them to the file via adding a
 file header like so
 
     //! statusCode: 201
