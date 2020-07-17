@@ -489,6 +489,30 @@ describe('canned', function () {
       }
       can2(req, res)
     })
+
+    it('overrides Access-Control-Allow-* response headers', function (done) {
+      var can2 = canned('./spec/test_responses', {
+        cors: true,
+        access_control_allow_credentials: "true",
+        access_control_allow_headers: "authorization",
+        access_control_allow_origin: "http://0.0.0.0:3000"
+      })
+      req.url = '/'
+      var expectedHeaders = {
+        'Access-Control-Allow-Credentials': "true",
+        'Access-Control-Allow-Headers': "authorization",
+        'Access-Control-Allow-Origin': "http://0.0.0.0:3000"
+      }
+      res.setHeader = function (name, value) {
+        if (expectedHeaders[name]) {
+          expect(expectedHeaders[name]).toBe(value)
+          delete expectedHeaders[name]
+        }
+        // all expected headers have been set!
+        if (Object.keys(expectedHeaders).length === 0) done()
+      }
+      can2(req, res)
+    })
   })
 
   describe('variable GET responses', function () {

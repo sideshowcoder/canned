@@ -18,6 +18,12 @@ var canned = require('../index')
           .describe('cors', 'disable cors support')
           .default('headers', false)
           .describe('headers', 'add custom headers allowed in cors requests')
+          .default('access_control_allow_credentials', 'false')
+          .describe('access_control_allow_credentials', 'overide cors credentials')
+          .default('access_control_allow_headers', 'X-Requested-With')
+          .describe('access_control_allow_headers', 'overide cors headers')
+          .default('access_control_allow_origin', '*')
+          .describe('access_control_allow_origin', 'overide cors origin')
           .default('h', false)
           .alias('h', 'help')
           .describe('h', 'show the help')
@@ -34,6 +40,9 @@ var dir = ''
 ,   relaxed_accept = argv.relaxed_accept
 ,   cors = argv.cors
 ,   cors_headers = argv.headers
+,   access_control_allow_credentials = argv.access_control_allow_credentials
+,   access_control_allow_headers = argv.access_control_allow_headers
+,   access_control_allow_origin = argv.access_control_allow_origin
 ,   logger
 ,   cannedDir
 ,   wildcard = argv.wildcard
@@ -53,6 +62,9 @@ var can = canned(dir, {
   relaxed_accept: relaxed_accept,
   cors: cors,
   cors_headers: cors_headers,
+  access_control_allow_credentials: access_control_allow_credentials,
+  access_control_allow_headers: access_control_allow_headers,
+  access_control_allow_origin: access_control_allow_origin,
   wildcard: wildcard,
   response_delay: response_delay
 })

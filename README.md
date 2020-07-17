@@ -292,6 +292,14 @@ If for whatever reason you want to turn of CORS support do so via
 
     $ canned --cors=false ./my/responses/
 
+If you need to override the values of the cors response headers
+
+    $ canned \
+    --access_control_allow_credentials "true" \
+    --access_control_allow_headers "authorization" \
+    --access_control_allow_origin "http://0.0.0.0:3000" \
+    ./my/responses/
+
 Also if you need additional headers to be served alongside the CORS headers
 these can be added like this (thanks to runemadsen)
 
@@ -359,6 +367,7 @@ feel free to [bug me on twitter](https://twitter.com/ischi)
 Release History
 ---------------
 ### next
+* adding support for overridding cors response header values
 * adding PATCH to default Access-Control-Allow-Method Cors header #113 (@william-mcmillian)
 * adding support for delayed responses #114 (@Onatolich)
 * adding support to make sanatize optional #115 (@YuliyaMarholina)
@@ -457,6 +466,7 @@ Contributors
 * [mazoni](https://github.com/mazoni)
 * [william-mcmillian](https://github.com/william-mcmillian)
 * [Onatolich](https://github.com/Onatolich)
+* [stollcri](https://github.com/stollcri)
 
 License
 -------
